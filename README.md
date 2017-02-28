@@ -5,8 +5,13 @@
 ### Time domain
 
   * [x] Shift (Delay)
-  * [ ] Signal Power
+  * [x] Scale
+  * [ ] Add signals (Signals embedded in infinity)
+  * [ ] Product (Signals embedded in infinity)
+  * [ ] Integration
+  * [ ] Differentiation
   * [ ] Signal Energy
+  * [ ] Signal Power
   
 ### Frequency domain
 

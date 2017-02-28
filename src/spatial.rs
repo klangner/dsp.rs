@@ -1,5 +1,6 @@
 /// Spatial domain processing (e.g. Time)
 
+use std::ops::Mul;
 use ndarray::{Array, Ix1};
 
 
@@ -19,6 +20,10 @@ pub trait Signal {
     /// Shift signal by given integer
     /// y[n] = x[n-k]
     fn shift(&self, k: isize) -> Vector;
+
+    /// Scale signal by given value
+    /// y[n] = x[n-k]
+    fn scale(&self, k: f32) -> Vector;
 }
 
 impl Signal for Vector {
@@ -34,6 +39,10 @@ impl Signal for Vector {
             v.push(self.extended_get(n-k));
         }
         signal(v)
+    }
+
+    fn scale(&self, a: f32) -> Vector {
+        self.mul(a)
     }
 }
 
@@ -67,5 +76,13 @@ mod tests {
         let v1 = v.shift(-1);
         assert!(v1.ndim() == 1);
         assert!(v1 == signal(vec![2., 3., 4.0, 0.]));
+    }
+
+    #[test]
+    fn test_scale() {
+        let v = signal(vec![1., 2., 3., 4.]);
+        let v1 = v.scale(-2.0);
+        assert!(v1.ndim() == 1);
+        assert!(v1 == signal(vec![-2., -4., -6.0, -8.]));
     }
 }
