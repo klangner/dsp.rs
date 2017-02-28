@@ -4,7 +4,7 @@
    
 ### Time domain
 
-  * [ ] Delay
+  * [x] Shift (Delay)
   * [ ] Signal Power
   * [ ] Signal Energy
   
