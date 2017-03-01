@@ -1,4 +1,4 @@
 
 extern crate ndarray;
 
-pub mod spatial;
+pub mod signals;

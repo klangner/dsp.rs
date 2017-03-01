@@ -1,49 +1,64 @@
-/// Spatial domain processing (e.g. Time)
+/// Helper functions for signal processing
+///
 
 use std::ops::Mul;
+use std::cmp;
 use ndarray::{Array, Ix1};
 
 
 /// One dimensional signal
-pub type Vector = Array<f32, Ix1>;
+pub type Signal = Array<f32, Ix1>;
 
 /// Create new signal from vector data.
 /// This vector will be owned by Signal.
-pub fn signal(v: Vec<f32>) -> Vector {
+pub fn signal(v: Vec<f32>) -> Signal {
     Array::from_vec(v)
 }
 
-pub trait Signal {
-    /// Extended finite time series into infinite one. Pad with zeros
-    fn extended_get(&self, i: isize) -> f32;
+pub trait SignalImpl {
+    /// Embed finite time series into infinite one. Pad with zeros
+    fn embedded_get(&self, i: isize) -> f32;
 
     /// Shift signal by given integer
     /// y[n] = x[n-k]
-    fn shift(&self, k: isize) -> Vector;
+    fn shift(&self, k: isize) -> Signal;
 
     /// Scale signal by given value
-    /// y[n] = x[n-k]
-    fn scale(&self, k: f32) -> Vector;
+    /// y[n] = a*x[n]
+    fn scale(&self, k: f32) -> Signal;
+
 }
 
-impl Signal for Vector {
-    fn extended_get(&self, i: isize) -> f32 {
+impl SignalImpl for Signal {
+    fn embedded_get(&self, i: isize) -> f32 {
         let s = self.len() as isize;
         if i < 0 || i >= s {0.0} else {self.get(i as usize).map(|x| *x).unwrap_or(0.0)}
     }
 
-    fn shift(&self, k: isize) -> Vector {
+    fn shift(&self, k: isize) -> Signal {
         let mut v: Vec<f32> = Vec::with_capacity(self.len());
         let size: isize = self.len() as isize;
         for n in 0..size {
-            v.push(self.extended_get(n-k));
+            v.push(self.embedded_get(n-k));
         }
         signal(v)
     }
 
-    fn scale(&self, a: f32) -> Vector {
+    fn scale(&self, a: f32) -> Signal {
         self.mul(a)
     }
+
+}
+
+/// Add 2 signals
+/// z[n] = x[n] + y[n]
+pub fn add(v1: &Signal, v2: &Signal) -> Signal {
+    let size = cmp::max(v1.len(), v2.len());
+    let mut x: Vec<f32> = Vec::with_capacity(size);
+    for n in 0..size {
+        x.push(v1.embedded_get(n as isize) + v2.embedded_get(n as isize));
+    }
+    signal(x)
 }
 
 
@@ -84,5 +99,14 @@ mod tests {
         let v1 = v.scale(-2.0);
         assert!(v1.ndim() == 1);
         assert!(v1 == signal(vec![-2., -4., -6.0, -8.]));
+    }
+
+    #[test]
+    fn test_add() {
+        let x = signal(vec![1., 2., 3., 4.]);
+        let y = signal(vec![2., 3., 4.]);
+        let z = add(&x, &y);
+        assert!(z.ndim() == 1);
+        assert!(z == signal(vec![3., 5., 7.0, 4.]));
     }
 }
