@@ -20,7 +20,7 @@
   
 ### signal generators
   
-  * [ ] Impulse
+  * [x] Impulse
   * [ ] Step
   * [ ] Sinusoid
   * [ ] Random
