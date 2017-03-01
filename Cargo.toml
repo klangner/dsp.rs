@@ -5,3 +5,7 @@ authors = ["Krzysztof Langner <krzysztof@carlsolutions.com>"]
 
 [dependencies]
 ndarray = "0.7.3"
+
+[dependencies.num-complex]
+version = "0.1.32"
+default-features = false
