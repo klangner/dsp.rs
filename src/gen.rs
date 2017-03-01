@@ -3,16 +3,23 @@
 use num_complex::{Complex, Complex32};
 use signals::{Signal, signal};
 
+
+/// Signal generator
+/// Generates size-samples using provided as closure function
+pub fn signal_generator(size: usize, g: &Fn(usize) -> Complex32) -> Signal {
+    let mut vs: Vec<Complex32> = Vec::with_capacity(size);
+    for n in 0..size {
+        vs.push(g(n));
+    }
+    signal(vs)
+}
+
 /// Impulse signal
 /// x[n] = 1 if n == 0
 /// x[n] = 0 if n > 0
 pub fn impulse(size: usize) -> Signal {
-    let mut vs: Vec<Complex32> = Vec::with_capacity(size);
-    vs.push(Complex::new(1., 0.));
-    for _ in 1..size {
-        vs.push(Complex::new(0., 0.));
-    }
-    signal(vs)
+    let g = |n| if n == 0 {Complex::new(1., 0.)} else {Complex::new(0., 0.)};
+    signal_generator(size, &g)
 }
 
 
@@ -20,11 +27,8 @@ pub fn impulse(size: usize) -> Signal {
 /// x[n] = 1 if n >= 0
 /// x[n] = 0 if n < 0
 pub fn step(size: usize) -> Signal {
-    let mut vs: Vec<Complex32> = Vec::with_capacity(size);
-    for _ in 0..size {
-        vs.push(Complex::new(1., 0.));
-    }
-    signal(vs)
+    let g = |_| Complex::new(1., 0.);
+    signal_generator(size, &g)
 }
 
 

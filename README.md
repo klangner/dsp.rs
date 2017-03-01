@@ -18,7 +18,7 @@
   * [ ] FFT
   
   
-### signal generators
+### Signal generators
   
   * [x] Impulse
   * [x] Step
