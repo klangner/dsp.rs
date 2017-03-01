@@ -2,7 +2,7 @@
 
 ## Features
    
-### Time domain
+### Basic signal processing
 
   * [x] Shift (Delay)
   * [x] Scale
@@ -16,6 +16,14 @@
 ### Frequency domain
 
   * [ ] FFT
+  
+  
+### Generators
+  
+  * [ ] Impulse
+  * [ ] Step function
+  * [ ] Sinusoid
+  * [ ] Random
 
 
 ## License

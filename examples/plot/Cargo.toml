@@ -1,11 +1,12 @@
 [package]
-name = "dsp"
+name = "plot"
 version = "0.1.0"
 authors = ["Krzysztof Langner <krzysztof@carlsolutions.com>"]
 
 
 [dependencies]
-ndarray = "0.7.3"
+dsp = { path = "../.." }
+gnuplot = "0.0.22"
 
 
 [dependencies.num-complex]

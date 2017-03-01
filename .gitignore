@@ -1,4 +1,4 @@
 target
 .idea/
-dsp.iml
-/Cargo.lock
+*.iml
+*.lock
