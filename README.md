@@ -18,10 +18,10 @@
   * [ ] FFT
   
   
-### Generators
+### signal generators
   
   * [ ] Impulse
-  * [ ] Step function
+  * [ ] Step
   * [ ] Sinusoid
   * [ ] Random
 
