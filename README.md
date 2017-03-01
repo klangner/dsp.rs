@@ -6,8 +6,8 @@
 
   * [x] Shift (Delay)
   * [x] Scale
-  * [ ] Add signals (Signals embedded in infinity)
-  * [ ] Product (Signals embedded in infinity)
+  * [x] Add signals
+  * [x] Multiply signals
   * [ ] Integration
   * [ ] Differentiation
   * [ ] Signal Energy

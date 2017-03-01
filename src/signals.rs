@@ -74,6 +74,18 @@ pub fn add(v1: &Signal, v2: &Signal) -> Signal {
 }
 
 
+/// Multiply 2 signals
+/// z[n] = x[n] * y[n]
+pub fn multiply(v1: &Signal, v2: &Signal) -> Signal {
+    let size = cmp::min(v1.len(), v2.len());
+    let mut x: Vec<Complex32> = Vec::with_capacity(size);
+    for n in 0..size {
+        x.push(v1.embedded_get(n as isize) * v2.embedded_get(n as isize));
+    }
+    signal(x)
+}
+
+
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
@@ -142,5 +154,21 @@ mod tests {
                                  Complex::new(5., 4.),
                                  Complex::new(7., 6.),
                                  Complex::new(4., 8.)]));
+    }
+
+    #[test]
+    fn test_multiply() {
+        let x = signal(vec![Complex::new(1., 2.),
+                            Complex::new(2., 4.),
+                            Complex::new(3., 6.),
+                            Complex::new(4., 8.)]);
+        let y = signal(vec![Complex::new(2., 4.),
+                            Complex::new(3., 6.),
+                            Complex::new(4., 1.)]);
+        let z = multiply(&x, &y);
+        assert!(z.ndim() == 1);
+        assert!(z == signal(vec![Complex::new(-6., 8.),
+                                 Complex::new(-18., 24.),
+                                 Complex::new(6., 27.)]));
     }
 }
