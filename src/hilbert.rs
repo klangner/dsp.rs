@@ -3,6 +3,7 @@
 
 use std::ops::Mul;
 use std::cmp;
+use std::f64::consts::PI;
 use ndarray::{Array, Ix1};
 use num_complex::{Complex, Complex64};
 
@@ -82,6 +83,20 @@ pub fn multiply(v1: &Vector, v2: &Vector) -> Vector {
     }
     vector(x)
 }
+
+
+/// Base function for Discrete Fourier Transformation
+pub fn fourier_base(size: usize, k: usize) -> Vector {
+    assert!(size > 0);
+    let w = 2.0*PI/(size as f64)*(k as f64);
+    let mut vs: Vec<Complex64> = Vec::with_capacity(size);
+
+    for n in 0..size {
+        vs.push(Complex::new(0., -w*(n as f64)).exp());
+    }
+    vector(vs)
+}
+
 
 
 /// ------------------------------------------------------------------------------------------------
@@ -169,4 +184,21 @@ mod tests {
                                  Complex::new(-18., 24.),
                                  Complex::new(6., 27.)]));
     }
+
+    #[test]
+    fn test_dft_base_0() {
+        let xs = fourier_base(4, 0);
+        assert!(xs == vector(vec![Complex::new(1., 0.),
+                                  Complex::new(1., 0.),
+                                  Complex::new(1., 0.),
+                                  Complex::new(1., 0.)]));
+    }
+
+    #[test]
+    fn test_dot() {
+        let xs = vector(vec![Complex::new(1., 1.),
+                            Complex::new(3., -1.)]);
+        assert!(inner_product(&xs, &xs) == 12.);
+    }
+
 }

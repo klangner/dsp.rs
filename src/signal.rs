@@ -3,7 +3,7 @@
 ///  R - Set of Real Numbers (Here defined as f64)
 ///  C - Set of Complex Numbers (Here defines as Complex64)
 
-use std::f64::consts::{PI};
+use std::f64;
 use num_complex::{Complex, Complex64};
 
 
@@ -32,17 +32,17 @@ pub fn step() -> Signal {
     Signal { gen: Box::new(|i| if i >= 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}) }
 }
 
-/// Base function for Discrete Fourier Transformation
-pub fn dft_base(size: usize, k: usize) -> Signal {
-    sinusoid((size as f64)/(k as f64), 0.)
+/// Complex sinusoidal signal
+pub fn complex(freq: f64, offset: f64) -> Signal {
+    let w = 2.0*f64::consts::PI/freq;
+    Signal { gen: Box::new(move |i| Complex::new(0., w*i + offset).exp()) }
 }
 
 
-/// Generate sinusoidal signal
-/// cos is in real part and sin is in imaginary part
+/// Real value sinusoidal signal
 pub fn sinusoid(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*PI/freq + offset;
-    Signal { gen: Box::new(move |i| Complex::new(0., w*i).exp()) }
+    let w = 2.0*f64::consts::PI/freq;
+    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*i + offset), 0.).exp()) }
 }
 
 
@@ -80,15 +80,5 @@ mod tests {
         let signal = impulse();
         let xs = sample(&signal, -1.0, 1.0, 1.);
         assert!(xs == vec![Complex::new(0., 0.), Complex::new(1., 0.), Complex::new(0., 0.)]);
-    }
-
-    #[test]
-    fn test_dft_base_0() {
-        let signal = dft_base(4, 0);
-        let xs = sample(&signal, 0.0, 3.0, 1.);
-        assert!(xs == vec![Complex::new(1., 0.),
-                           Complex::new(1., 0.),
-                           Complex::new(1., 0.),
-                           Complex::new(1., 0.)]);
     }
 }
