@@ -34,15 +34,22 @@ pub fn step() -> Signal {
 
 /// Complex sinusoidal signal
 pub fn complex(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*f64::consts::PI/freq;
+    let w = 2.0*f64::consts::PI*freq;
     Signal { gen: Box::new(move |i| Complex::new(0., w*i + offset).exp()) }
 }
 
 
-/// Real value sinusoidal signal
-pub fn sinusoid(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*f64::consts::PI/freq;
-    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*i + offset), 0.).exp()) }
+/// Real value sine signal
+pub fn sine(freq: f64, offset: f64) -> Signal {
+    let w = 2.0*f64::consts::PI*freq;
+    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*i + offset), 0.)) }
+}
+
+
+/// Real value cosine signal
+pub fn cosine(freq: f64, offset: f64) -> Signal {
+    let w = 2.0*f64::consts::PI*freq;
+    Signal { gen: Box::new(move |i| Complex::new(f64::cos(w*i + offset), 0.)) }
 }
 
 
@@ -51,7 +58,7 @@ pub fn sample(signal: &Signal, start: f64, end: f64, step: f64) -> Vec<Complex64
     let size = ((end-start)/step) as usize;
     let mut v: Vec<Complex64> = Vec::with_capacity(size);
     let mut i = start;
-    while i <= end {
+    while i < end {
         v.push(signal.at(i));
         i += step;
     }

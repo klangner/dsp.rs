@@ -194,11 +194,4 @@ mod tests {
                                   Complex::new(1., 0.)]));
     }
 
-    #[test]
-    fn test_dot() {
-        let xs = vector(vec![Complex::new(1., 1.),
-                            Complex::new(3., -1.)]);
-        assert!(inner_product(&xs, &xs) == 12.);
-    }
-
 }
