@@ -4,26 +4,26 @@
 use std::ops::Mul;
 use std::cmp;
 use ndarray::{Array, Ix1};
-use num_complex::{Complex, Complex32};
+use num_complex::{Complex, Complex64};
 
 
 /// One dimensional signal
-pub type Vector = Array<Complex32, Ix1>;
+pub type Vector = Array<Complex64, Ix1>;
 
 /// Create vector from complex numbers
-pub fn vector(v: Vec<Complex32>) -> Vector {
+pub fn vector(v: Vec<Complex64>) -> Vector {
     Array::from_vec(v)
 }
 
 /// Create new vector from real numbers.
-pub fn from_real(v: Vec<f32>) -> Vector {
-    let v2: Vec<Complex32> = v.iter().map(|x| Complex::new(*x, 0.)).collect();
+pub fn from_real(v: Vec<f64>) -> Vector {
+    let v2: Vec<Complex64> = v.iter().map(|x| Complex::new(*x, 0.)).collect();
     vector(v2)
 }
 
 pub trait VectorImpl {
     /// Embed finite time series into infinite one. Pad with zeros
-    fn safe_get(&self, i: isize) -> Complex32;
+    fn safe_get(&self, i: isize) -> Complex64;
 
     /// Shift signal by given integer
     /// y[n] = x[n-k]
@@ -31,12 +31,12 @@ pub trait VectorImpl {
 
     /// Scale signal by given value
     /// y[n] = a*x[n]
-    fn scale(&self, k: f32) -> Vector;
+    fn scale(&self, k: f64) -> Vector;
 
 }
 
 impl VectorImpl for Vector {
-    fn safe_get(&self, i: isize) -> Complex32 {
+    fn safe_get(&self, i: isize) -> Complex64 {
         let s = self.len() as isize;
         if i < 0 || i >= s {
             Complex::new(0., 0.)
@@ -46,7 +46,7 @@ impl VectorImpl for Vector {
     }
 
     fn shift(&self, k: isize) -> Vector {
-        let mut v: Vec<Complex32> = Vec::with_capacity(self.len());
+        let mut v: Vec<Complex64> = Vec::with_capacity(self.len());
         let size: isize = self.len() as isize;
         for n in 0..size {
             v.push(self.safe_get(n-k));
@@ -54,7 +54,7 @@ impl VectorImpl for Vector {
         vector(v)
     }
 
-    fn scale(&self, a: f32) -> Vector {
+    fn scale(&self, a: f64) -> Vector {
         self.mul(a)
     }
 
@@ -64,7 +64,7 @@ impl VectorImpl for Vector {
 /// z[n] = x[n] + y[n]
 pub fn add(v1: &Vector, v2: &Vector) -> Vector {
     let size = cmp::max(v1.len(), v2.len());
-    let mut x: Vec<Complex32> = Vec::with_capacity(size);
+    let mut x: Vec<Complex64> = Vec::with_capacity(size);
     for n in 0..size {
         x.push(v1.safe_get(n as isize) + v2.safe_get(n as isize));
     }
@@ -76,7 +76,7 @@ pub fn add(v1: &Vector, v2: &Vector) -> Vector {
 /// z[n] = x[n] * y[n]
 pub fn multiply(v1: &Vector, v2: &Vector) -> Vector {
     let size = cmp::min(v1.len(), v2.len());
-    let mut x: Vec<Complex32> = Vec::with_capacity(size);
+    let mut x: Vec<Complex64> = Vec::with_capacity(size);
     for n in 0..size {
         x.push(v1.safe_get(n as isize) * v2.safe_get(n as isize));
     }
