@@ -3,13 +3,11 @@ extern crate num_complex;
 extern crate dsp;
 
 use gnuplot::{Figure, Color};
-use dsp::signals::{SignalImpl};
-use dsp::gen::*;
+use dsp::signal::*;
 
 
 fn main() {
-//    let xs = impulse(1024).shift(200);
-    let xs = step(1024).shift(200);
+    let xs = sample(&step, -10.0, 10.0, 0.2);
 
     let idx: Vec<usize> = (0..xs.len()).collect();
     let ys: Vec<f32> = xs.iter().map(|x| x.re).collect();
