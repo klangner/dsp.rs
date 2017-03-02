@@ -33,12 +33,12 @@ pub fn step() -> Signal {
 }
 
 /// Base function for Discrete Fourier Transformation
-//pub fn dft_base(size: usize, k: usize) -> Signal {
-//    let size2 = size as f64;
-//    let k2 = k as f64;
-//    let w = 2.0*PI/size2*k2;
-//    Signal { gen: Box::new(|i| Complex::new(0., w*i).exp()) }
-//}
+pub fn dft_base(size: usize, k: usize) -> Signal {
+    let size2 = size as f64;
+    let k2 = k as f64;
+    let w = 2.0*PI/size2*k2;
+    Signal { gen: Box::new(move |i| Complex::new(0., w*i).exp()) }
+}
 
 
 /// Sample given signal
@@ -75,5 +75,15 @@ mod tests {
         let signal = impulse();
         let xs = sample(&signal, -1.0, 1.0, 1.);
         assert!(xs == vec![Complex::new(0., 0.), Complex::new(1., 0.), Complex::new(0., 0.)]);
+    }
+
+    #[test]
+    fn test_dft_base_0() {
+        let signal = dft_base(4, 0);
+        let xs = sample(&signal, 0.0, 3.0, 1.);
+        assert!(xs == vec![Complex::new(1., 0.),
+                           Complex::new(1., 0.),
+                           Complex::new(1., 0.),
+                           Complex::new(1., 0.)]);
     }
 }
