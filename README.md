@@ -22,7 +22,7 @@
   
   * [x] Impulse
   * [x] Step
-  * [ ] Sinusoid
+  * [x] Sinusoid
   * [ ] Random
 
 

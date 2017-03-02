@@ -34,9 +34,14 @@ pub fn step() -> Signal {
 
 /// Base function for Discrete Fourier Transformation
 pub fn dft_base(size: usize, k: usize) -> Signal {
-    let size2 = size as f64;
-    let k2 = k as f64;
-    let w = 2.0*PI/size2*k2;
+    sinusoid((size as f64)/(k as f64), 0.)
+}
+
+
+/// Generate sinusoidal signal
+/// cos is in real part and sin is in imaginary part
+pub fn sinusoid(freq: f64, offset: f64) -> Signal {
+    let w = 2.0*PI/freq + offset;
     Signal { gen: Box::new(move |i| Complex::new(0., w*i).exp()) }
 }
 
