@@ -85,7 +85,7 @@ mod tests {
     #[test]
     fn test_sample() {
         let signal = impulse();
-        let xs = sample(&signal, -1.0, 1.0, 1.);
+        let xs = sample(&signal, -1.0, 2.0, 1.);
         assert!(xs == vec![Complex::new(0., 0.), Complex::new(1., 0.), Complex::new(0., 0.)]);
     }
 }

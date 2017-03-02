@@ -2,6 +2,12 @@
 name = "dsp"
 version = "0.1.0"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
+description = "Digital Signal Processing"
+keywords = ["dsp"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/klangner/dsp"
+homepage = "https://github.com/klangner/dsp"
+documentation = "https://github.com/klangner/dsp"
 
 
 [dependencies]
