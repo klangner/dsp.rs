@@ -1,5 +1,5 @@
 [package]
-name = "plot"
+name = "fourier"
 version = "0.1.0"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
 

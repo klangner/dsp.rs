@@ -1,5 +1,5 @@
 [package]
-name = "plot"
+name = "tuner"
 version = "0.1.0"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
 
@@ -7,6 +7,7 @@ authors = ["Krzysztof Langner <klangner@gmail.com>"]
 [dependencies]
 dsp = { path = "../.." }
 gnuplot = "0.0.22"
+audrey = "0.1.0"
 
 
 [dependencies.num-complex]

@@ -1,7 +1,7 @@
 [package]
 name = "dsp"
 version = "0.1.0"
-authors = ["Krzysztof Langner <krzysztof@carlsolutions.com>"]
+authors = ["Krzysztof Langner <klangner@gmail.com>"]
 
 
 [dependencies]
