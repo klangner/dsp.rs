@@ -11,7 +11,7 @@
   * [x] Integration
   * [x] Differentiation
   * [x] Signal Energy
-  * [ ] Signal Power
+  * [x] Signal Power
   
 ### Frequency domain
 
