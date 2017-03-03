@@ -2,6 +2,9 @@
 
 [![Crates.io](https://img.shields.io/crates/v/dsp.svg)](https://crates.io/crates/dsp) [![Crates.io](https://img.shields.io/crates/l/dsp.svg)](https://github.com/klangner/dsp/blob/master/LICENSE-MIT) [![docs.rs](https://docs.rs/dsp/badge.svg)](https://docs.rs/dsp/)
 
+**dsp is an early-stage open-source project**. It means that API can change at any time.
+If you think that this library can help you, then let me know. We can discuss future direction and try to stabilize the API.
+
 The folder [examples](https://github.com/klangner/dsp/tree/master/examples) contains demo programs which shows how to use this library.
 
 
@@ -36,15 +39,16 @@ Signals are continuous functions f: ℝ -> ℂ
   
 # License
 
-Dual-licensed to be compatible with the Rust project.
+Licensed under either of
 
-Licensed under the Apache License, Version 2.0
-http://www.apache.org/licenses/LICENSE-2.0 or the MIT license
-http://opensource.org/licenses/MIT, at your
-option. This file may not be copied, modified, or distributed
-except according to those terms.
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
-### Contributions
+at your option.
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, 
-as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+**Contributions**
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
