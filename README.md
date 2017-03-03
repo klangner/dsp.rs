@@ -19,18 +19,19 @@
   
   
 ### Signal generators
+
+Signals are continuous functions f: R -> C
   
   * [x] Impulse
   * [x] Step
   * [x] Sinusoid
+  * [x] Scale signal
+  * [ ] Add 2 signals
   
   
 ## IO
   
-  * [ ] PCM Reader
-
-
-## License
+  * [ ] PCM Reader# License
 
 Dual-licensed to be compatible with the Rust project.
 

@@ -65,6 +65,10 @@ pub fn sample(signal: &Signal, start: f64, end: f64, step: f64) -> Vec<Complex64
     v
 }
 
+/// Scale signal
+pub fn scale(signal: Signal, a: Complex64) -> Signal {
+    Signal { gen: Box::new(move |i| a * signal.at(i)) }
+}
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
@@ -79,6 +83,14 @@ mod tests {
         let signal = impulse();
         assert!(signal.at(-4.0) == Complex::new(0., 0.));
         assert!(signal.at(0.) == Complex::new(1., 0.));
+        assert!(signal.at(42.) == Complex::new(0., 0.));
+    }
+
+    #[test]
+    fn test_scale() {
+        let signal = scale(impulse(), Complex::new(5., 3.));
+        assert!(signal.at(-4.0) == Complex::new(0., 0.));
+        assert!(signal.at(0.) == Complex::new(5., 3.));
         assert!(signal.at(42.) == Complex::new(0., 0.));
     }
 
