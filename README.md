@@ -8,7 +8,7 @@
   * [x] Scale
   * [x] Add signals
   * [x] Multiply signals
-  * [ ] Integration
+  * [x] Integration
   * [ ] Differentiation
   * [ ] Signal Energy
   * [ ] Signal Power
@@ -23,7 +23,11 @@
   * [x] Impulse
   * [x] Step
   * [x] Sinusoid
-  * [ ] Random
+  
+  
+## IO
+  
+  * [ ] PCM Reader
 
 
 ## License

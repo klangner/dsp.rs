@@ -34,6 +34,10 @@ pub trait VectorImpl {
     /// y[n] = a*x[n]
     fn scale(&self, k: f64) -> Vector;
 
+    /// Integrate signal
+    /// y[n] = Sum x[k] For all k <= n
+    fn integrate(&self) -> Vector;
+
 }
 
 impl VectorImpl for Vector {
@@ -57,6 +61,16 @@ impl VectorImpl for Vector {
 
     fn scale(&self, a: f64) -> Vector {
         self.mul(a)
+    }
+
+    fn integrate(&self) -> Vector {
+        let mut v: Vec<Complex64> = Vec::with_capacity(self.len());
+        let mut acc = Complex::new(0., 0.);
+        for n in 0..self.len() {
+            acc = acc + self.safe_get(n as isize);
+            v.push(acc);
+        }
+        vector(v)
     }
 
 }
@@ -192,6 +206,21 @@ mod tests {
                                   Complex::new(1., 0.),
                                   Complex::new(1., 0.),
                                   Complex::new(1., 0.)]));
+    }
+
+    #[test]
+    fn test_integration() {
+        let v = vector(vec![Complex::new(1., 2.),
+                            Complex::new(2., -4.),
+                            Complex::new(3., -6.),
+                            Complex::new(4., 8.)]);
+        let v2 = v.integrate();
+        assert!(v2.ndim() == 1);
+        assert!(v2.len() == 4);
+        assert!(v2 == vector(vec![Complex::new(1., 2.),
+                                  Complex::new(3., -2.),
+                                  Complex::new(6., -8.),
+                                  Complex::new(10., 0.)]));
     }
 
 }
