@@ -1,6 +1,6 @@
-# Digital Signal Processing [![Crates.io](https://img.shields.io/crates/v/dsp.svg)](https://crates.io/crates/dsp)] 
-[![Crates.io](https://img.shields.io/crates/l/dsp.svg)](https://github.com/klangner/dsp/blob/master/LICENSE-MIT) 
-[![docs.rs](https://docs.rs/dsp/badge.svg)](https://docs.rs/dsp/) 
+# Digital Signal Processing 
+
+[![Crates.io](https://img.shields.io/crates/v/dsp.svg)](https://crates.io/crates/dsp)[![Crates.io](https://img.shields.io/crates/l/dsp.svg)](https://github.com/klangner/dsp/blob/master/LICENSE-MIT)[![docs.rs](https://docs.rs/dsp/badge.svg)](https://docs.rs/dsp/)
 
 ## Features
    
@@ -36,8 +36,6 @@ Signals are continuous functions f: ℝ -> ℂ
   * [ ] PCM Reader
 
 
-# Contributing  
-  
 # License
 
 Dual-licensed to be compatible with the Rust project.
