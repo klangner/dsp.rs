@@ -34,11 +34,6 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Add 2 signals
   
   
-## IO
-  
-  * [ ] PCM Reader
-
-
 # License
 
 Dual-licensed to be compatible with the Rust project.

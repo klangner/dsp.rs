@@ -5,15 +5,18 @@ extern crate dsp;
 
 
 use gnuplot::{Figure, Color};
-use dsp::signal::*;
 
 
 fn main() {
-    let xs = sample(&step(), -10.0, 10.0, 0.2);
+    let mut reader = audrey::open("../sounds/sine_440hz.wav").unwrap();
+    let mut samples: Vec<f32> = reader.samples().map(Result::unwrap).collect();
 
-    let idx: Vec<usize> = (0..xs.len()).collect();
-    let ys: Vec<f64> = xs.iter().map(|x| x.re).collect();
+    println!("Samples: {:?}", samples.len());
+
+    samples.truncate(1024);
+    let idx: Vec<usize> = (0..samples.len()).collect();
+//    let ys: Vec<f64> = xs.iter().map(|x| x.re).collect();
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, &ys, &[Color("red")]);
+    fg.axes2d().lines(&idx, &samples, &[Color("red")]);
     fg.show();
 }
