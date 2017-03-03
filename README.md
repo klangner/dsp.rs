@@ -26,7 +26,7 @@ Signals are continuous functions f: R -> C
   * [x] Step
   * [x] Sinusoid
   * [x] Scale signal
-  * [ ] Add 2 signals
+  * [x] Add 2 signals
   
   
 ## IO

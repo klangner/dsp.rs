@@ -66,6 +66,11 @@ pub fn sample(signal: &Signal, start: f64, end: f64, step: f64) -> Vec<Complex64
 }
 
 /// Scale signal
+pub fn add(s1: Signal, s2: Signal) -> Signal {
+    Signal { gen: Box::new(move |i| s1.at(i) + s2.at(i)) }
+}
+
+/// Add 2 signals
 pub fn scale(signal: Signal, a: Complex64) -> Signal {
     Signal { gen: Box::new(move |i| a * signal.at(i)) }
 }
@@ -87,6 +92,13 @@ mod tests {
     }
 
     #[test]
+    fn test_sample() {
+        let signal = impulse();
+        let xs = sample(&signal, -1.0, 2.0, 1.);
+        assert!(xs == vec![Complex::new(0., 0.), Complex::new(1., 0.), Complex::new(0., 0.)]);
+    }
+
+    #[test]
     fn test_scale() {
         let signal = scale(impulse(), Complex::new(5., 3.));
         assert!(signal.at(-4.0) == Complex::new(0., 0.));
@@ -95,9 +107,11 @@ mod tests {
     }
 
     #[test]
-    fn test_sample() {
-        let signal = impulse();
-        let xs = sample(&signal, -1.0, 2.0, 1.);
-        assert!(xs == vec![Complex::new(0., 0.), Complex::new(1., 0.), Complex::new(0., 0.)]);
+    fn test_sum() {
+        let signal = add(impulse(), step());
+        assert!(signal.at(-4.0) == Complex::new(0., 0.));
+        assert!(signal.at(0.) == Complex::new(2., 0.));
+        assert!(signal.at(42.) == Complex::new(1., 0.));
     }
+
 }
