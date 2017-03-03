@@ -10,7 +10,7 @@
   * [x] Multiply signals
   * [x] Integration
   * [x] Differentiation
-  * [ ] Signal Energy
+  * [x] Signal Energy
   * [ ] Signal Power
   
 ### Frequency domain

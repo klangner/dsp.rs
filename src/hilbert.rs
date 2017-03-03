@@ -42,6 +42,9 @@ pub trait VectorImpl {
     /// y[n] = x[n] - x[n-1]
     fn differentiate(&self) -> Vector;
 
+    /// Calculate power
+    /// E = Sum x[n]^2 For all n
+    fn energy(&self) -> f64;
 }
 
 impl VectorImpl for Vector {
@@ -85,6 +88,10 @@ impl VectorImpl for Vector {
             last = self.safe_get(n as isize);
         }
         vector(v)
+    }
+
+    fn energy(&self) -> f64 {
+        self.iter().fold(0., |acc, &x| acc + (x*x.conj()).re)
     }
 }
 
@@ -249,6 +256,15 @@ mod tests {
                                   Complex::new(1., -6.),
                                   Complex::new(1., -2.),
                                   Complex::new(1., 14.)]));
+    }
+
+    #[test]
+    fn test_energy() {
+        let v = vector(vec![Complex::new(1., 1.),
+                            Complex::new(2., -1.),
+                            Complex::new(1., -1.),
+                            Complex::new(1., -2.)]);
+        assert!(v.energy() == 14.0);
     }
 
 }
