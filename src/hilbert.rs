@@ -38,6 +38,10 @@ pub trait VectorImpl {
     /// y[n] = Sum x[k] For all k <= n
     fn integrate(&self) -> Vector;
 
+    /// Differentiate the signal
+    /// y[n] = x[n] - x[n-1]
+    fn differentiate(&self) -> Vector;
+
 }
 
 impl VectorImpl for Vector {
@@ -73,6 +77,15 @@ impl VectorImpl for Vector {
         vector(v)
     }
 
+    fn differentiate(&self) -> Vector {
+        let mut v: Vec<Complex64> = Vec::with_capacity(self.len());
+        let mut last = Complex::new(0., 0.);
+        for n in 0..self.len() {
+            v.push(self.safe_get(n as isize) - last);
+            last = self.safe_get(n as isize);
+        }
+        vector(v)
+    }
 }
 
 /// Add 2 vectors
@@ -221,6 +234,21 @@ mod tests {
                                   Complex::new(3., -2.),
                                   Complex::new(6., -8.),
                                   Complex::new(10., 0.)]));
+    }
+
+    #[test]
+    fn test_differentiation() {
+        let v = vector(vec![Complex::new(1., 2.),
+                            Complex::new(2., -4.),
+                            Complex::new(3., -6.),
+                            Complex::new(4., 8.)]);
+        let v2 = v.differentiate();
+        assert!(v2.ndim() == 1);
+        assert!(v2.len() == 4);
+        assert!(v2 == vector(vec![Complex::new(1., 2.),
+                                  Complex::new(1., -6.),
+                                  Complex::new(1., -2.),
+                                  Complex::new(1., 14.)]));
     }
 
 }

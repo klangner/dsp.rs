@@ -9,7 +9,7 @@
   * [x] Add signals
   * [x] Multiply signals
   * [x] Integration
-  * [ ] Differentiation
+  * [x] Differentiation
   * [ ] Signal Energy
   * [ ] Signal Power
   
