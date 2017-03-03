@@ -1,3 +1,3 @@
-# Tuner 
+# Tuner
 
-Find base frequency of the wav file
+Example of tuner application written with the dsp library.

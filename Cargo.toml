@@ -7,7 +7,7 @@ keywords = ["dsp"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/klangner/dsp"
 homepage = "https://github.com/klangner/dsp"
-documentation = "https://github.com/klangner/dsp"
+documentation = "https://docs.rs/dsp"
 
 
 [dependencies]
