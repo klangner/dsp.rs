@@ -10,7 +10,9 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 
 ## Features
    
-### Basic signal processing
+### Vector operations 
+
+Vectors are digital signal in time or frequency domain
 
   * [x] Shift (Delay)
   * [x] Scale
@@ -20,10 +22,11 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [x] Differentiation
   * [x] Signal Energy
   * [x] Signal Power
+
   
 ### Frequency domain
 
-  * [ ] FFT
+  * [x] FFT (using RustFFT crate)
   
   
 ### Signal generators

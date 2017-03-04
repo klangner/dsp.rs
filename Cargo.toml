@@ -12,6 +12,7 @@ documentation = "https://docs.rs/dsp"
 
 [dependencies]
 ndarray = "0.7.3"
+rustfft = "1.0.1"
 
 
 [dependencies.num-complex]

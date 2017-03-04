@@ -2,10 +2,10 @@ extern crate gnuplot;
 extern crate num_complex;
 extern crate dsp;
 
-use num_complex::{Complex64};
 use gnuplot::{Figure, Color};
-use dsp::vectors::*;
-use dsp::signal::*;
+use dsp::vectors::{vector};
+use dsp::signal::{cosine, sample};
+use dsp::freq::{fft};
 
 // Dimension
 static N: usize = 64;
@@ -15,14 +15,9 @@ fn main() {
     // Our testing signal has 4Hz
     let signal = cosine(4./(N as f64), 0.);
     let xs = vector(sample(&signal, 0.0, N as f64, 1.));
-    let mut vs: Vec<Complex64> = Vec::with_capacity(N);
+    let spectrum = fft(&xs);
 
-    for n in 0..N {
-        let base = fourier_base(N, n);
-        vs.push(xs.dot(&base));
-    }
-
-    let powers: Vec<f64> = vs.iter().map(|x| x.re).collect();
+    let powers: Vec<f64> = spectrum.iter().map(|x| x.re).collect();
     plot(&powers);
 
     let xs_real: Vec<f64> = xs.iter().map(|x| x.re).collect();
