@@ -1,4 +1,4 @@
-/// Hilbert space is a vector space where Digital Signals are processed.
+/// Vector Space (Hilbert space) discrete signal representation.
 /// Here vector space is defined over set of Complex numbers.
 
 use std::ops::Mul;

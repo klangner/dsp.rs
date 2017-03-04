@@ -4,7 +4,7 @@ extern crate dsp;
 
 use num_complex::{Complex64};
 use gnuplot::{Figure, Color};
-use dsp::hilbert::*;
+use dsp::vectors::*;
 use dsp::signal::*;
 
 // Dimension
