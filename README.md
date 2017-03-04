@@ -38,6 +38,7 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Sinusoid
   * [x] Scale signal
   * [x] Add 2 signals
+  * [ ] Signal modulation
   
   
 # License
