@@ -22,11 +22,13 @@ Vectors are digital signal in time or frequency domain
   * [x] Differentiation
   * [x] Signal Energy
   * [x] Signal Power
+  * [ ] Convolution
 
   
 ### Frequency domain
 
   * [x] FFT (using RustFFT crate)
+  * [ ] Convolution
   
   
 ### Signal generators
