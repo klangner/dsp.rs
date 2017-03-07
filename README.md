@@ -23,6 +23,8 @@ Vectors are digital signal in time or frequency domain
   * [x] Signal Energy
   * [x] Signal Power
   * [ ] Convolution
+  * [ ] Moving Average
+  * [ ] Leaky integration
 
   
 ### Frequency domain
