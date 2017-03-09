@@ -3,7 +3,7 @@ extern crate num_complex;
 extern crate dsp;
 
 use gnuplot::{Figure, Color};
-use dsp::vectors::{vector};
+use dsp::vectors::{Vector};
 use dsp::signal::{cosine, sample};
 use dsp::freq::{fft};
 
@@ -14,13 +14,13 @@ static N: usize = 64;
 fn main() {
     // Our testing signal has 4Hz
     let signal = cosine(4./(N as f64), 0.);
-    let xs = vector(sample(&signal, 0.0, N as f64, 1.));
+    let xs = Vector::new(sample(&signal, 0.0, N as f64, 1.));
     let spectrum = fft(&xs);
 
-    let powers: Vec<f64> = spectrum.iter().map(|x| x.re).collect();
+    let powers: Vec<f64> = spectrum.to_vec().iter().map(|x| x.re).collect();
     plot(&powers);
 
-    let xs_real: Vec<f64> = xs.iter().map(|x| x.re).collect();
+    let xs_real: Vec<f64> = xs.to_vec().iter().map(|x| x.re).collect();
     plot(&xs_real);
 
 //    let bs: Vec<f64> = fourier_base(N, 4).iter().map(|x| x.re).collect();

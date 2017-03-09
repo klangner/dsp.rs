@@ -1,7 +1,7 @@
 /// Analyze discrete signal in frequency domain
 
 use rustfft;
-use vectors::{Vector, vector};
+use vectors::{Vector};
 
 
 /// Convert spatial vector into spectrum
@@ -12,9 +12,8 @@ pub fn fft(v: &Vector) -> Vector {
     let mut spectrum = raw_vec.clone();
 
     fft.process(&raw_vec, &mut spectrum);
-    vector(spectrum)
+    Vector::new(spectrum)
 }
-
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
@@ -22,16 +21,16 @@ pub fn fft(v: &Vector) -> Vector {
 #[cfg(test)]
 mod tests {
     use num_complex::{Complex};
-    use vectors::{from_real};
+    use vectors::{Vector};
     use super::*;
 
     #[test]
     fn test_fft() {
-        let v = from_real(vec![1., 0., 0., 0.]);
+        let v = Vector::from_reals(vec![1., 0., 0., 0.]);
         let s = fft(&v);
-        assert!(s == vector(vec![Complex::new(1., 0.),
-                                 Complex::new(1., 0.),
-                                 Complex::new(1., 0.),
-                                 Complex::new(1., 0.)]));
+        assert!(s == Vector::new(vec![Complex::new(1., 0.),
+                                      Complex::new(1., 0.),
+                                      Complex::new(1., 0.),
+                                      Complex::new(1., 0.)]));
     }
 }
