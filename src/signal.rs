@@ -54,10 +54,20 @@ pub fn cosine(freq: f64, offset: f64) -> Signal {
 }
 
 
-/// Real value periodic triangle signal (with period 2π).
+/// Real value periodic triangle signal (with period of 1 second).
 pub fn triangle(freq: f64) -> Signal {
     let w = 2.0*freq;
     Signal { gen: Box::new(move |i| Complex::new((w*(i+0.5)) % 2. - 1. , 0.)) }
+}
+
+/// Real value periodic square signal (with period of 1 second).
+pub fn square(freq: f64) -> Signal {
+    let w = freq;
+    Signal { gen: Box::new(move |i| {
+        let a = w*i % 1.;
+        let b = if a < -0.5 || (a > 0.0 && a < 0.5) {1.0} else  {-1.0};
+        Complex::new(b, 0.)
+    })}
 }
 
 
