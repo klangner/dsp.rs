@@ -31,6 +31,7 @@ Vectors are digital signal in time or frequency domain
 
   * [x] FFT (using RustFFT crate)
   * [ ] Convolution
+  * [ ] Filters
   
   
 ### Signal generators
