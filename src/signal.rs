@@ -75,6 +75,11 @@ pub fn scale(signal: Signal, a: Complex64) -> Signal {
     Signal { gen: Box::new(move |i| a * signal.at(i)) }
 }
 
+/// Modulate signal by given carrier
+pub fn modulate(s: Signal, carrier: Signal) -> Signal {
+    Signal { gen: Box::new(move |i| s.at(i) * carrier.at(i)) }
+}
+
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
