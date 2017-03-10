@@ -7,7 +7,7 @@ use dsp::signal::*;
 
 
 fn main() {
-    let xs = sample(&step(), -10.0, 10.0, 0.2);
+    let xs = sample(&triangle(3.), -0.5, 0.5, 0.01);
 
     let idx: Vec<usize> = (0..xs.len()).collect();
     let ys: Vec<f64> = xs.iter().map(|x| x.re).collect();

@@ -41,6 +41,8 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Impulse
   * [x] Step
   * [x] Sinusoid
+  * [x] Triangle
+  * [ ] Square
   * [x] Scale signal
   * [x] Add 2 signals
   * [x] Signal modulation

@@ -1,9 +1,10 @@
-/// Signal is function f: R -> C
+/// Signal is function f: ℝ -> ℂ
 /// Where:
-///  R - Set of Real Numbers (Here defined as f64)
-///  C - Set of Complex Numbers (Here defines as Complex64)
+///  R - Fraction of seconds. Here defined as f64)
+///  C - Set of Complex Numbers (Here defined as Complex64)
 
 use std::f64;
+use std::f64::consts::PI;
 use num_complex::{Complex, Complex64};
 
 
@@ -34,22 +35,29 @@ pub fn step() -> Signal {
 
 /// Complex sinusoidal signal
 pub fn complex(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*f64::consts::PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(0., w*i + offset).exp()) }
+    let w = 2.0*PI*freq;
+    Signal { gen: Box::new(move |i| Complex::new(0., w*(i + offset/2.)).exp()) }
 }
 
 
 /// Real value sine signal
 pub fn sine(freq: f64, offset: f64) -> Signal {
     let w = 2.0*f64::consts::PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*i + offset), 0.)) }
+    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*(i + offset/2.)), 0.)) }
 }
 
 
 /// Real value cosine signal
 pub fn cosine(freq: f64, offset: f64) -> Signal {
     let w = 2.0*f64::consts::PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(f64::cos(w*i + offset), 0.)) }
+    Signal { gen: Box::new(move |i| Complex::new(f64::cos(w*(i + offset/2.)), 0.)) }
+}
+
+
+/// Real value periodic triangle signal (with period 2π).
+pub fn triangle(freq: f64) -> Signal {
+    let w = 2.0*freq;
+    Signal { gen: Box::new(move |i| Complex::new((w*(i+0.5)) % 2. - 1. , 0.)) }
 }
 
 
