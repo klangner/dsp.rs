@@ -10,14 +10,12 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 
 ## Features
    
-### Vector operations 
-
-Vectors are digital signal in time or frequency domain
+### Discrete Finite Signals 
 
   * [x] Shift (Delay)
   * [x] Scale
   * [x] Add signals
-  * [x] Multiply signals
+  * [x] Multiply signals (modulation)
   * [x] Integration
   * [x] Differentiation
   * [x] Signal Energy

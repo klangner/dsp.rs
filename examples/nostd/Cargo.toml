@@ -1,0 +1,13 @@
+[package]
+name = "nostd"
+version = "0.1.0"
+authors = ["Krzysztof Langner <klangner@gmail.com>"]
+
+
+[dependencies]
+dsp = { path = "../.." }
+
+
+[dependencies.num-complex]
+version = "0.1.32"
+default-features = false
