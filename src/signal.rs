@@ -74,7 +74,6 @@ pub fn square(freq: f64) -> Signal {
 /// A chirp is a signal in which frequency increases with time.
 pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> Signal {
     let slope = (end_freq - start_freq)/time;
-    println!("Slope: {}", slope);
     Signal { gen: Box::new(move |i| {
         if i < 0. || i > time {
             Complex::new(0., 0.)
