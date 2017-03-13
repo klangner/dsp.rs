@@ -42,14 +42,14 @@ pub fn complex(freq: f64, offset: f64) -> Signal {
 
 /// Real value sine signal
 pub fn sine(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*f64::consts::PI*freq;
+    let w = 2.0*PI*freq;
     Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*(i + offset/2.)), 0.)) }
 }
 
 
 /// Real value cosine signal
 pub fn cosine(freq: f64, offset: f64) -> Signal {
-    let w = 2.0*f64::consts::PI*freq;
+    let w = 2.0*PI*freq;
     Signal { gen: Box::new(move |i| Complex::new(f64::cos(w*(i + offset/2.)), 0.)) }
 }
 
@@ -67,6 +67,22 @@ pub fn square(freq: f64) -> Signal {
         let a = w*i % 1.;
         let b = if a < -0.5 || (a > 0.0 && a < 0.5) {1.0} else  {-1.0};
         Complex::new(b, 0.)
+    })}
+}
+
+
+/// A chirp is a signal in which frequency increases with time.
+pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> Signal {
+    let slope = (end_freq - start_freq)/time;
+    println!("Slope: {}", slope);
+    Signal { gen: Box::new(move |i| {
+        if i < 0. || i > time {
+            Complex::new(0., 0.)
+        } else {
+            let f = slope*i + start_freq;
+            let w = 2.0*PI*f*i;
+            Complex::new(0., w).exp()
+        }
     })}
 }
 
