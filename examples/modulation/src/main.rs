@@ -4,7 +4,7 @@ extern crate dsp;
 use gnuplot::{Figure, Color, Caption};
 use dsp::vectors::{Vector};
 use dsp::signal::{cosine, sample, modulate, Signal};
-use dsp::freq::{fft};
+use dsp::freq::{FourierTransform};
 
 // Dimension
 static N: usize = 256;
@@ -32,6 +32,7 @@ fn main() {
 
 fn powers(signal: &Signal) -> Vec<f64> {
     let ds = Vector::new(sample(&signal, 0.0, N as f64, 1.));
-    let spectrum = fft(&ds);
+    let mut ft = FourierTransform::new(N, N);
+    let spectrum = ft.forward(&ds);
     spectrum.to_vec().iter().map(|x| x.re).collect()
 }

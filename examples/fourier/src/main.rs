@@ -5,7 +5,7 @@ extern crate dsp;
 use gnuplot::{Figure, Color};
 use dsp::vectors::{Vector};
 use dsp::signal::{cosine, sample};
-use dsp::freq::{fft};
+use dsp::freq::{FourierTransform};
 
 // Dimension
 static N: usize = 64;
@@ -15,7 +15,9 @@ fn main() {
     // Our testing signal has 4Hz
     let signal = cosine(4./(N as f64), 0.);
     let xs = Vector::new(sample(&signal, 0.0, N as f64, 1.));
-    let spectrum = fft(&xs);
+    let mut ft = FourierTransform::new(N, N);
+    let spectrum = ft.forward(&xs);
+//    println!("Max at {}: {}", spectrum);
 
     let powers: Vec<f64> = spectrum.to_vec().iter().map(|x| x.re).collect();
     plot(&powers);
