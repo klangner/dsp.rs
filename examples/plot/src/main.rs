@@ -7,7 +7,7 @@ use dsp::signal::*;
 
 
 fn main() {
-    let xs = sample(&chirp(1.0, 20.0, 3.0), 0.0, 3.0, 0.005);
+    let xs = sample(&chirp(1.0, 20.0, 3.0), (0..500).map(|x| (x as f64)*3.0/500.0).collect());
 
     let idx: Vec<usize> = (0..xs.len()).collect();
     let ys: Vec<f64> = xs.iter().map(|x| x.re).collect();

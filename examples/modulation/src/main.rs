@@ -31,7 +31,7 @@ fn main() {
 }
 
 fn powers(signal: &Signal) -> Vec<f64> {
-    let ds = Vector::new(sample(&signal, 0.0, N as f64, 1.));
+    let ds = Vector::new(sample(&signal, (0..N).map(|x| x as f64).collect()));
     let mut ft = FourierTransform::new(N, N);
     let spectrum = ft.forward(&ds);
     spectrum.to_vec().iter().map(|x| x.re).collect()
