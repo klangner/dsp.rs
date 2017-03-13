@@ -8,9 +8,9 @@ If you think that this library can help you, then let me know. We can discuss fu
 The folder [examples](https://github.com/klangner/dsp/tree/master/examples) contains demo programs which shows how to use this library.
 
 
-## Features
+# Features
    
-### Discrete Finite Signals 
+## Time domain
 
   * [x] Shift (Delay)
   * [x] Scale
@@ -25,7 +25,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [ ] Leaky integration
 
   
-### Frequency domain
+## Frequency domain
 
   * [x] FFT (using RustFFT crate)
   * [ ] Spectrogram
@@ -33,7 +33,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [ ] Filters
   
   
-### Signal generators
+## Signal generators
 
 Signals are continuous functions f: ℝ -> ℂ 
   
@@ -43,9 +43,10 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
-  * [x] Scale signal
-  * [x] Add 2 signals
-  * [x] Signal modulation
+  * Operations
+    * [x] Scale signal
+    * [x] Add 2 signals
+    * [x] Signal modulation
   
   
 # License

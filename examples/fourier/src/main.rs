@@ -34,5 +34,4 @@ fn plot(xs: &Vec<f64>) {
     let mut fg = Figure::new();
     fg.axes2d().lines(&idx, xs, &[Color("red")]);
     fg.show();
-
 }
