@@ -28,7 +28,6 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 ## Frequency domain
 
   * [x] FFT (using RustFFT crate)
-  * [ ] Spectrogram
   * [ ] Convolution
   * [ ] Filters
   
