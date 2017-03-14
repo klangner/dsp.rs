@@ -2,6 +2,7 @@
 /// Here vector space is defined over set of Complex numbers.
 
 use std::cmp;
+use std::f64;
 use num_complex::{Complex, Complex64};
 
 
@@ -60,7 +61,6 @@ impl Vector {
         Vector::new(x)
     }
 
-
     /// Multiply 2 vectors element wise
     /// z[n] = x[n] * y[n]
     pub fn multiply(&self, v: &Vector) -> Vector {
@@ -70,6 +70,27 @@ impl Vector {
             x.push(self.at(n) * v.at(n));
         }
         Vector::new(x)
+    }
+
+    /// Get value with max magnitude
+    pub fn max(&self) -> f64 {
+        self.data.iter()
+            .map(|x| x.norm())
+            .fold(f64::MIN, |acc, v| if acc < v {v} else {acc})
+    }
+
+    /// Get argument of maximum value
+    pub fn argmax(&self) -> usize {
+        let range = self.data.iter().map(|x| x.norm()).enumerate();
+        let mut max_value = f64::MIN;
+        let mut arg_max = 0;
+        for (i, v) in range {
+            if max_value < v {
+                max_value = v;
+                arg_max = i;
+            }
+        }
+        arg_max
     }
 }
 
@@ -128,5 +149,23 @@ mod tests {
         assert!(z == Vector::new(vec![Complex::new(-6., 8.),
                                       Complex::new(-18., 24.),
                                       Complex::new(6., 27.)]));
+    }
+
+    #[test]
+    fn test_max() {
+        let x = Vector::new(vec![Complex::new(1., 2.),
+                                 Complex::new(3., 4.),
+                                 Complex::new(3., 2.),
+                                 Complex::new(4., 2.)]);
+        assert!(x.max() == 5.0);
+    }
+
+    #[test]
+    fn test_argmax() {
+        let x = Vector::new(vec![Complex::new(1., 2.),
+                                 Complex::new(3., 4.),
+                                 Complex::new(3., 2.),
+                                 Complex::new(4., 2.)]);
+        assert!(x.argmax() == 1);
     }
 }
