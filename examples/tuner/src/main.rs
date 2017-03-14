@@ -13,13 +13,13 @@ const SAMPLE_SIZE: usize = 4096;
 
 
 fn main() {
-    let mut ft = FourierTransform::new(SAMPLE_RATE as usize, SAMPLE_SIZE);
+    let mut ft = FourierTransform::forward(SAMPLE_RATE as usize, SAMPLE_SIZE);
     let mut reader = audrey::open("../sounds/sine_440hz.wav").unwrap();
     let mut samples: Vec<f32> = reader.samples().map(Result::unwrap).collect();
 
     samples.truncate(SAMPLE_SIZE);
     let xs = Vector::from_reals(samples.iter().map(|&x| x as f64).collect());
-    let spectrum = ft.forward(&xs);
+    let spectrum = ft.process(&xs);
 
     // Print estimated frequency
     let idx = spectrum.argmax();

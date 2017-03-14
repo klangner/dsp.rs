@@ -17,18 +17,24 @@ impl FourierTransform {
     /// ## Params:
     ///   * sample_rate - Samples per second (1/sample_frequency)
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
-    pub fn new(sample_rate: usize, sample_size: usize) -> FourierTransform {
+    pub fn forward(sample_rate: usize, sample_size: usize) -> FourierTransform {
         let fft = FFT::new(sample_size, false);
         FourierTransform{ fft: fft, sample_rate: sample_rate, sample_size: sample_size }
     }
 
-    /// Forward DFT (implemented as FFT)
-    pub fn forward(&mut self, v: &Vector) -> Vector {
-        let raw_vec = v.to_vec();
-        let mut spectrum = raw_vec.clone();
+    /// Define inverse transformation
+    pub fn inverse(sample_rate: usize, sample_size: usize) -> FourierTransform {
+        let fft = FFT::new(sample_size, true);
+        FourierTransform{ fft: fft, sample_rate: sample_rate, sample_size: sample_size }
+    }
 
-        self.fft.process(&raw_vec, &mut spectrum);
-        Vector::new(spectrum)
+    /// Forward DFT (implemented as FFT)
+    pub fn process(&mut self, v: &Vector) -> Vector {
+        let raw_vec = v.to_vec();
+        let mut out = raw_vec.clone();
+
+        self.fft.process(&raw_vec, &mut out);
+        Vector::new(out)
     }
 
     /// Calculated frequncy of a given component
@@ -62,8 +68,8 @@ mod tests {
     #[test]
     fn test_fft() {
         let v = Vector::from_reals(vec![1., 0., 0., 0.]);
-        let mut ft = FourierTransform::new(4, 4);
-        let s = ft.forward(&v);
+        let mut ft = FourierTransform::forward(4, 4);
+        let s = ft.process(&v);
         assert!(s == Vector::new(vec![Complex::new(1., 0.),
                                       Complex::new(1., 0.),
                                       Complex::new(1., 0.),
@@ -72,13 +78,13 @@ mod tests {
 
     #[test]
     fn test_freq_0() {
-        let ft = FourierTransform::new(4, 4);
+        let ft = FourierTransform::forward(4, 4);
         assert!(ft.item_freq(0) == 0.0);
     }
 
     #[test]
     fn test_freq_10() {
-        let ft = FourierTransform::new(44100, 1024);
+        let ft = FourierTransform::forward(44100, 1024);
         assert!(ft.item_freq(10) == 430.6640625);
     }
 

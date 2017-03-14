@@ -46,7 +46,7 @@ fn freq_plot(ds: &Vector, cs: &Vector, ms: &Vector) {
 
 
 fn powers(v: &Vector) -> Vec<f64> {
-    let mut ft = FourierTransform::new(N, N);
-    let spectrum = ft.forward(&v);
+    let mut ft = FourierTransform::forward(N, N);
+    let spectrum = ft.process(&v);
     spectrum.to_vec().iter().map(|x| x.re).collect()
 }

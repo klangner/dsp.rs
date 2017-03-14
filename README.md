@@ -23,11 +23,12 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [ ] Convolution
   * [ ] Moving Average
   * [ ] Leaky integration
+  * [ ] Windowing (Hamming)
 
   
 ## Frequency domain
 
-  * [x] FFT (using RustFFT crate)
+  * [x] FFT forward and inverse using RustFFT crate.
   * [ ] Convolution
   * [ ] Filters
   

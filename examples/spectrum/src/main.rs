@@ -14,14 +14,14 @@ const SAMPLE_SIZE: usize = 2048;
 
 fn main() {
     let signal = chirp(110.0, 880.0, 1.0);
-    let mut ft = FourierTransform::new(SAMPLE_RATE, SAMPLE_SIZE);
+    let mut ft = FourierTransform::forward(SAMPLE_RATE, SAMPLE_SIZE);
 
     // Calculate FFT every 1/10th of the second
     let ps: Vec<f64> = (0..100).map(|i| {
         let start_pos = (i as f64)/100.0;
         let range = (0..SAMPLE_SIZE).map(|x| start_pos+(x as f64)/(SAMPLE_RATE as f64)).collect();
         let xs = Vector::new(sample(&signal, range));
-        let spectrum = ft.forward(&xs);
+        let spectrum = ft.process(&xs);
         let argmax = spectrum.argmax();
         if argmax < SAMPLE_SIZE/2 {ft.item_freq(argmax)} else {ft.item_freq(SAMPLE_SIZE-argmax)}
     }).collect();
