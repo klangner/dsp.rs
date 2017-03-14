@@ -28,6 +28,7 @@ fn time_plot(vector: &Vector) {
     let xs: Vec<f64> = vector.to_vec().iter().map(|x| x.re).collect();
     let idx: Vec<usize> = (0..N).collect();
     let mut fg = Figure::new();
+    fg.set_terminal("x11 size 800, 400","");
     fg.axes2d().lines(&idx, &xs, &[Color("green"), Caption("Modulated signal")]);
     fg.show();
 
