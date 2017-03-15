@@ -12,6 +12,7 @@ documentation = "https://docs.rs/dsp"
 
 [dependencies]
 rustfft = "1.0.1"
+rand = "0.3.15"
 
 
 [dependencies.num-complex]

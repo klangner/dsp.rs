@@ -5,6 +5,7 @@
 
 extern crate num_complex;
 extern crate rustfft;
+extern crate rand;
 
 pub mod vectors;
 pub mod signal;

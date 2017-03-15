@@ -1,8 +1,10 @@
 /// Vector Space (Hilbert space) discrete signal representation.
 /// Here vector space is defined over set of Complex numbers.
 
+use std::iter::{FromIterator};
 use std::cmp;
 use std::f64;
+use std::slice;
 use num_complex::{Complex, Complex64};
 
 
@@ -41,6 +43,11 @@ impl Vector {
         } else {
             Complex::new(0., 0.)
         }
+    }
+
+    /// Get iterator over Vector
+    pub fn iter(&self) -> slice::Iter<Complex64> {
+        self.data.iter()
     }
 
     /// Scale vector by given value
@@ -91,6 +98,17 @@ impl Vector {
             }
         }
         arg_max
+    }
+}
+
+/// We can call collect on any iterator with complex numbers
+impl FromIterator<Complex64> for Vector {
+    fn from_iter<I: IntoIterator<Item=Complex64>>(iter: I) -> Self {
+        let mut data: Vec<Complex64> = Vec::new();
+        for i in iter {
+            data.push(i);
+        }
+        Vector::new(data)
     }
 }
 

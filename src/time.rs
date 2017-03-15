@@ -1,5 +1,6 @@
 //! Process signals in Time Domain
 
+use rand::{random};
 use num_complex::{Complex, Complex64};
 use vectors::{Vector};
 
@@ -30,6 +31,9 @@ pub trait SpatialSignal {
     /// Calculate power
     /// P = 1/N Sum x[n]^2 For all n
     fn power(&self) -> f64;
+
+    /// Add noise to the signal
+    fn add_noise(&self, amplitude: f64) -> Vector;
 }
 
 impl SpatialSignal for Vector {
@@ -80,6 +84,9 @@ impl SpatialSignal for Vector {
         self.energy() / (self.len() as f64)
     }
 
+    fn add_noise(&self, amplitude: f64) -> Vector {
+        self.iter().map(|x| x + amplitude).collect()
+    }
 
 }
 
