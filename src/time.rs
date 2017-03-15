@@ -1,6 +1,7 @@
 //! Process signals in Time Domain
 
-use rand::{random};
+use rand;
+use rand::distributions::{Normal, IndependentSample};
 use num_complex::{Complex, Complex64};
 use vectors::{Vector};
 
@@ -84,8 +85,10 @@ impl SpatialSignal for Vector {
         self.energy() / (self.len() as f64)
     }
 
-    fn add_noise(&self, amplitude: f64) -> Vector {
-        self.iter().map(|x| x + amplitude).collect()
+    fn add_noise(&self, std: f64) -> Vector {
+        let normal = Normal::new(0.0, std);
+        let mut rng = rand::thread_rng();
+        self.iter().map(|x| x + normal.ind_sample(&mut rng)).collect()
     }
 
 }
