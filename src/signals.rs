@@ -16,10 +16,15 @@ pub struct Signal {
 
 impl Signal {
 
-    /// Create new signal from vector
+    /// Create new signal from 1 second of samples
     pub fn new(data: Vec<Complex64>) -> Signal {
         let n = data.len();
         Signal { data: data, sample_rate: n }
+    }
+
+    /// Create new signal from samples with given sample rate
+    pub fn from_samples(data: Vec<Complex64>, sample_rate: usize) -> Signal {
+        Signal { data: data, sample_rate: sample_rate }
     }
 
     /// Create new signal from vector of real numbers
@@ -110,7 +115,7 @@ impl Signal {
 
     /// Sliced signal. Return copy.
     pub fn slice(&self, start: usize, end: usize) -> Signal {
-        Signal::new(self.data[start..end].to_vec())
+        Signal::from_samples(self.data[start..end].to_vec(), self.sample_rate)
     }
 
 }
