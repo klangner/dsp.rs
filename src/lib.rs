@@ -8,6 +8,6 @@ extern crate rustfft;
 extern crate rand;
 
 pub mod vectors;
-pub mod csignal;
+pub mod csignals;
 pub mod freq;
-pub mod time;
+pub mod dsignals;

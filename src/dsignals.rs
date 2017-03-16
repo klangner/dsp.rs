@@ -1,4 +1,7 @@
 //! Process signals in Time Domain
+//! Discrete signal is function
+//! f: N -> ℂ
+
 
 use rand;
 use rand::distributions::{Normal, IndependentSample};
@@ -6,8 +9,8 @@ use num_complex::{Complex, Complex64};
 use vectors::{Vector};
 
 
-/// DiscreteTimeSignal
-pub trait SpatialSignal {
+/// Discrete Time Signal
+pub trait DSignal {
 
     /// This function will return 0 if index out of bound
     fn get(&self, i: isize) -> Complex64;
@@ -37,7 +40,7 @@ pub trait SpatialSignal {
     fn add_noise(&self, amplitude: f64) -> Vector;
 }
 
-impl SpatialSignal for Vector {
+impl DSignal for Vector {
 
     fn get(&self, i: isize) -> Complex64 {
         let s = self.len() as isize;
