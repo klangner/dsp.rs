@@ -1,16 +1,16 @@
 //! Process Discrete signals in time domain
 
 
-use rand;
-use rand::distributions::{Normal, IndependentSample};
 use num_complex::{Complex, Complex64};
 use vectors::{Vector, VectorImpl};
 
 /// Discrete Time Signal
+///   * data - Data points
+///   * sample_rate - how many points per second
 #[derive(Debug, PartialEq)]
 pub struct Signal {
+    pub sample_rate: usize,
     data: Vector,
-    sample_freq: usize
 }
 
 
@@ -19,13 +19,13 @@ impl Signal {
     /// Create new signal from vector
     pub fn new(data: Vec<Complex64>) -> Signal {
         let n = data.len();
-        Signal { data: data, sample_freq: n }
+        Signal { data: data, sample_rate: n }
     }
 
     /// Create new signal from vector of real numbers
-    pub fn from_reals(data: Vec<f64>) -> Signal {
+    pub fn from_reals(data: Vec<f64>, sample_rate: usize) -> Signal {
         Signal { data: data.iter().map(|x| Complex::new(*x, 0.)).collect(),
-                 sample_freq: data.len()}
+                 sample_rate: sample_rate}
     }
 
     /// Signal length()
@@ -96,12 +96,21 @@ impl Signal {
         self.energy() / (self.data.len() as f64)
     }
 
-    /// Add noise to the signal
-    pub fn add_noise(&self, std: f64) -> Signal {
-        let normal = Normal::new(0.0, std);
-        let mut rng = rand::thread_rng();
-        let data = self.data.iter().map(|x| x + normal.ind_sample(&mut rng)).collect();
-        Signal { data: data, sample_freq: self.sample_freq }
+    /// Modulate signal by given carrier
+    pub fn modulate(&self, carrier: &Signal) -> Signal {
+        let data = self.data.multiply(&carrier.data);
+        Signal::new(data)
+    }
+
+    /// Sum 2 signals
+    pub fn sum(&self, s2: &Signal) -> Signal {
+        let data = self.data.add(&s2.data);
+        Signal::new(data)
+    }
+
+    /// Sliced signal. Return copy.
+    pub fn slice(&self, start: usize, end: usize) -> Signal {
+        Signal::new(self.data[start..end].to_vec())
     }
 
 }
@@ -132,7 +141,7 @@ mod tests {
 
     #[test]
     fn test_shift2() {
-        let v = Signal::from_reals(vec![1., 2., 3., 4.]);
+        let v = Signal::from_reals(vec![1., 2., 3., 4.], 4);
         let v1 = v.shift(-1);
         assert!(v1 == Signal::new(vec![Complex::new(2., 0.),
                                        Complex::new(3., 0.),

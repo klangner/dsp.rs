@@ -8,7 +8,7 @@ extern crate rustfft;
 extern crate rand;
 
 mod vectors;
-pub mod csignals;
+pub mod generators;
 pub mod fft;
 pub mod spectrums;
 pub mod signals;

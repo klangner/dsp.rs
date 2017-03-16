@@ -29,7 +29,7 @@ impl ForwardFFT {
         let mut out = raw_vec.clone();
 
         self.fft.process(&raw_vec, &mut out);
-        Spectrum::new(out)
+        Spectrum::new(out, v.sample_rate)
     }
 }
 
@@ -66,13 +66,13 @@ mod tests {
 
     #[test]
     fn test_fft() {
-        let v = Signal::from_reals(vec![1., 0., 0., 0.]);
+        let v = Signal::from_reals(vec![1., 0., 0., 0.], 4);
         let mut ft = ForwardFFT::new(4);
         let s = ft.process(&v);
         assert!(s == Spectrum::new(vec![Complex::new(1., 0.),
                                       Complex::new(1., 0.),
                                       Complex::new(1., 0.),
-                                      Complex::new(1., 0.)]));
+                                      Complex::new(1., 0.)], 4));
     }
 
 }
