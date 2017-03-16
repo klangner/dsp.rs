@@ -7,7 +7,8 @@ extern crate num_complex;
 extern crate rustfft;
 extern crate rand;
 
-pub mod vectors;
+mod vectors;
 pub mod csignals;
-pub mod freq;
-pub mod dsignals;
+pub mod fft;
+pub mod spectrums;
+pub mod signals;

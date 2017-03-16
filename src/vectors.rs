@@ -1,94 +1,80 @@
-/// Vector Space (Hilbert space) discrete signal representation.
+/// Helper functions for working with Vec as Vector in Vector (Hilbert) Space.
 /// Here vector space is defined over set of Complex numbers.
 
-use std::iter::{FromIterator};
+
 use std::cmp;
 use std::f64;
-use std::slice;
 use num_complex::{Complex, Complex64};
 
 
-/// One dimensional signal
-#[derive(Debug, PartialEq)]
-pub struct Vector {
-    data: Vec<Complex64>
-}
+pub type Vector = Vec<Complex64>;
 
-impl Vector {
-    /// Create new vector from real numbers.
-    pub fn new(data: Vec<Complex64>) -> Vector {
-        Vector { data: data }
-    }
-
-    /// Create new vector from real numbers.
-    pub fn from_reals(v: Vec<f64>) -> Vector {
-        let data: Vec<Complex64> = v.iter().map(|x| Complex::new(*x, 0.)).collect();
-        Vector::new(data)
-    }
-
-    /// Convert vector into Vec representation
-    pub fn to_vec(&self) -> &Vec<Complex64> {
-        &self.data
-    }
-
-    /// Vector length
-    pub fn len(&self) -> usize {
-        self.data.len()
-    }
+pub trait VectorImpl {
 
     /// This function will return 0 if index is out of bounds
-    pub fn at(&self, i: usize) -> Complex64 {
-        if i < self.data.len() {
-            self.data[i]
+    fn at(&self, i: usize) -> Complex64;
+
+    /// Scale vector by given value
+    /// y[n] = a*x[n]
+    fn scale(&self, a: f64) -> Vector;
+
+    /// Add 2 vectors together
+    /// z[n] = x[n] + y[n]
+    fn add(&self, v: &Vector) -> Vector;
+
+    /// Multiply 2 vectors element wise
+    /// z[n] = x[n] * y[n]
+    fn multiply(&self, v: &Vector) -> Vector;
+
+    /// Get value with max magnitude
+    fn max(&self) -> f64;
+
+    /// Get argument of maximum value
+    fn argmax(&self) -> usize;
+}
+
+
+impl VectorImpl for Vector {
+
+    fn at(&self, i: usize) -> Complex64 {
+        if i < self.len() {
+            self[i]
         } else {
             Complex::new(0., 0.)
         }
     }
 
-    /// Get iterator over Vector
-    pub fn iter(&self) -> slice::Iter<Complex64> {
-        self.data.iter()
-    }
-
-    /// Scale vector by given value
-    /// y[n] = a*x[n]
-    pub fn scale(&self, a: f64) -> Vector {
+    fn scale(&self, a: f64) -> Vector {
         let data = self.to_vec().iter().map(|x| x*a).collect();
-        Vector::new(data)
+        data
     }
 
-    /// Add 2 vectors together
-    /// z[n] = x[n] + y[n]
-    pub fn add(&self, v: &Vector) -> Vector {
-        let size = cmp::max(self.data.len(), v.len());
+    fn add(&self, v: &Vector) -> Vector {
+        let size = cmp::max(self.len(), v.len());
         let mut x: Vec<Complex64> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) + v.at(n));
         }
-        Vector::new(x)
+        x
     }
 
-    /// Multiply 2 vectors element wise
-    /// z[n] = x[n] * y[n]
-    pub fn multiply(&self, v: &Vector) -> Vector {
-        let size = cmp::min(self.data.len(), v.len());
+    fn multiply(&self, v: &Vector) -> Vector {
+        let size = cmp::min(self.len(), v.len());
         let mut x: Vec<Complex64> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) * v.at(n));
         }
-        Vector::new(x)
+        x
     }
 
-    /// Get value with max magnitude
-    pub fn max(&self) -> f64 {
-        self.data.iter()
+    fn max(&self) -> f64 {
+        self.iter()
             .map(|x| x.norm())
             .fold(f64::MIN, |acc, v| if acc < v {v} else {acc})
     }
 
-    /// Get argument of maximum value
-    pub fn argmax(&self) -> usize {
-        let range = self.data.iter().map(|x| x.norm()).enumerate();
+    fn argmax(&self) -> usize {
+        let range = self.iter().map(|x| x.norm()).enumerate();
         let mut max_value = f64::MIN;
         let mut arg_max = 0;
         for (i, v) in range {
@@ -98,17 +84,6 @@ impl Vector {
             }
         }
         arg_max
-    }
-}
-
-/// We can call collect on any iterator with complex numbers
-impl FromIterator<Complex64> for Vector {
-    fn from_iter<I: IntoIterator<Item=Complex64>>(iter: I) -> Self {
-        let mut data: Vec<Complex64> = Vec::new();
-        for i in iter {
-            data.push(i);
-        }
-        Vector::new(data)
     }
 }
 
@@ -123,67 +98,67 @@ mod tests {
 
     #[test]
     fn test_init() {
-        let v = Vector::from_reals(vec![1., 2., 3., 4.]);
-        assert!(v == Vector::new(vec![Complex::new(1., 0.),
-                                      Complex::new(2., 0.),
-                                      Complex::new(3., 0.),
-                                      Complex::new(4., 0.)]));
+        let v: Vector = vec![1., 2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
+        assert!(v == vec![Complex::new(1., 0.),
+                          Complex::new(2., 0.),
+                          Complex::new(3., 0.),
+                          Complex::new(4., 0.)]);
     }
 
     #[test]
     fn test_scale() {
-        let v = Vector::from_reals(vec![1., 2., 3., 4.]);
+        let v: Vector = vec![1., 2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
         let v1 = v.scale(-2.0);
-        assert!(v1 == Vector::new(vec![Complex::new(-2., 0.),
-                                       Complex::new(-4., 0.),
-                                       Complex::new(-6., 0.),
-                                       Complex::new(-8., 0.)]));
+        assert!(v1 == vec![Complex::new(-2., 0.),
+                           Complex::new(-4., 0.),
+                           Complex::new(-6., 0.),
+                           Complex::new(-8., 0.)]);
     }
 
     #[test]
     fn test_add() {
-        let x = Vector::new(vec![Complex::new(1., 2.),
-                                 Complex::new(2., 4.),
-                                 Complex::new(3., 6.),
-                                 Complex::new(4., 8.)]);
-        let y = Vector::from_reals(vec![2., 3., 4.]);
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(2., 4.),
+                     Complex::new(3., 6.),
+                     Complex::new(4., 8.)];
+        let y: Vector = vec![2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
         let z = x.add(&y);
-        assert!(z == Vector::new(vec![Complex::new(3., 2.),
-                                      Complex::new(5., 4.),
-                                      Complex::new(7., 6.),
-                                      Complex::new(4., 8.)]));
+        assert!(z == vec![Complex::new(3., 2.),
+                          Complex::new(5., 4.),
+                          Complex::new(7., 6.),
+                          Complex::new(4., 8.)]);
     }
 
     #[test]
     fn test_multiply() {
-        let x = Vector::new(vec![Complex::new(1., 2.),
-                                 Complex::new(2., 4.),
-                                 Complex::new(3., 6.),
-                                 Complex::new(4., 8.)]);
-        let y = Vector::new(vec![Complex::new(2., 4.),
-                                 Complex::new(3., 6.),
-                                 Complex::new(4., 1.)]);
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(2., 4.),
+                     Complex::new(3., 6.),
+                     Complex::new(4., 8.)];
+        let y = vec![Complex::new(2., 4.),
+                     Complex::new(3., 6.),
+                     Complex::new(4., 1.)];
         let z = x.multiply(&y);
-        assert!(z == Vector::new(vec![Complex::new(-6., 8.),
-                                      Complex::new(-18., 24.),
-                                      Complex::new(6., 27.)]));
+        assert!(z == vec![Complex::new(-6., 8.),
+                          Complex::new(-18., 24.),
+                          Complex::new(6., 27.)]);
     }
 
     #[test]
     fn test_max() {
-        let x = Vector::new(vec![Complex::new(1., 2.),
-                                 Complex::new(3., 4.),
-                                 Complex::new(3., 2.),
-                                 Complex::new(4., 2.)]);
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(3., 4.),
+                     Complex::new(3., 2.),
+                     Complex::new(4., 2.)];
         assert!(x.max() == 5.0);
     }
 
     #[test]
     fn test_argmax() {
-        let x = Vector::new(vec![Complex::new(1., 2.),
-                                 Complex::new(3., 4.),
-                                 Complex::new(3., 2.),
-                                 Complex::new(4., 2.)]);
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(3., 4.),
+                     Complex::new(3., 2.),
+                     Complex::new(4., 2.)];
         assert!(x.argmax() == 1);
     }
 }
