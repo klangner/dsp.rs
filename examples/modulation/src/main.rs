@@ -3,7 +3,7 @@ extern crate dsp;
 
 use gnuplot::{Figure, Color, Caption};
 use dsp::vectors::{Vector};
-use dsp::signal::{cosine, sample, modulate};
+use dsp::csignal::{cosine, sample, modulate};
 use dsp::freq::{FourierTransform};
 
 const N: usize = 4096;

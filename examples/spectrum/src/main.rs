@@ -4,7 +4,7 @@ extern crate dsp;
 
 use gnuplot::{Figure, Color, Caption};
 use dsp::vectors::{Vector};
-use dsp::signal::*;
+use dsp::csignal::*;
 use dsp::freq::{FourierTransform};
 
 

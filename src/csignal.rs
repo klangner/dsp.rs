@@ -1,4 +1,5 @@
-/// Signal is function f: ℝ -> ℂ
+/// Continuous signal is function
+/// f: ℝ -> ℂ
 /// Where:
 ///  R - Fraction of seconds. Here defined as f64)
 ///  C - Set of Complex Numbers (Here defined as Complex64)
@@ -8,11 +9,11 @@ use std::f64::consts::PI;
 use num_complex::{Complex, Complex64};
 
 
-pub struct Signal{
+pub struct CSignal {
     gen: Box<Fn(f64) -> Complex64>
 }
 
-impl Signal {
+impl CSignal {
     pub fn at(&self, i: f64) -> Complex64 {
         (self.gen)(i)
     }
@@ -22,48 +23,48 @@ impl Signal {
 /// Impulse signal
 /// x[n] = 1 if n == 0
 /// x[n] = 0 if n > 0
-pub fn impulse() -> Signal {
-    Signal { gen: Box::new(|i| if i == 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}) }
+pub fn impulse() -> CSignal {
+    CSignal { gen: Box::new(|i| if i == 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}) }
 }
 
 /// Step signal
 /// x[n] = 1 if n >= 0
 /// x[n] = 0 if n < 0
-pub fn step() -> Signal {
-    Signal { gen: Box::new(|i| if i >= 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}) }
+pub fn step() -> CSignal {
+    CSignal { gen: Box::new(|i| if i >= 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}) }
 }
 
 /// Complex sinusoidal signal
-pub fn complex(freq: f64, offset: f64) -> Signal {
+pub fn complex(freq: f64, offset: f64) -> CSignal {
     let w = 2.0*PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(0., w*(i + offset/2.)).exp()) }
+    CSignal { gen: Box::new(move |i| Complex::new(0., w*(i + offset/2.)).exp()) }
 }
 
 
 /// Real value sine signal
-pub fn sine(freq: f64, offset: f64) -> Signal {
+pub fn sine(freq: f64, offset: f64) -> CSignal {
     let w = 2.0*PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(f64::sin(w*(i + offset/2.)), 0.)) }
+    CSignal { gen: Box::new(move |i| Complex::new(f64::sin(w*(i + offset/2.)), 0.)) }
 }
 
 
 /// Real value cosine signal
-pub fn cosine(freq: f64, offset: f64) -> Signal {
+pub fn cosine(freq: f64, offset: f64) -> CSignal {
     let w = 2.0*PI*freq;
-    Signal { gen: Box::new(move |i| Complex::new(f64::cos(w*(i + offset/2.)), 0.)) }
+    CSignal { gen: Box::new(move |i| Complex::new(f64::cos(w*(i + offset/2.)), 0.)) }
 }
 
 
 /// Real value periodic triangle signal (with period of 1 second).
-pub fn triangle(freq: f64) -> Signal {
+pub fn triangle(freq: f64) -> CSignal {
     let w = 2.0*freq;
-    Signal { gen: Box::new(move |i| Complex::new((w*(i+0.5)) % 2. - 1. , 0.)) }
+    CSignal { gen: Box::new(move |i| Complex::new((w*(i+0.5)) % 2. - 1., 0.)) }
 }
 
 /// Real value periodic square signal (with period of 1 second).
-pub fn square(freq: f64) -> Signal {
+pub fn square(freq: f64) -> CSignal {
     let w = freq;
-    Signal { gen: Box::new(move |i| {
+    CSignal { gen: Box::new(move |i| {
         let a = w*i % 1.;
         let b = if a < -0.5 || (a > 0.0 && a < 0.5) {1.0} else  {-1.0};
         Complex::new(b, 0.)
@@ -72,9 +73,9 @@ pub fn square(freq: f64) -> Signal {
 
 
 /// A chirp is a signal in which frequency increases with time.
-pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> Signal {
+pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> CSignal {
     let slope = (end_freq - start_freq)/time;
-    Signal { gen: Box::new(move |i| {
+    CSignal { gen: Box::new(move |i| {
         if i < 0. || i > time {
             Complex::new(0., 0.)
         } else {
@@ -87,23 +88,23 @@ pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> Signal {
 
 
 /// Sample given signal
-pub fn sample(signal: &Signal, ns: Vec<f64>) -> Vec<Complex64> {
+pub fn sample(signal: &CSignal, ns: Vec<f64>) -> Vec<Complex64> {
     ns.iter().map(|&i| signal.at(i)).collect()
 }
 
 /// Scale signal
-pub fn add(s1: Signal, s2: Signal) -> Signal {
-    Signal { gen: Box::new(move |i| s1.at(i) + s2.at(i)) }
+pub fn add(s1: CSignal, s2: CSignal) -> CSignal {
+    CSignal { gen: Box::new(move |i| s1.at(i) + s2.at(i)) }
 }
 
 /// Add 2 signals
-pub fn scale(signal: Signal, a: Complex64) -> Signal {
-    Signal { gen: Box::new(move |i| a * signal.at(i)) }
+pub fn scale(signal: CSignal, a: Complex64) -> CSignal {
+    CSignal { gen: Box::new(move |i| a * signal.at(i)) }
 }
 
 /// Modulate signal by given carrier
-pub fn modulate(s: Signal, carrier: Signal) -> Signal {
-    Signal { gen: Box::new(move |i| s.at(i) * carrier.at(i)) }
+pub fn modulate(s: CSignal, carrier: CSignal) -> CSignal {
+    CSignal { gen: Box::new(move |i| s.at(i) * carrier.at(i)) }
 }
 
 /// ------------------------------------------------------------------------------------------------

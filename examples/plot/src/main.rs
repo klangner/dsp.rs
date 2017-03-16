@@ -5,7 +5,7 @@ extern crate dsp;
 use gnuplot::{Figure, Color};
 use dsp::vectors::{Vector};
 use dsp::time::{SpatialSignal};
-use dsp::signal::*;
+use dsp::csignal::*;
 
 
 const N: usize = 1000;

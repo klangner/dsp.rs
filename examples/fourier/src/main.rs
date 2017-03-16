@@ -4,7 +4,7 @@ extern crate dsp;
 
 use gnuplot::{Figure, Color};
 use dsp::vectors::{Vector};
-use dsp::signal::{cosine, sample};
+use dsp::csignal::{cosine, sample};
 use dsp::freq::{FourierTransform};
 
 // Dimension
