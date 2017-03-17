@@ -20,6 +20,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [x] Differentiation
   * [x] Signal Energy
   * [x] Signal Power
+  * [x] Modulation
   * [ ] Convolution
   * [ ] Moving Average
   * [ ] Leaky integration
@@ -44,10 +45,6 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
-  * Operations
-    * [x] Scale signal
-    * [x] Add 2 signals
-    * [x] Signal modulation
   
   
 # License

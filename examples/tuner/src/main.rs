@@ -26,7 +26,7 @@ fn main() {
     println!("Freq: {}Hz", freq);
 
     // Plot
-    let powers: Vec<f64> = spectrum.to_vec().iter().map(|x| x.norm()).collect();
+    let powers: Vec<f64> = spectrum.to_vec().iter().map(|x| x.re).collect();
     let idx: Vec<f64> = (0..powers.len()/2).map(|x| (x as f64)* (SAMPLE_RATE as f64)/(SAMPLE_SIZE as f64)).collect();
     let mut fg = Figure::new();
     fg.axes2d().lines(&idx, &powers, &[Color("blue")]);
