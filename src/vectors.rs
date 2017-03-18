@@ -26,6 +26,12 @@ pub trait VectorImpl {
     /// z[n] = x[n] * y[n]
     fn multiply(&self, v: &Vector) -> Vector;
 
+    /// Sum elements of the vector
+    fn sum(&self) -> Complex64;
+
+    /// Inner product between 2 vectors
+    fn inner_product(&self, v: &Vector) -> Complex64;
+
     /// Get value with max magnitude
     fn max(&self) -> f64;
 
@@ -65,6 +71,14 @@ impl VectorImpl for Vector {
             x.push(self.at(n) * v.at(n));
         }
         x
+    }
+
+    fn inner_product(&self, v: &Vector) -> Complex64{
+        self.multiply(v).sum()
+    }
+
+    fn sum(&self) -> Complex64 {
+        self.iter().fold(Complex::new(0.0, 0.0), |acc, v| acc + v)
     }
 
     fn max(&self) -> f64 {
@@ -142,6 +156,24 @@ mod tests {
         assert!(z == vec![Complex::new(-6., 8.),
                           Complex::new(-18., 24.),
                           Complex::new(6., 27.)]);
+    }
+
+    #[test]
+    fn test_sum() {
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(3., 4.),
+                     Complex::new(-3., -2.),
+                     Complex::new(4., 2.)];
+        assert!(x.sum() == Complex::new(5.0, 6.0));
+    }
+
+    #[test]
+    fn test_inner_product() {
+        let x = vec![Complex::new(1., 2.),
+                     Complex::new(2., 4.)];
+        let y = vec![Complex::new(2., 4.),
+                     Complex::new(3., -6.)];
+        assert!(x.inner_product(&y) == Complex::new(24., 8.));
     }
 
     #[test]
