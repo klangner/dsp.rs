@@ -31,7 +31,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 ## Frequency domain
 
   * [x] FFT forward and inverse using RustFFT crate.
-  * [ ] Convolution
+  * [x] Convolution
   * [ ] Filters
   
   

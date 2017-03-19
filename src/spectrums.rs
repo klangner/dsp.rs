@@ -27,6 +27,13 @@ impl Spectrum {
         (i * self.sample_rate) as f64 / (self.data.len() as f64)
     }
 
+    /// Convolution.
+    /// In frequency domain convolution it equals to the multiplication
+    pub fn convolve(&self, other: &Spectrum) -> Spectrum {
+        let data = self.data.multiply(&other.data);
+        Spectrum::new(data, self.sample_rate)
+    }
+
     /// Return max frequency
     pub fn max_freq(&self) -> f64 {
         let idx = self.data.argmax();
