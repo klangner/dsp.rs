@@ -21,7 +21,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [x] Signal Energy
   * [x] Signal Power
   * [x] Modulation
-  * [ ] Convolution
+  * [x] Convolution
   * [ ] Moving Average
   * [ ] Leaky integration
   * [ ] Windowing (Hamming)

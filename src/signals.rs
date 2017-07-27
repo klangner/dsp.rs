@@ -3,6 +3,8 @@
 
 use num_complex::{Complex, Complex64};
 use vectors::{Vector, VectorImpl};
+use std::cmp;
+
 
 /// Discrete Time Signal
 ///   * data - Data points
@@ -118,6 +120,29 @@ impl Signal {
         Signal::from_samples(self.data[start..end].to_vec(), self.sample_rate)
     }
 
+    /// Reverse the signal. Last value will be first
+    pub fn reverse(&self) -> Signal {
+        let mut v: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let n = self.data.len();
+        for i in 0..n {
+            v.push(self.data.at(n-i-1));
+        }
+        Signal::new(v)
+    }
+
+    /// Convolve signals
+    pub fn convolve(&self, h: &Signal) -> Signal {
+        let mut vs: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        for i in 0..self.len() {
+            let mut v = Complex::new(0., 0.);
+            for j in 0..cmp::min(i+1, h.len()) {
+                v = v + self.data.at(i - j) * h.data.at(j);
+            }
+            vs.push(v);
+        }
+        Signal::new(vs)
+    }
+
 }
 
 
@@ -191,7 +216,6 @@ mod tests {
         assert!(v.energy() == 14.0);
     }
 
-
     #[test]
     fn test_power() {
         let v = Signal::new(vec![Complex::new(1., 1.),
@@ -199,6 +223,32 @@ mod tests {
                                  Complex::new(1., -1.),
                                  Complex::new(1., -2.)]);
         assert!(v.power() == 14./4.);
+    }
+
+    #[test]
+    fn test_reverse() {
+        let v = Signal::new(vec![Complex::new(3., 13.),
+                                 Complex::new(2., 4.),
+                                 Complex::new(1., 5.)]);
+        assert!(v.reverse() == Signal::new(vec![Complex::new(1., 5.),
+                                                Complex::new(2., 4.),
+                                                Complex::new(3., 13.)]));
+    }
+
+    #[test]
+    fn test_convolve() {
+        let u = Signal::new(vec![Complex::new(1., 0.),
+                                 Complex::new(1., 0.),
+                                 Complex::new(1., 0.),
+                                 Complex::new(1., 0.)]);
+        let h = Signal::new(vec![Complex::new(3., 0.),
+                                 Complex::new(2., 0.),
+                                 Complex::new(1., 0.)]);
+        println!("Convolved {:?}", u.convolve(&h));
+        assert!(u.convolve(&h) == Signal::new(vec![Complex::new(3., 0.),
+                                                   Complex::new(5., 0.),
+                                                   Complex::new(6., 0.),
+                                                   Complex::new(6., 0.)]));
     }
 
 }

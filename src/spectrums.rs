@@ -22,7 +22,7 @@ impl Spectrum {
     /// Copy data into new vector
     pub fn to_vec(&self) -> Vec<Complex64> { self.data.clone() }
 
-    /// Calculated frequncy of a given component
+    /// Calculated frequency of a given component
     pub fn item_freq(&self, i: usize) -> f64 {
         (i * self.sample_rate) as f64 / (self.data.len() as f64)
     }
