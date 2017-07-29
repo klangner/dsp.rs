@@ -1,0 +1,14 @@
+[package]
+name = "sandbox"
+version = "0.1.0"
+authors = ["Krzysztof Langner <klangner@gmail.com>"]
+
+
+[dependencies]
+dsp = { path = "../.." }
+gnuplot = "0.0.22"
+
+
+[dependencies.num-complex]
+version = "0.1.32"
+default-features = false
