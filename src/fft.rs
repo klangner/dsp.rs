@@ -20,7 +20,7 @@ impl ForwardFFT {
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> ForwardFFT {
         let fft = FFT::new(sample_size, false);
-        ForwardFFT{ fft: fft }
+        ForwardFFT{ fft }
     }
 
     /// Forward DFT (implemented as FFT)
@@ -40,7 +40,7 @@ impl InverseFFT {
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> InverseFFT {
         let fft = FFT::new(sample_size, true);
-        InverseFFT{ fft: fft }
+        InverseFFT{ fft }
     }
 
     /// Forward DFT (implemented as FFT)
@@ -69,10 +69,10 @@ mod tests {
         let v = Signal::from_reals(vec![1., 0., 0., 0.], 4);
         let mut ft = ForwardFFT::new(4);
         let s = ft.process(&v);
-        assert!(s == Spectrum::new(vec![Complex::new(1., 0.),
-                                      Complex::new(1., 0.),
-                                      Complex::new(1., 0.),
-                                      Complex::new(1., 0.)], 4));
+        assert_eq!(s, Spectrum::new(vec![Complex::new(1., 0.),
+                                              Complex::new(1., 0.),
+                                              Complex::new(1., 0.),
+                                              Complex::new(1., 0.)], 4));
     }
 
 }

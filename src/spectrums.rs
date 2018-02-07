@@ -13,7 +13,7 @@ pub struct Spectrum {
 impl Spectrum {
     /// Create new signal from vector
     pub fn new(data: Vec<Complex64>, sample_rate: usize) -> Spectrum {
-        Spectrum { data: data, sample_rate: sample_rate }
+        Spectrum { data, sample_rate }
     }
 
     /// Spectrum length
@@ -56,8 +56,8 @@ mod tests {
                                    Complex::new(1., 0.),
                                    Complex::new(1., 0.),
                                    Complex::new(1., 0.)], 4);
-        assert!(s.item_freq(0) == 0.0);
-        assert!(s.item_freq(2) == 2.0);
+        assert_eq!(s.item_freq(0), 0.0);
+        assert_eq!(s.item_freq(2), 2.0);
     }
 
 }

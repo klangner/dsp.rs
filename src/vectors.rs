@@ -73,12 +73,12 @@ impl VectorImpl for Vector {
         x
     }
 
-    fn inner_product(&self, v: &Vector) -> Complex64{
-        self.multiply(v).sum()
-    }
-
     fn sum(&self) -> Complex64 {
         self.iter().fold(Complex::new(0.0, 0.0), |acc, v| acc + v)
+    }
+
+    fn inner_product(&self, v: &Vector) -> Complex64{
+        self.multiply(v).sum()
     }
 
     fn max(&self) -> f64 {
@@ -113,20 +113,20 @@ mod tests {
     #[test]
     fn test_init() {
         let v: Vector = vec![1., 2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
-        assert!(v == vec![Complex::new(1., 0.),
-                          Complex::new(2., 0.),
-                          Complex::new(3., 0.),
-                          Complex::new(4., 0.)]);
+        assert_eq!(v, vec![Complex::new(1., 0.),
+                           Complex::new(2., 0.),
+                           Complex::new(3., 0.),
+                           Complex::new(4., 0.)]);
     }
 
     #[test]
     fn test_scale() {
         let v: Vector = vec![1., 2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
         let v1 = v.scale(-2.0);
-        assert!(v1 == vec![Complex::new(-2., 0.),
-                           Complex::new(-4., 0.),
-                           Complex::new(-6., 0.),
-                           Complex::new(-8., 0.)]);
+        assert_eq!(v1, vec![Complex::new(-2., 0.),
+                            Complex::new(-4., 0.),
+                            Complex::new(-6., 0.),
+                            Complex::new(-8., 0.)]);
     }
 
     #[test]
@@ -137,10 +137,10 @@ mod tests {
                      Complex::new(4., 8.)];
         let y: Vector = vec![2., 3., 4.].iter().map(|x| Complex::new(*x, 0.)).collect();
         let z = x.add(&y);
-        assert!(z == vec![Complex::new(3., 2.),
-                          Complex::new(5., 4.),
-                          Complex::new(7., 6.),
-                          Complex::new(4., 8.)]);
+        assert_eq!(z, vec![Complex::new(3., 2.),
+                           Complex::new(5., 4.),
+                           Complex::new(7., 6.),
+                           Complex::new(4., 8.)]);
     }
 
     #[test]
@@ -153,9 +153,9 @@ mod tests {
                      Complex::new(3., 6.),
                      Complex::new(4., 1.)];
         let z = x.multiply(&y);
-        assert!(z == vec![Complex::new(-6., 8.),
-                          Complex::new(-18., 24.),
-                          Complex::new(6., 27.)]);
+        assert_eq!(z, vec![Complex::new(-6., 8.),
+                           Complex::new(-18., 24.),
+                           Complex::new(6., 27.)]);
     }
 
     #[test]
@@ -164,7 +164,7 @@ mod tests {
                      Complex::new(3., 4.),
                      Complex::new(-3., -2.),
                      Complex::new(4., 2.)];
-        assert!(x.sum() == Complex::new(5.0, 6.0));
+        assert_eq!(x.sum(), Complex::new(5.0, 6.0));
     }
 
     #[test]
@@ -173,7 +173,7 @@ mod tests {
                      Complex::new(2., 4.)];
         let y = vec![Complex::new(2., 4.),
                      Complex::new(3., -6.)];
-        assert!(x.inner_product(&y) == Complex::new(24., 8.));
+        assert_eq!(x.inner_product(&y), Complex::new(24., 8.));
     }
 
     #[test]
@@ -182,7 +182,7 @@ mod tests {
                      Complex::new(3., 4.),
                      Complex::new(3., 2.),
                      Complex::new(4., 2.)];
-        assert!(x.max() == 5.0);
+        assert_eq!(x.max(), 5.0);
     }
 
     #[test]
@@ -191,6 +191,6 @@ mod tests {
                      Complex::new(3., 4.),
                      Complex::new(3., 2.),
                      Complex::new(4., 2.)];
-        assert!(x.argmax() == 1);
+        assert_eq!(x.argmax(), 1);
     }
 }

@@ -21,18 +21,19 @@ impl Signal {
     /// Create new signal from 1 second of samples
     pub fn new(data: Vec<Complex64>) -> Signal {
         let n = data.len();
-        Signal { data: data, sample_rate: n }
+        Signal { data, sample_rate: n }
     }
 
     /// Create new signal from samples with given sample rate
     pub fn from_samples(data: Vec<Complex64>, sample_rate: usize) -> Signal {
-        Signal { data: data, sample_rate: sample_rate }
+        Signal { data, sample_rate }
     }
 
     /// Create new signal from vector of real numbers
     pub fn from_reals(data: Vec<f64>, sample_rate: usize) -> Signal {
         Signal { data: data.iter().map(|x| Complex::new(*x, 0.)).collect(),
-                 sample_rate: sample_rate}
+                 sample_rate
+        }
     }
 
     /// Signal length()
@@ -163,20 +164,20 @@ mod tests {
                                  Complex::new(3., 4.),
                                  Complex::new(4., 1.)]);
         let v1 = v.shift(1);
-        assert!(v1 == Signal::new(vec![Complex::new(0., 0.),
-                                       Complex::new(1., 2.),
-                                       Complex::new(2., 3.),
-                                       Complex::new(3., 4.)]));
+        assert_eq!(v1, Signal::new(vec![Complex::new(0., 0.),
+                                             Complex::new(1., 2.),
+                                             Complex::new(2., 3.),
+                                             Complex::new(3., 4.)]));
     }
 
     #[test]
     fn test_shift2() {
         let v = Signal::from_reals(vec![1., 2., 3., 4.], 4);
         let v1 = v.shift(-1);
-        assert!(v1 == Signal::new(vec![Complex::new(2., 0.),
-                                       Complex::new(3., 0.),
-                                       Complex::new(4., 0.),
-                                       Complex::new(0., 0.)]));
+        assert_eq!(v1, Signal::new(vec![Complex::new(2., 0.),
+                                             Complex::new(3., 0.),
+                                             Complex::new(4., 0.),
+                                             Complex::new(0., 0.)]));
     }
 
     #[test]
@@ -186,11 +187,11 @@ mod tests {
                                  Complex::new(3., -6.),
                                  Complex::new(4., 8.)]);
         let v2 = v.integrate();
-        assert!(v2.len() == 4);
-        assert!(v2 == Signal::new(vec![Complex::new(1., 2.),
-                                       Complex::new(3., -2.),
-                                       Complex::new(6., -8.),
-                                       Complex::new(10., 0.)]));
+        assert_eq!(v2.len(), 4);
+        assert_eq!(v2, Signal::new(vec![Complex::new(1., 2.),
+                                        Complex::new(3., -2.),
+                                        Complex::new(6., -8.),
+                                        Complex::new(10., 0.)]));
     }
 
     #[test]
@@ -200,11 +201,11 @@ mod tests {
                                  Complex::new(3., -6.),
                                  Complex::new(4., 8.)]);
         let v2 = v.differentiate();
-        assert!(v2.len() == 4);
-        assert!(v2 == Signal::new(vec![Complex::new(1., 2.),
-                                       Complex::new(1., -6.),
-                                       Complex::new(1., -2.),
-                                       Complex::new(1., 14.)]));
+        assert_eq!(v2.len(), 4);
+        assert_eq!(v2, Signal::new(vec![Complex::new(1., 2.),
+                                        Complex::new(1., -6.),
+                                        Complex::new(1., -2.),
+                                        Complex::new(1., 14.)]));
     }
 
     #[test]
@@ -213,7 +214,7 @@ mod tests {
                                  Complex::new(2., -1.),
                                  Complex::new(1., -1.),
                                  Complex::new(1., -2.)]);
-        assert!(v.energy() == 14.0);
+        assert_eq!(v.energy(), 14.0);
     }
 
     #[test]
@@ -222,7 +223,7 @@ mod tests {
                                  Complex::new(2., -1.),
                                  Complex::new(1., -1.),
                                  Complex::new(1., -2.)]);
-        assert!(v.power() == 14./4.);
+        assert_eq!(v.power(), 14./4.);
     }
 
     #[test]
@@ -230,9 +231,9 @@ mod tests {
         let v = Signal::new(vec![Complex::new(3., 13.),
                                  Complex::new(2., 4.),
                                  Complex::new(1., 5.)]);
-        assert!(v.reverse() == Signal::new(vec![Complex::new(1., 5.),
-                                                Complex::new(2., 4.),
-                                                Complex::new(3., 13.)]));
+        assert_eq!(v.reverse(), Signal::new(vec![Complex::new(1., 5.),
+                                                 Complex::new(2., 4.),
+                                                 Complex::new(3., 13.)]));
     }
 
     #[test]
@@ -245,10 +246,10 @@ mod tests {
                                  Complex::new(2., 0.),
                                  Complex::new(1., 0.)]);
         println!("Convolved {:?}", u.convolve(&h));
-        assert!(u.convolve(&h) == Signal::new(vec![Complex::new(3., 0.),
-                                                   Complex::new(5., 0.),
-                                                   Complex::new(6., 0.),
-                                                   Complex::new(6., 0.)]));
+        assert_eq!(u.convolve(&h), Signal::new(vec![Complex::new(3., 0.),
+                                                    Complex::new(5., 0.),
+                                                    Complex::new(6., 0.),
+                                                    Complex::new(6., 0.)]));
     }
 
 }
