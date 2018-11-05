@@ -96,6 +96,10 @@ pub fn noise(std: f64) -> SignalGen {
     })}
 }
 
+/// A arbitrary signals generator
+pub fn arbitrary(f: Box<Fn(f64) -> Complex64>) -> SignalGen {
+    SignalGen{f}
+}
 
 
 
@@ -122,7 +126,6 @@ mod tests {
         assert_eq!(signal.get(1), Complex::new(1., 0.));
         assert_eq!(signal.get(2), Complex::new(1., 0.));
     }
-
 
     #[test]
     fn test_generate() {
