@@ -11,7 +11,7 @@ documentation = "https://docs.rs/dsp"
 
 
 [dependencies]
-rustfft = "1.0.1"
+rustfft = "2"
 rand = "0.3.15"
 
 

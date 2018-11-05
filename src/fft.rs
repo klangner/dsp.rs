@@ -1,16 +1,17 @@
 //! Analyze discrete signal in frequency domain
+use std::sync::Arc;
 
-use rustfft::{FFT};
+use rustfft::{FFTplanner, FFT};
 use signals::{Signal};
 use spectrums::{Spectrum};
 
 
 pub struct ForwardFFT {
-    fft: FFT<f64>,
+    fft: Arc<FFT<f64>>,
 }
 
 pub struct InverseFFT {
-    fft: FFT<f64>,
+    fft: Arc<FFT<f64>>,
 }
 
 impl ForwardFFT {
@@ -19,16 +20,16 @@ impl ForwardFFT {
     ///   * sample_rate - Samples per second (1/sample_frequency)
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> ForwardFFT {
-        let fft = FFT::new(sample_size, false);
-        ForwardFFT{ fft }
+        let mut fft = FFTplanner::new(false);
+        ForwardFFT{ fft: fft.plan_fft(sample_size) }
     }
 
     /// Forward DFT (implemented as FFT)
     pub fn process(&mut self, v: &Signal) -> Spectrum {
-        let raw_vec = v.to_vec();
+        let mut raw_vec = v.to_vec();
         let mut out = raw_vec.clone();
 
-        self.fft.process(&raw_vec, &mut out);
+        self.fft.process(&mut raw_vec, &mut out);
         Spectrum::new(out, v.sample_rate)
     }
 }
@@ -39,16 +40,16 @@ impl InverseFFT {
     /// ## Params:
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> InverseFFT {
-        let fft = FFT::new(sample_size, true);
-        InverseFFT{ fft }
+        let mut fft = FFTplanner::new(true);
+        InverseFFT{ fft: fft.plan_fft(sample_size)  }
     }
 
     /// Forward DFT (implemented as FFT)
     pub fn process(&mut self, v: &Spectrum) -> Signal {
-        let raw_vec = v.to_vec();
+        let mut raw_vec = v.to_vec();
         let mut out = raw_vec.clone();
 
-        self.fft.process(&raw_vec, &mut out);
+        self.fft.process(&mut raw_vec, &mut out);
         Signal::new(out)
     }
 }

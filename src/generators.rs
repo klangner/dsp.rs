@@ -115,6 +115,14 @@ mod tests {
         assert_eq!(signal.get(2), Complex::new(0., 0.));
     }
 
+    #[test]
+    fn test_step() {
+        let signal = step().generate(vec![-4.0, 0.0, 42.0]);
+        assert_eq!(signal.get(0), Complex::new(0., 0.));
+        assert_eq!(signal.get(1), Complex::new(1., 0.));
+        assert_eq!(signal.get(2), Complex::new(1., 0.));
+    }
+
 
     #[test]
     fn test_generate() {
