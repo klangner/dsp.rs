@@ -1,5 +1,6 @@
 # Digital Signal Processing 
 
+[![Build Status](https://travis-ci.org/klangner/dsp.svg?branch=master)](https://travis-ci.org/klangner/dsp)
 [![Crates.io](https://img.shields.io/crates/v/dsp.svg)](https://crates.io/crates/dsp) [![Crates.io](https://img.shields.io/crates/l/dsp.svg)](https://github.com/klangner/dsp/blob/master/LICENSE-MIT) [![docs.rs](https://docs.rs/dsp/badge.svg)](https://docs.rs/dsp/)
 
 **dsp is an early-stage open-source project**. It means that API can change at any time.
@@ -45,6 +46,7 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
+  * [x] Arbitrary (defined by custom function)
   
   
 # License
