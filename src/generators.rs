@@ -98,7 +98,7 @@ pub fn noise(std: f64) -> SignalGen {
 
 /// A arbitrary signals generator
 pub fn arbitrary(f: Box<Fn(f64) -> Complex64>) -> SignalGen {
-    SignalGen{f}
+    SignalGen{gen: f}
 }
 
 
