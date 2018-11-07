@@ -9,7 +9,7 @@ use vectors::{Vector, VectorImpl};
 ///   * sample_rate - how many points per second
 #[derive(Debug, PartialEq)]
 pub struct Signal {
-    pub sample_rate: usize,
+    sample_rate: usize,
     data: Vector,
 }
 
@@ -21,6 +21,11 @@ impl Signal {
             data,
             sample_rate: n,
         }
+    }
+
+    /// Returns the sample_rate of this signal
+    pub fn sample_rate(&self) -> usize {
+        self.sample_rate
     }
 
     /// Create new signal from samples with given sample rate
@@ -36,9 +41,14 @@ impl Signal {
         }
     }
 
-    /// Signal length()
+    /// Signal length() in number of samples
     pub fn len(&self) -> usize {
         self.data.len()
+    }
+
+    /// Signal duration in time units
+    pub fn duration(&self) -> f64 {
+        self.data.len() as f64 / self.sample_rate as f64
     }
 
     /// This function will return 0 if index out of bound
@@ -147,18 +157,20 @@ impl Signal {
     /// Build an iterator over frames of this signal.
     /// The frames have the specified length and spaced shift samples center to center
     pub fn frames<'a>(&'a self, length:usize, shift:usize) -> Frames<'a> {
-        Frames{it: self.data.windows(length).step_by(shift)}
+        Frames{it: self.data.windows(length).step_by(shift), sample_rate: self.sample_rate}
     }
 }
 
 use std::iter::StepBy;
 use std::slice::Windows;
 pub struct Frames<'a>{
-    it: StepBy<Windows<'a, Complex64>>
+    it: StepBy<Windows<'a, Complex64>>,
+    sample_rate: usize,
 }
 
 pub struct FrameSlice<'a>{
-    frame: &'a [Complex64]
+    frame: &'a [Complex64],
+    
 }
 
 impl<'a> Iterator for Frames<'a>{
