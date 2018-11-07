@@ -143,6 +143,36 @@ impl Signal {
         }
         Signal::new(vs)
     }
+
+    /// Build an iterator over frames of this signal.
+    /// The frames have the specified length and spaced shift samples center to center
+    pub fn frames<'a>(&'a self, length:usize, shift:usize) -> Frames<'a> {
+        Frames{it: self.data.windows(length).step_by(shift)}
+    }
+}
+
+use std::iter::StepBy;
+use std::slice::Windows;
+pub struct Frames<'a>{
+    it: StepBy<Windows<'a, Complex64>>
+}
+
+pub struct FrameSlice<'a>{
+    frame: &'a [Complex64]
+}
+
+impl<'a> Iterator for Frames<'a>{
+    type Item = FrameSlice<'a>;
+    
+    fn next(&mut self)-> Option<Self::Item>{
+        self.it.next().map(|frame| FrameSlice{frame})
+    }
+}
+
+impl<'a> FrameSlice<'a> {
+    pub fn as_slice(&self) -> &'a [Complex64] {
+        self.frame
+    }
 }
 
 /// ------------------------------------------------------------------------------------------------
