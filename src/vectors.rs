@@ -49,6 +49,7 @@ impl VectorImpl for Vector {
         data
     }
 
+    // TODO: this can be faster using what is available between multithreading, GPU or SIMD instructions
     fn add(&self, v: &Vector) -> Vector {
         let size = cmp::max(self.len(), v.len());
         let mut x: Vec<Complex64> = Vec::with_capacity(size);

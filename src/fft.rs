@@ -31,7 +31,7 @@ impl ForwardFFT {
         let mut out = raw_vec.clone();
 
         self.fft.process(&mut raw_vec, &mut out);
-        Spectrum::new(out, v.sample_rate)
+        Spectrum::new(out, v.sample_rate())
     }
 }
 

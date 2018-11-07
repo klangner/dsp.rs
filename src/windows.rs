@@ -2,6 +2,7 @@
 
 use num_complex::Complex;
 use vectors::{Vector, VectorImpl};
+use signals::Signal;
 
 /// A window function. Can be applied to a signal
 #[derive(Clone)]
@@ -10,11 +11,25 @@ pub struct Window {
 }
 
 impl Window {
+    /// returns a `Vector` comsuming this window.
     pub fn into_vector(self) -> Vector {
         self.samples
             .into_iter()
             .map(|x| Complex::new(x, 0.0))
             .collect()
+    }
+
+    /// returns a `Vector` without comsuming this window.
+    pub fn to_vec(&self) -> Vector {
+        self.samples.iter()
+            .map(|x| Complex::new(x.clone(), 0.0))
+            .collect()
+    }
+
+    /// apply this window to the given signal
+    pub fn apply(&self, signal: Signal) -> Signal {
+        assert_eq!(self.samples.len(), signal.len());
+        Signal::from_samples(signal.to_vec().multiply(&(self.to_vec())), signal.sample_rate()) 
     }
 }
 
@@ -25,6 +40,7 @@ pub fn rectangular(frame_length: usize) -> Window {
     }
 }
 
+/// Creates a triangular window
 pub fn triangular(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
@@ -36,6 +52,8 @@ pub fn triangular(frame_length: usize) -> Window {
     }
 }
 
+
+/// Create the Welch window
 pub fn welch(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
