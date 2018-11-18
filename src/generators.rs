@@ -31,7 +31,6 @@ impl SignalGen {
 /// x[n] = 1 if n == 0
 /// x[n] = 0 if n > 0
 pub fn impulse() -> SignalGen {
-    let sig: Fn(f64) -> Complex64 =
     SignalGen::new(Box::new(|i| if i == 0. {Complex::new(1., 0.)} else {Complex::new(0., 0.)}))
 }
 
