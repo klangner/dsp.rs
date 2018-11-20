@@ -35,6 +35,67 @@ pub trait VectorImpl {
     fn argmax(&self) -> usize;
 }
 
+impl VectorImpl for [Complex64] {
+    fn at(&self, i: usize) -> Complex64 {
+        if i < self.len() {
+            self[i]
+        } else {
+            Complex::new(0., 0.)
+        }
+    }
+
+    fn scale(&self, a: f64) -> Vector {
+        let data = self.to_vec().iter().map(|x| x * a).collect();
+        data
+    }
+
+    // TODO: this can be faster using what is available between multithreading, GPU or SIMD instructions
+    fn add(&self, v: &Vector) -> Vector {
+        let size = cmp::max(self.len(), v.len());
+        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        for n in 0..size {
+            x.push(self.at(n) + v.at(n));
+        }
+        x
+    }
+
+    fn multiply(&self, v: &Vector) -> Vector {
+        let size = cmp::min(self.len(), v.len());
+        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        for n in 0..size {
+            x.push(self.at(n) * v.at(n));
+        }
+        x
+    }
+
+    fn sum(&self) -> Complex64 {
+        self.iter().fold(Complex::new(0.0, 0.0), |acc, v| acc + v)
+    }
+
+    fn inner_product(&self, v: &Vector) -> Complex64 {
+        self.multiply(v).sum()
+    }
+
+    fn max(&self) -> f64 {
+        self.iter()
+            .map(|x| x.norm())
+            .fold(f64::MIN, |acc, v| if acc < v { v } else { acc })
+    }
+
+    fn argmax(&self) -> usize {
+        let range = self.iter().map(|x| x.norm()).enumerate();
+        let mut max_value = f64::MIN;
+        let mut arg_max = 0;
+        for (i, v) in range {
+            if max_value < v {
+                max_value = v;
+                arg_max = i;
+            }
+        }
+        arg_max
+    }
+}
+
 impl VectorImpl for Vector {
     fn at(&self, i: usize) -> Complex64 {
         if i < self.len() {

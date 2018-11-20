@@ -3,13 +3,14 @@
 use num_complex::{Complex, Complex64};
 use std::cmp;
 use vectors::{Vector, VectorImpl};
+use windows::Window;
 
 /// Discrete Time Signal
 ///   * data - Data points
 ///   * sample_rate - how many points per second
 #[derive(Debug, PartialEq)]
 pub struct Signal {
-    sample_rate: usize,
+    pub sample_rate: usize,
     data: Vector,
 }
 
@@ -156,28 +157,66 @@ impl Signal {
 
     /// Build an iterator over frames of this signal.
     /// The frames have the specified length and spaced shift samples center to center
-    pub fn frames<'a>(&'a self, length:usize, shift:usize) -> Frames<'a> {
-        Frames{it: self.data.windows(length).step_by(shift), sample_rate: self.sample_rate}
+    pub fn frames<'a>(&'a self, length: usize, shift: usize) -> Frames<'a> {
+        Frames {
+            it: self.data.windows(length).step_by(shift),
+            sample_rate: self.sample_rate,
+        }
     }
 }
 
 use std::iter::StepBy;
 use std::slice::Windows;
-pub struct Frames<'a>{
+pub struct Frames<'a> {
     it: StepBy<Windows<'a, Complex64>>,
     sample_rate: usize,
 }
 
-pub struct FrameSlice<'a>{
+pub struct FrameSlice<'a> {
     frame: &'a [Complex64],
-    
+    sample_rate: usize,
 }
 
-impl<'a> Iterator for Frames<'a>{
+pub struct WindowedFrame<'a> {
+    frame: &'a [Complex64],
+    sample_rate: usize,
+    window: &'a Window,
+}
+
+pub struct Windoweds<'a> {
+    frames: Frames<'a>,
+    window: Window,
+}
+
+impl<'a> Frames<'a> {
+    pub fn windoweds(self, window: Window) -> Windoweds<'a> {
+        Windoweds {
+            frames: self,
+            window,
+        }
+    }
+}
+
+impl<'a> Iterator for Frames<'a> {
     type Item = FrameSlice<'a>;
-    
-    fn next(&mut self)-> Option<Self::Item>{
-        self.it.next().map(|frame| FrameSlice{frame})
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.it.next().map(|frame| FrameSlice {
+            frame,
+            sample_rate: self.sample_rate,
+        })
+    }
+}
+
+impl<'a> Iterator for Windoweds<'a> {
+    type Item = WindowedFrame<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.frames.next().map(|frameslice| WindowedFrame {
+            frame: frameslice.frame,
+            window: &self.window,
+            sample_rate: frameslice.sample_rate,
+        })
     }
 }
 
