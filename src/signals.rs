@@ -208,17 +208,17 @@ impl<'a> Iterator for Frames<'a> {
     }
 }
 
-impl<'a> Iterator for Windoweds<'a> {
-    type Item = WindowedFrame<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.frames.next().map(|frameslice| WindowedFrame {
-            frame: frameslice.frame,
-            window: &self.window,
-            sample_rate: frameslice.sample_rate,
-        })
-    }
-}
+// impl<'a> Iterator for Windoweds<'a> {
+//     type Item = WindowedFrame<'a>;
+// 
+//     fn next(&mut self) -> Option<Self::Item> {
+//         self.frames.next().map(|frameslice| WindowedFrame {
+//             frame: frameslice.frame,
+//             window: &self.window,
+//             sample_rate: frameslice.sample_rate,
+//         })
+//     }
+// }
 
 impl<'a> FrameSlice<'a> {
     pub fn as_slice(&self) -> &'a [Complex64] {

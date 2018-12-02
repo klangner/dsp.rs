@@ -69,10 +69,10 @@ impl Window {
             rw = self.len() - (rs - signal.len());
             rs = signal.len();
         }
-        let samples = Vector::with_capacity(rs);
+        let mut samples = Vector::with_capacity(rs);
         // Compute the left end of the singal and of the portion of window to consider
         let mut ls = center-(self.len()/2) as isize;
-        let mut lw;
+        let lw;
         if ls > 0 {
             lw = 0;
             // If the signal to consider starts after the 0, fill the first part of the result
