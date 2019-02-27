@@ -5,7 +5,7 @@ use signals::Signal;
 use vectors::{Vector, VectorImpl};
 
 /// A window function. Can be applied to a signal
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Window {
     samples: Vec<f64>,
 }
@@ -162,5 +162,43 @@ pub fn blackman(frame_length: usize) -> Window {
                 a0 - a1 * (2.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
                     + a2 * (4.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
             }).collect(),
+    }
+}
+
+
+/// ------------------------------------------------------------------------------------------------
+/// Module unit tests
+/// ------------------------------------------------------------------------------------------------
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use num_complex::Complex;
+
+    #[test]
+    fn test_base_rectangular(){
+        let w = rectangular(10);
+        assert_eq!(w.len(), 10);
+        assert_eq!(w.to_vec(), (0..10).map(|_| Complex::new(1.0, 0.0)).collect::<Vec<_>>());
+    }
+
+    use generators::step;
+    #[test]
+    fn test_apply(){
+        let w = triangular(10);
+        let s = step().generate((0..10).map(|i| i.into()).collect());
+
+        assert_eq!(w.to_vec(), w.apply(&s).to_vec());
+    }
+
+    #[test]
+    fn test_apply_with_center(){
+        let w = triangular(11);
+        let s = step().generate((0..20).map(|i| i.into()).collect());
+
+        let new_signal = w.apply_with_center(&s, 10);
+
+        assert_eq!(Complex::new(0.0, 0.0), new_signal.get(2));
+        assert_eq!(Complex::new(1.0, 0.0), new_signal.get(10));
     }
 }
