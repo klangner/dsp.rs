@@ -8,7 +8,8 @@ use windows::Window;
 /// Discrete Time Signal
 ///   * data - Data points
 ///   * sample_rate - how many points per second
-#[derive(Debug, PartialEq)]
+// FIXME: sample_rate should be private!
+#[derive(Clone, Debug, PartialEq)]
 pub struct Signal {
     pub sample_rate: usize,
     data: Vector,
@@ -374,4 +375,20 @@ mod tests {
         );
     }
 
+    use generators::step;
+    use windows::hamming;
+    #[test]
+    fn test_frames() {
+        let s  = step().generate((0..100).map(|i| i.into()).collect());
+
+        assert_eq!(10, s.frames(10, 10).count());
+    }
+
+    #[test]
+    fn test_window_frames() {
+        let s = step().generate((0..100).map(|i| i.into()).collect());
+        let w = hamming(10);
+
+        assert_eq!(10, s.frames(10, 10).windowed(w).count());
+    }
 }
