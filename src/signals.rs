@@ -213,10 +213,15 @@ impl<'a> Iterator for Windowed<'a> {
 
     // TODO: Fix too many allocations here!!
     fn next(&mut self) -> Option<Self::Item> {
-        self.frames.next().map(|frameslice|
-                               Signal::from_samples(frameslice.as_slice().to_vec().multiply(&(self.window.to_vec())),
-                                                    frameslice.sample_rate)
-        )
+        self.frames.next().map(|frameslice| {
+            Signal::from_samples(
+                frameslice
+                    .as_slice()
+                    .to_vec()
+                    .multiply(&(self.window.to_vec())),
+                frameslice.sample_rate,
+            )
+        })
     }
 }
 
@@ -379,7 +384,7 @@ mod tests {
     use windows::hamming;
     #[test]
     fn test_frames() {
-        let s  = step().generate((0..100).map(|i| i.into()).collect());
+        let s = step().generate((0..100).map(|i| i.into()).collect());
 
         assert_eq!(10, s.frames(10, 10).count());
     }

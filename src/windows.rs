@@ -15,7 +15,7 @@ impl Window {
     pub fn len(&self) -> usize {
         self.samples.len()
     }
-    
+
     /// Returns a `Vector` comsuming this window.
     pub fn into_vector(self) -> Vector {
         self.samples
@@ -42,7 +42,11 @@ impl Window {
     ///
     /// A new `Signal` obtained windowing the original.
     pub fn apply(&self, signal: &Signal) -> Signal {
-        assert_eq!(self.samples.len(), signal.len(), "Signal and window should have the same length");
+        assert_eq!(
+            self.samples.len(),
+            signal.len(),
+            "Signal and window should have the same length"
+        );
         Signal::from_samples(
             signal.to_vec().multiply(&(self.to_vec())),
             signal.sample_rate(),
@@ -55,11 +59,11 @@ impl Window {
         // If the window is applied such that it does not intersect the signal,
         // or at least one between the signal and the windows has zero length,
         // we return an empty signal immediately
-        let maxr = center+(self.len()/2) as isize;
-        if maxr < 0  || self.len() == 0 || signal.len() == 0 {
+        let maxr = center + (self.len() / 2) as isize;
+        if maxr < 0 || self.len() == 0 || signal.len() == 0 {
             return Signal::from_samples(vec![], signal.sample_rate());
         }
-        
+
         // Compute the length of the resulting signal. It is the minimum between
         // the length of the source signal and the right end of the translated window.
         // Also compute the right end of the portion of window to consider in the multiplication
@@ -71,7 +75,7 @@ impl Window {
         }
         let mut samples = Vector::with_capacity(rs);
         // Compute the left end of the singal and of the portion of window to consider
-        let mut ls = center-(self.len()/2) as isize;
+        let mut ls = center - (self.len() / 2) as isize;
         let lw;
         if ls > 0 {
             lw = 0;
@@ -87,7 +91,7 @@ impl Window {
         let (ls, lw) = (ls as usize, lw as usize);
 
         // FIXME: using a good linalg crate it should be possible to use less allocations here
-        samples.append(&mut signal.to_vec()[ls..rs].multiply(& self.to_vec()[lw..rw].to_vec()));
+        samples.append(&mut signal.to_vec()[ls..rs].multiply(&self.to_vec()[lw..rw].to_vec()));
         Signal::from_samples(samples, signal.sample_rate())
     }
 }
@@ -107,7 +111,8 @@ pub fn triangular(frame_length: usize) -> Window {
                 1.0 - ((x as f64 - (frame_length - 1) as f64 / 2.0)
                     / ((frame_length - 1) as f64 / 2.0))
                     .abs()
-            }).collect(),
+            })
+            .collect(),
     }
 }
 
@@ -119,7 +124,8 @@ pub fn welch(frame_length: usize) -> Window {
                 1.0 - ((x as f64 - (frame_length - 1) as f64 / 2.0)
                     / ((frame_length - 1) as f64 / 2.0))
                     .powi(2)
-            }).collect(),
+            })
+            .collect(),
     }
 }
 use std::f64::consts::PI;
@@ -161,10 +167,10 @@ pub fn blackman(frame_length: usize) -> Window {
             .map(|x| {
                 a0 - a1 * (2.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
                     + a2 * (4.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
-            }).collect(),
+            })
+            .collect(),
     }
 }
-
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
@@ -176,15 +182,18 @@ mod tests {
     use num_complex::Complex;
 
     #[test]
-    fn test_base_rectangular(){
+    fn test_base_rectangular() {
         let w = rectangular(10);
         assert_eq!(w.len(), 10);
-        assert_eq!(w.to_vec(), (0..10).map(|_| Complex::new(1.0, 0.0)).collect::<Vec<_>>());
+        assert_eq!(
+            w.to_vec(),
+            (0..10).map(|_| Complex::new(1.0, 0.0)).collect::<Vec<_>>()
+        );
     }
 
     use generators::step;
     #[test]
-    fn test_apply(){
+    fn test_apply() {
         let w = triangular(10);
         let s = step().generate((0..10).map(|i| i.into()).collect());
 
@@ -192,7 +201,7 @@ mod tests {
     }
 
     #[test]
-    fn test_apply_with_center(){
+    fn test_apply_with_center() {
         let w = triangular(11);
         let s = step().generate((0..20).map(|i| i.into()).collect());
 
