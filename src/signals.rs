@@ -156,7 +156,7 @@ impl Signal {
     }
 
     /// Build an iterator over frames of this signal.
-    /// The frames have the specified length and spaced shift samples center to center
+    /// The frames have the specified length and they are spaced shift samples center to center
     pub fn frames<'a>(&'a self, length: usize, shift: usize) -> Frames<'a> {
         Frames {
             it: self.data.windows(length).step_by(shift),
@@ -167,30 +167,29 @@ impl Signal {
 
 use std::iter::StepBy;
 use std::slice::Windows;
+
+/// An interator over the frames of a signal. Returned by the application of the `frames` method of the signal.
 pub struct Frames<'a> {
     it: StepBy<Windows<'a, Complex64>>,
     sample_rate: usize,
 }
 
+/// A frame of a signal.
 pub struct FrameSlice<'a> {
     frame: &'a [Complex64],
     sample_rate: usize,
 }
 
-pub struct WindowedFrame<'a> {
-    frame: &'a [Complex64],
-    sample_rate: usize,
-    window: &'a Window,
-}
-
-pub struct Windoweds<'a> {
+/// An iterator over the frames of a signal that applies a window function to all of its frames.
+pub struct Windowed<'a> {
     frames: Frames<'a>,
     window: Window,
 }
 
 impl<'a> Frames<'a> {
-    pub fn windoweds(self, window: Window) -> Windoweds<'a> {
-        Windoweds {
+    /// Returns a new iterator which lazily applies a Window to all of its frames.
+    pub fn windowed(self, window: Window) -> Windowed<'a> {
+        Windowed {
             frames: self,
             window,
         }
@@ -208,17 +207,17 @@ impl<'a> Iterator for Frames<'a> {
     }
 }
 
-// impl<'a> Iterator for Windoweds<'a> {
-//     type Item = WindowedFrame<'a>;
-// 
-//     fn next(&mut self) -> Option<Self::Item> {
-//         self.frames.next().map(|frameslice| WindowedFrame {
-//             frame: frameslice.frame,
-//             window: &self.window,
-//             sample_rate: frameslice.sample_rate,
-//         })
-//     }
-// }
+impl<'a> Iterator for Windowed<'a> {
+    type Item = Signal;
+
+    // TODO: Fix too many allocations here!!
+    fn next(&mut self) -> Option<Self::Item> {
+        self.frames.next().map(|frameslice|
+                               Signal::from_samples(frameslice.as_slice().to_vec().multiply(&(self.window.to_vec())),
+                                                    frameslice.sample_rate)
+        )
+    }
+}
 
 impl<'a> FrameSlice<'a> {
     pub fn as_slice(&self) -> &'a [Complex64] {
