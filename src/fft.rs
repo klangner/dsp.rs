@@ -2,9 +2,8 @@
 use std::sync::Arc;
 
 use rustfft::{FFTplanner, FFT};
-use signals::{Signal};
-use spectrums::{Spectrum};
-
+use signals::Signal;
+use spectrums::Spectrum;
 
 pub struct ForwardFFT {
     fft: Arc<FFT<f64>>,
@@ -21,7 +20,9 @@ impl ForwardFFT {
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> ForwardFFT {
         let mut fft = FFTplanner::new(false);
-        ForwardFFT{ fft: fft.plan_fft(sample_size) }
+        ForwardFFT {
+            fft: fft.plan_fft(sample_size),
+        }
     }
 
     /// Forward DFT (implemented as FFT)
@@ -30,10 +31,9 @@ impl ForwardFFT {
         let mut out = raw_vec.clone();
 
         self.fft.process(&mut raw_vec, &mut out);
-        Spectrum::new(out, v.sample_rate)
+        Spectrum::new(out, v.sample_rate())
     }
 }
-
 
 impl InverseFFT {
     /// Define new transformation
@@ -41,7 +41,9 @@ impl InverseFFT {
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
     pub fn new(sample_size: usize) -> InverseFFT {
         let mut fft = FFTplanner::new(true);
-        InverseFFT{ fft: fft.plan_fft(sample_size)  }
+        InverseFFT {
+            fft: fft.plan_fft(sample_size),
+        }
     }
 
     /// Forward DFT (implemented as FFT)
@@ -54,26 +56,33 @@ impl InverseFFT {
     }
 }
 
-
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
-    use num_complex::{Complex};
-    use signals::{Signal};
-    use spectrums::{Spectrum};
     use super::*;
+    use num_complex::Complex;
+    use signals::Signal;
+    use spectrums::Spectrum;
 
     #[test]
     fn test_fft() {
         let v = Signal::from_reals(vec![1., 0., 0., 0.], 4);
         let mut ft = ForwardFFT::new(4);
         let s = ft.process(&v);
-        assert_eq!(s, Spectrum::new(vec![Complex::new(1., 0.),
-                                              Complex::new(1., 0.),
-                                              Complex::new(1., 0.),
-                                              Complex::new(1., 0.)], 4));
+        assert_eq!(
+            s,
+            Spectrum::new(
+                vec![
+                    Complex::new(1., 0.),
+                    Complex::new(1., 0.),
+                    Complex::new(1., 0.),
+                    Complex::new(1., 0.)
+                ],
+                4
+            )
+        );
     }
 
 }

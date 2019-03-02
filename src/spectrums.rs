@@ -1,13 +1,12 @@
 //! Analyze discrete signal in frequency domain
 
-use num_complex::{Complex64};
+use num_complex::Complex64;
 use vectors::{Vector, VectorImpl};
-
 
 #[derive(Debug, PartialEq)]
 pub struct Spectrum {
     data: Vector,
-    sample_rate: usize
+    sample_rate: usize,
 }
 
 impl Spectrum {
@@ -17,10 +16,14 @@ impl Spectrum {
     }
 
     /// Spectrum length
-    pub fn len(&self) -> usize { self.data.len() }
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
 
     /// Copy data into new vector
-    pub fn to_vec(&self) -> Vec<Complex64> { self.data.clone() }
+    pub fn to_vec(&self) -> Vec<Complex64> {
+        self.data.clone()
+    }
 
     /// Calculated frequency of a given component
     pub fn item_freq(&self, i: usize) -> f64 {
@@ -37,25 +40,33 @@ impl Spectrum {
     /// Return max frequency
     pub fn max_freq(&self) -> f64 {
         let idx = self.data.argmax();
-        if idx < self.len()/2 {self.item_freq(idx)} else {self.item_freq(self.len()-idx)}
+        if idx < self.len() / 2 {
+            self.item_freq(idx)
+        } else {
+            self.item_freq(self.len() - idx)
+        }
     }
 }
-
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
-    use num_complex::{Complex};
     use super::*;
+    use num_complex::Complex;
 
     #[test]
     fn test_freq_0() {
-        let s = Spectrum::new(vec![Complex::new(1., 0.),
-                                   Complex::new(1., 0.),
-                                   Complex::new(1., 0.),
-                                   Complex::new(1., 0.)], 4);
+        let s = Spectrum::new(
+            vec![
+                Complex::new(1., 0.),
+                Complex::new(1., 0.),
+                Complex::new(1., 0.),
+                Complex::new(1., 0.),
+            ],
+            4,
+        );
         assert_eq!(s.item_freq(0), 0.0);
         assert_eq!(s.item_freq(2), 2.0);
     }

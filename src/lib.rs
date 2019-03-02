@@ -4,11 +4,12 @@
 //!
 
 extern crate num_complex;
-extern crate rustfft;
 extern crate rand;
+extern crate rustfft;
 
-mod vectors;
-pub mod generators;
 pub mod fft;
-pub mod spectrums;
+pub mod generators;
 pub mod signals;
+pub mod spectrums;
+mod vectors;
+pub mod windows;
