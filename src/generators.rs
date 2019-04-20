@@ -2,10 +2,11 @@
 
 use num_complex::{Complex, Complex64};
 use rand;
-use rand::distributions::{IndependentSample, Normal};
-use signals::Signal;
+use rand::distributions::{Normal, Distribution};
 use std::f64;
 use std::f64::consts::PI;
+use crate::signals::Signal;
+
 
 pub struct SignalGen<F>
 where
@@ -112,8 +113,7 @@ pub fn chirp(start_freq: f64, end_freq: f64, time: f64) -> SignalGen<impl Fn(f64
 pub fn noise(std: f64) -> SignalGen<impl Fn(f64) -> Complex64> {
     let normal = Normal::new(0.0, std);
     SignalGen::new(move |_| {
-        let mut rng = rand::thread_rng();
-        Complex::new(normal.ind_sample(&mut rng), 0.0)
+        Complex::new(normal.sample(&mut rand::thread_rng()), 0.0)
     })
 }
 

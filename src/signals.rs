@@ -2,8 +2,9 @@
 
 use num_complex::{Complex, Complex64};
 use std::cmp;
-use vectors::{Vector, VectorImpl};
-use windows::Window;
+use crate::vectors::{Vector, VectorImpl};
+use crate::windows::Window;
+
 
 /// Discrete Time Signal
 ///   * data - Data points
@@ -238,6 +239,8 @@ impl<'a> FrameSlice<'a> {
 mod tests {
     use super::*;
     use num_complex::Complex;
+    use crate::generators::step;
+    use crate::windows::hamming;
 
     #[test]
     fn test_shift1() {
@@ -380,8 +383,6 @@ mod tests {
         );
     }
 
-    use generators::step;
-    use windows::hamming;
     #[test]
     fn test_frames() {
         let s = step().generate((0..100).map(|i| i.into()).collect());

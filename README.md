@@ -25,7 +25,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
   * [x] Convolution
   * [ ] Moving Average
   * [ ] Leaky integration
-  * [ ] Windowing (Hamming)
+  * [x] Windowing (Hamming)
   * [ ] Envelope detection (via squaring), i.e. y[n]=|x[n]|2∗h[n]
 
   

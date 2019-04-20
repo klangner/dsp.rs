@@ -2,8 +2,9 @@
 use std::sync::Arc;
 
 use rustfft::{FFTplanner, FFT};
-use signals::Signal;
-use spectrums::Spectrum;
+use crate::signals::Signal;
+use crate::spectrums::Spectrum;
+
 
 pub struct ForwardFFT {
     fft: Arc<FFT<f64>>,
@@ -63,8 +64,8 @@ impl InverseFFT {
 mod tests {
     use super::*;
     use num_complex::Complex;
-    use signals::Signal;
-    use spectrums::Spectrum;
+    use crate::signals::Signal;
+    use crate::spectrums::Spectrum;
 
     #[test]
     fn test_fft() {

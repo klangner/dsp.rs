@@ -1,8 +1,9 @@
-use num_complex::{Complex, Complex64};
 /// Helper functions for working with Vec as Vector in Vector (Hilbert) Space.
 /// Here vector space is defined over set of Complex numbers.
+use num_complex::{Complex, Complex64};
 use std::cmp;
 use std::f64;
+
 
 pub type Vector = Vec<Complex64>;
 

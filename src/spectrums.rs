@@ -1,7 +1,8 @@
 //! Analyze discrete signal in frequency domain
 
 use num_complex::Complex64;
-use vectors::{Vector, VectorImpl};
+use crate::vectors::{Vector, VectorImpl};
+
 
 #[derive(Debug, PartialEq)]
 pub struct Spectrum {

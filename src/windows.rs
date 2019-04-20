@@ -1,8 +1,8 @@
 //! Standard Windows functions
 
 use num_complex::Complex;
-use signals::Signal;
-use vectors::{Vector, VectorImpl};
+use crate::signals::Signal;
+use crate::vectors::{Vector, VectorImpl};
 
 /// A window function. Can be applied to a signal
 #[derive(Clone, Debug, PartialEq)]
@@ -180,6 +180,7 @@ mod tests {
 
     use super::*;
     use num_complex::Complex;
+    use crate::generators::step;
 
     #[test]
     fn test_base_rectangular() {
@@ -191,7 +192,6 @@ mod tests {
         );
     }
 
-    use generators::step;
     #[test]
     fn test_apply() {
         let w = triangular(10);

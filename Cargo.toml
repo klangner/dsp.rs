@@ -8,13 +8,10 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/klangner/dsp"
 homepage = "https://github.com/klangner/dsp"
 documentation = "https://docs.rs/dsp"
+edition = "2018"
 
 
 [dependencies]
 rustfft = "2"
-rand = "0.3.15"
-
-
-[dependencies.num-complex]
-version = "0.1.32"
-default-features = false
+rand = "0.6"
+num-complex = "0.1"
