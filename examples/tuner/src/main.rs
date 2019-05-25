@@ -14,7 +14,7 @@ const SAMPLE_SIZE: usize = 4096;
 
 fn main() {
     let mut ft = ForwardFFT::new(SAMPLE_SIZE);
-    let mut reader = audrey::open("../sounds/sine_440hz.wav").unwrap();
+    let mut reader = audrey::open("../assets/sine_440hz.wav").unwrap();
     let mut samples: Vec<f32> = reader.samples().map(Result::unwrap).collect();
 
     samples.truncate(SAMPLE_SIZE);
