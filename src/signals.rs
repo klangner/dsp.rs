@@ -239,7 +239,7 @@ impl<'a> FrameSlice<'a> {
 mod tests {
     use super::*;
     use num_complex::Complex;
-    use crate::generators::step;
+    use crate::generators2::step;
     use crate::windows::hamming;
 
     #[test]

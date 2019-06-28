@@ -180,7 +180,7 @@ mod tests {
 
     use super::*;
     use num_complex::Complex;
-    use crate::generators::step;
+    use crate::generators2::step;
 
     #[test]
     fn test_base_rectangular() {
