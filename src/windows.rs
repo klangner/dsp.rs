@@ -7,7 +7,7 @@ use crate::vectors::{Vector, VectorImpl};
 /// A window function. Can be applied to a signal
 #[derive(Clone, Debug, PartialEq)]
 pub struct Window {
-    samples: Vec<f64>,
+    samples: Vec<f32>,
 }
 
 impl Window {
@@ -108,8 +108,8 @@ pub fn triangular(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
             .map(|x| {
-                1.0 - ((x as f64 - (frame_length - 1) as f64 / 2.0)
-                    / ((frame_length - 1) as f64 / 2.0))
+                1.0 - ((x as f32 - (frame_length - 1) as f32 / 2.0)
+                    / ((frame_length - 1) as f32 / 2.0))
                     .abs()
             })
             .collect(),
@@ -121,19 +121,19 @@ pub fn welch(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
             .map(|x| {
-                1.0 - ((x as f64 - (frame_length - 1) as f64 / 2.0)
-                    / ((frame_length - 1) as f64 / 2.0))
+                1.0 - ((x as f32 - (frame_length - 1) as f32 / 2.0)
+                    / ((frame_length - 1) as f32 / 2.0))
                     .powi(2)
             })
             .collect(),
     }
 }
-use std::f64::consts::PI;
+use std::f32::consts::PI;
 
 pub fn sine(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
-            .map(|x| (PI * x as f64 / (frame_length - 1) as f64).sin())
+            .map(|x| (PI * x as f32 / (frame_length - 1) as f32).sin())
             .collect(),
     }
 }
@@ -141,7 +141,7 @@ pub fn sine(frame_length: usize) -> Window {
 pub fn hann(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
-            .map(|x| 0.5 * (1.0 - (2.0 * PI * x as f64 / (frame_length - 1) as f64).cos()))
+            .map(|x| 0.5 * (1.0 - (2.0 * PI * x as f32 / (frame_length - 1) as f32).cos()))
             .collect(),
     }
 }
@@ -152,7 +152,7 @@ pub fn hamming(frame_length: usize) -> Window {
 
     Window {
         samples: (0..frame_length)
-            .map(|x| a0 - (1.0 - a0) * ((2.0 * PI * x as f64 / (frame_length - 1) as f64).cos()))
+            .map(|x| a0 - (1.0 - a0) * ((2.0 * PI * x as f32 / (frame_length - 1) as f32).cos()))
             .collect(),
     }
 }
@@ -165,8 +165,8 @@ pub fn blackman(frame_length: usize) -> Window {
     Window {
         samples: (0..frame_length)
             .map(|x| {
-                a0 - a1 * (2.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
-                    + a2 * (4.0 * PI * x as f64 / (frame_length - 1) as f64).cos()
+                a0 - a1 * (2.0 * PI * x as f32 / (frame_length - 1) as f32).cos()
+                    + a2 * (4.0 * PI * x as f32 / (frame_length - 1) as f32).cos()
             })
             .collect(),
     }
@@ -195,7 +195,7 @@ mod tests {
     #[test]
     fn test_apply() {
         let w = triangular(10);
-        let s = step().generate((0..10).map(|i| i.into()).collect());
+        let s = step().generate((0..10u8).map(|i| i.into()).collect());
 
         assert_eq!(w.to_vec(), w.apply(&s).to_vec());
     }
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn test_apply_with_center() {
         let w = triangular(11);
-        let s = step().generate((0..20).map(|i| i.into()).collect());
+        let s = step().generate((0..20u8).map(|i| i.into()).collect());
 
         let new_signal = w.apply_with_center(&s, 10);
 

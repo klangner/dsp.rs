@@ -1,6 +1,6 @@
 //! Analyze discrete signal in frequency domain
 
-use num_complex::Complex64;
+use num_complex::Complex32;
 use crate::vectors::{Vector, VectorImpl};
 
 
@@ -12,7 +12,7 @@ pub struct Spectrum {
 
 impl Spectrum {
     /// Create new signal from vector
-    pub fn new(data: Vec<Complex64>, sample_rate: usize) -> Spectrum {
+    pub fn new(data: Vec<Complex32>, sample_rate: usize) -> Spectrum {
         Spectrum { data, sample_rate }
     }
 
@@ -22,13 +22,13 @@ impl Spectrum {
     }
 
     /// Copy data into new vector
-    pub fn to_vec(&self) -> Vec<Complex64> {
+    pub fn to_vec(&self) -> Vec<Complex32> {
         self.data.clone()
     }
 
     /// Calculated frequency of a given component
-    pub fn item_freq(&self, i: usize) -> f64 {
-        (i * self.sample_rate) as f64 / (self.data.len() as f64)
+    pub fn item_freq(&self, i: usize) -> f32 {
+        (i * self.sample_rate) as f32 / (self.data.len() as f32)
     }
 
     /// Convolution.
@@ -39,7 +39,7 @@ impl Spectrum {
     }
 
     /// Return max frequency
-    pub fn max_freq(&self) -> f64 {
+    pub fn max_freq(&self) -> f32 {
         let idx = self.data.argmax();
         if idx < self.len() / 2 {
             self.item_freq(idx)

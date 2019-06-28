@@ -7,11 +7,11 @@ use crate::spectrums::Spectrum;
 
 
 pub struct ForwardFFT {
-    fft: Arc<FFT<f64>>,
+    fft: Arc<FFT<f32>>,
 }
 
 pub struct InverseFFT {
-    fft: Arc<FFT<f64>>,
+    fft: Arc<FFT<f32>>,
 }
 
 impl ForwardFFT {

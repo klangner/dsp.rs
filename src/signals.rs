@@ -1,6 +1,6 @@
 //! Process Discrete signals in time domain
 
-use num_complex::{Complex, Complex64};
+use num_complex::{Complex, Complex32};
 use std::cmp;
 use crate::vectors::{Vector, VectorImpl};
 use crate::windows::Window;
@@ -18,7 +18,7 @@ pub struct Signal {
 
 impl Signal {
     /// Create new signal from 1 second of samples
-    pub fn new(data: Vec<Complex64>) -> Signal {
+    pub fn new(data: Vec<Complex32>) -> Signal {
         let n = data.len();
         Signal {
             data,
@@ -32,12 +32,12 @@ impl Signal {
     }
 
     /// Create new signal from samples with given sample rate
-    pub fn from_samples(data: Vec<Complex64>, sample_rate: usize) -> Signal {
+    pub fn from_samples(data: Vec<Complex32>, sample_rate: usize) -> Signal {
         Signal { data, sample_rate }
     }
 
     /// Create new signal from vector of real numbers
-    pub fn from_reals(data: Vec<f64>, sample_rate: usize) -> Signal {
+    pub fn from_reals(data: Vec<f32>, sample_rate: usize) -> Signal {
         Signal {
             data: data.iter().map(|x| Complex::new(*x, 0.)).collect(),
             sample_rate,
@@ -50,12 +50,12 @@ impl Signal {
     }
 
     /// Signal duration in time units
-    pub fn duration(&self) -> f64 {
-        self.data.len() as f64 / self.sample_rate as f64
+    pub fn duration(&self) -> f32 {
+        self.data.len() as f32 / self.sample_rate as f32
     }
 
     /// This function will return 0 if index out of bound
-    pub fn get(&self, i: isize) -> Complex64 {
+    pub fn get(&self, i: isize) -> Complex32 {
         let s = self.data.len() as isize;
         if i < 0 || i >= s {
             Complex::new(0., 0.)
@@ -65,7 +65,7 @@ impl Signal {
     }
 
     /// Copy data into new vector
-    pub fn to_vec(&self) -> Vec<Complex64> {
+    pub fn to_vec(&self) -> Vec<Complex32> {
         self.data.clone()
     }
 
@@ -73,7 +73,7 @@ impl Signal {
     /// y[n] = x[n-k]
     /// This function will not change the signal length
     pub fn shift(&self, k: isize) -> Signal {
-        let mut v: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let mut v: Vec<Complex32> = Vec::with_capacity(self.data.len());
         let size: isize = self.data.len() as isize;
         for n in 0..size {
             v.push(self.get(n - k));
@@ -84,7 +84,7 @@ impl Signal {
     /// Integrate signal
     /// y[n] = Sum x[k] For all k <= n
     pub fn integrate(&self) -> Signal {
-        let mut v: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let mut v: Vec<Complex32> = Vec::with_capacity(self.data.len());
         let mut acc = Complex::new(0., 0.);
         for n in 0..self.data.len() {
             acc = acc + self.data.at(n);
@@ -96,7 +96,7 @@ impl Signal {
     /// Differentiate the signal
     /// y[n] = x[n] - x[n-1]
     pub fn differentiate(&self) -> Signal {
-        let mut v: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let mut v: Vec<Complex32> = Vec::with_capacity(self.data.len());
         let mut last = Complex::new(0., 0.);
         for n in 0..self.data.len() {
             v.push(self.data.at(n) - last);
@@ -107,14 +107,14 @@ impl Signal {
 
     /// Calculate energy
     /// E = Sum x[n]^2 For all n
-    pub fn energy(&self) -> f64 {
+    pub fn energy(&self) -> f32 {
         self.data.iter().fold(0., |acc, &x| acc + (x * x.conj()).re)
     }
 
     /// Calculate power
     /// P = 1/N Sum x[n]^2 For all n
-    pub fn power(&self) -> f64 {
-        self.energy() / (self.data.len() as f64)
+    pub fn power(&self) -> f32 {
+        self.energy() / (self.data.len() as f32)
     }
 
     /// Modulate signal by given carrier
@@ -136,7 +136,7 @@ impl Signal {
 
     /// Reverse the signal. Last value will be first
     pub fn reverse(&self) -> Signal {
-        let mut v: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let mut v: Vec<Complex32> = Vec::with_capacity(self.data.len());
         let n = self.data.len();
         for i in 0..n {
             v.push(self.data.at(n - i - 1));
@@ -146,7 +146,7 @@ impl Signal {
 
     /// Convolve signals
     pub fn convolve(&self, h: &Signal) -> Signal {
-        let mut vs: Vec<Complex64> = Vec::with_capacity(self.data.len());
+        let mut vs: Vec<Complex32> = Vec::with_capacity(self.data.len());
         for i in 0..self.len() {
             let mut v = Complex::new(0., 0.);
             for j in 0..cmp::min(i + 1, h.len()) {
@@ -172,13 +172,13 @@ use std::slice::Windows;
 
 /// An interator over the frames of a signal. Returned by the application of the `frames` method of the signal.
 pub struct Frames<'a> {
-    it: StepBy<Windows<'a, Complex64>>,
+    it: StepBy<Windows<'a, Complex32>>,
     sample_rate: usize,
 }
 
 /// A frame of a signal.
 pub struct FrameSlice<'a> {
-    frame: &'a [Complex64],
+    frame: &'a [Complex32],
     sample_rate: usize,
 }
 
@@ -227,7 +227,7 @@ impl<'a> Iterator for Windowed<'a> {
 }
 
 impl<'a> FrameSlice<'a> {
-    pub fn as_slice(&self) -> &'a [Complex64] {
+    pub fn as_slice(&self) -> &'a [Complex32] {
         self.frame
     }
 }
@@ -385,14 +385,14 @@ mod tests {
 
     #[test]
     fn test_frames() {
-        let s = step().generate((0..100).map(|i| i.into()).collect());
+        let s = step().generate((0..100u8).map(|i| i.into()).collect());
 
         assert_eq!(10, s.frames(10, 10).count());
     }
 
     #[test]
     fn test_window_frames() {
-        let s = step().generate((0..100).map(|i| i.into()).collect());
+        let s = step().generate((0..100u8).map(|i| i.into()).collect());
         let w = hamming(10);
 
         assert_eq!(10, s.frames(10, 10).windowed(w).count());

@@ -1,19 +1,19 @@
 /// Helper functions for working with Vec as Vector in Vector (Hilbert) Space.
 /// Here vector space is defined over set of Complex numbers.
-use num_complex::{Complex, Complex64};
+use num_complex::{Complex, Complex32};
 use std::cmp;
-use std::f64;
+use std::f32;
 
 
-pub type Vector = Vec<Complex64>;
+pub type Vector = Vec<Complex32>;
 
 pub trait VectorImpl {
     /// This function will return 0 if index is out of bounds
-    fn at(&self, i: usize) -> Complex64;
+    fn at(&self, i: usize) -> Complex32;
 
     /// Scale vector by given value
     /// y[n] = a*x[n]
-    fn scale(&self, a: f64) -> Vector;
+    fn scale(&self, a: f32) -> Vector;
 
     /// Add 2 vectors together
     /// z[n] = x[n] + y[n]
@@ -24,20 +24,20 @@ pub trait VectorImpl {
     fn multiply(&self, v: &Vector) -> Vector;
 
     /// Sum elements of the vector
-    fn sum(&self) -> Complex64;
+    fn sum(&self) -> Complex32;
 
     /// Inner product between 2 vectors
-    fn inner_product(&self, v: &Vector) -> Complex64;
+    fn inner_product(&self, v: &Vector) -> Complex32;
 
     /// Get value with max magnitude
-    fn max(&self) -> f64;
+    fn max(&self) -> f32;
 
     /// Get argument of maximum value
     fn argmax(&self) -> usize;
 }
 
-impl VectorImpl for [Complex64] {
-    fn at(&self, i: usize) -> Complex64 {
+impl VectorImpl for [Complex32] {
+    fn at(&self, i: usize) -> Complex32 {
         if i < self.len() {
             self[i]
         } else {
@@ -45,7 +45,7 @@ impl VectorImpl for [Complex64] {
         }
     }
 
-    fn scale(&self, a: f64) -> Vector {
+    fn scale(&self, a: f32) -> Vector {
         let data = self.to_vec().iter().map(|x| x * a).collect();
         data
     }
@@ -53,7 +53,7 @@ impl VectorImpl for [Complex64] {
     // TODO: this can be faster using what is available between multithreading, GPU or SIMD instructions
     fn add(&self, v: &Vector) -> Vector {
         let size = cmp::max(self.len(), v.len());
-        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        let mut x: Vec<Complex32> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) + v.at(n));
         }
@@ -62,30 +62,30 @@ impl VectorImpl for [Complex64] {
 
     fn multiply(&self, v: &Vector) -> Vector {
         let size = cmp::min(self.len(), v.len());
-        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        let mut x: Vec<Complex32> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) * v.at(n));
         }
         x
     }
 
-    fn sum(&self) -> Complex64 {
+    fn sum(&self) -> Complex32 {
         self.iter().fold(Complex::new(0.0, 0.0), |acc, v| acc + v)
     }
 
-    fn inner_product(&self, v: &Vector) -> Complex64 {
+    fn inner_product(&self, v: &Vector) -> Complex32 {
         self.multiply(v).sum()
     }
 
-    fn max(&self) -> f64 {
+    fn max(&self) -> f32 {
         self.iter()
             .map(|x| x.norm())
-            .fold(f64::MIN, |acc, v| if acc < v { v } else { acc })
+            .fold(f32::MIN, |acc, v| if acc < v { v } else { acc })
     }
 
     fn argmax(&self) -> usize {
         let range = self.iter().map(|x| x.norm()).enumerate();
-        let mut max_value = f64::MIN;
+        let mut max_value = f32::MIN;
         let mut arg_max = 0;
         for (i, v) in range {
             if max_value < v {
@@ -98,7 +98,7 @@ impl VectorImpl for [Complex64] {
 }
 
 impl VectorImpl for Vector {
-    fn at(&self, i: usize) -> Complex64 {
+    fn at(&self, i: usize) -> Complex32 {
         if i < self.len() {
             self[i]
         } else {
@@ -106,7 +106,7 @@ impl VectorImpl for Vector {
         }
     }
 
-    fn scale(&self, a: f64) -> Vector {
+    fn scale(&self, a: f32) -> Vector {
         let data = self.to_vec().iter().map(|x| x * a).collect();
         data
     }
@@ -114,7 +114,7 @@ impl VectorImpl for Vector {
     // TODO: this can be faster using what is available between multithreading, GPU or SIMD instructions
     fn add(&self, v: &Vector) -> Vector {
         let size = cmp::max(self.len(), v.len());
-        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        let mut x: Vec<Complex32> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) + v.at(n));
         }
@@ -123,30 +123,30 @@ impl VectorImpl for Vector {
 
     fn multiply(&self, v: &Vector) -> Vector {
         let size = cmp::min(self.len(), v.len());
-        let mut x: Vec<Complex64> = Vec::with_capacity(size);
+        let mut x: Vec<Complex32> = Vec::with_capacity(size);
         for n in 0..size {
             x.push(self.at(n) * v.at(n));
         }
         x
     }
 
-    fn sum(&self) -> Complex64 {
+    fn sum(&self) -> Complex32 {
         self.iter().fold(Complex::new(0.0, 0.0), |acc, v| acc + v)
     }
 
-    fn inner_product(&self, v: &Vector) -> Complex64 {
+    fn inner_product(&self, v: &Vector) -> Complex32 {
         self.multiply(v).sum()
     }
 
-    fn max(&self) -> f64 {
+    fn max(&self) -> f32 {
         self.iter()
             .map(|x| x.norm())
-            .fold(f64::MIN, |acc, v| if acc < v { v } else { acc })
+            .fold(f32::MIN, |acc, v| if acc < v { v } else { acc })
     }
 
     fn argmax(&self) -> usize {
         let range = self.iter().map(|x| x.norm()).enumerate();
-        let mut max_value = f64::MIN;
+        let mut max_value = f32::MIN;
         let mut arg_max = 0;
         for (i, v) in range {
             if max_value < v {
