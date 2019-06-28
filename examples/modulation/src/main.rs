@@ -1,5 +1,3 @@
-extern crate gnuplot;
-extern crate dsp;
 
 use gnuplot::{Figure, Color, Caption};
 use dsp::signals::{Signal};
@@ -11,9 +9,9 @@ const N: usize = 4096;
 
 fn main() {
     // Our testing signal has 1Hz
-    let signal = cosine(2./(N as f64), 0.).generate((0..N).map(|x| x as f64).collect());
+    let signal = cosine(2./(N as f32), 0.).generate((0..N).map(|x| x as f32).collect());
     // Our carrier signal has 20Hz
-    let carrier = cosine(20./(N as f64), 0.).generate((0..N).map(|x| x as f64).collect());
+    let carrier = cosine(20./(N as f32), 0.).generate((0..N).map(|x| x as f32).collect());
     // Modulated signal
     let modulated = signal.modulate(&carrier);
 
@@ -24,7 +22,7 @@ fn main() {
 }
 
 fn time_plot(signal: &Signal) {
-    let xs: Vec<f64> = signal.to_vec().iter().map(|x| x.re).collect();
+    let xs: Vec<f32> = signal.to_vec().iter().map(|x| x.re).collect();
     let idx: Vec<usize> = (0..N).collect();
     let mut fg = Figure::new();
     fg.set_terminal("x11 size 800, 400","");
@@ -44,7 +42,7 @@ fn freq_plot(ds: &Signal, cs: &Signal, ms: &Signal) {
 }
 
 
-fn powers(v: &Signal) -> Vec<f64> {
+fn powers(v: &Signal) -> Vec<f32> {
     let mut ft = ForwardFFT::new(N);
     let spectrum = ft.process(&v);
     spectrum.to_vec().iter().map(|x| x.re).collect()
@@ -57,8 +55,8 @@ fn powers(v: &Signal) -> Vec<f64> {
 //    // Convert to freq domain to apply filter
 //    let ps = ft.process(&demodulated);
 //    let ds = fti.process(&ps);
-//    let xs: Vec<f64> = source.to_vec().iter().map(|x| x.re).collect();
-//    let xs2: Vec<f64> = ds.to_vec().iter().map(|x| x.re/(N as f64)).collect();
+//    let xs: Vec<f32> = source.to_vec().iter().map(|x| x.re).collect();
+//    let xs2: Vec<f32> = ds.to_vec().iter().map(|x| x.re/(N as f32)).collect();
 //    let idx: Vec<usize> = (0..N).collect();
 //    let mut fg = Figure::new();
 //    fg.set_terminal("x11 size 800, 400","");
