@@ -1,12 +1,8 @@
-extern crate gnuplot;
-extern crate num_complex;
-extern crate audrey;
-extern crate dsp;
-
-
 use gnuplot::{Figure, Color};
 use dsp::signals::{Signal};
 use dsp::fft::{ForwardFFT};
+use pitch_calc::calc::step_from_hz;
+use pitch_calc::step::Step;
 
 const SAMPLE_RATE: usize = 44100;
 const SAMPLE_SIZE: usize = 4096;
@@ -22,8 +18,10 @@ fn main() {
     let spectrum = ft.process(&xs);
 
     // Print estimated frequency
-    let freq = spectrum.max_freq();
-    println!("Freq: {}Hz", freq);
+    let freq = spectrum.max_freq() as f32;
+    let step = step_from_hz(freq);
+    let letter = Step(step).letter_octave();
+    println!("Freq: {}Hz, step: {}, letter: {:?}", freq, step, letter);
 
     // Plot
     let powers: Vec<f64> = spectrum.to_vec().iter().map(|x| x.re).collect();

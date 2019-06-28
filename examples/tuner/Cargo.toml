@@ -1,11 +1,14 @@
 [package]
 name = "tuner"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
+edition = "2018"
 
 
 [dependencies]
 dsp = { path = "../.." }
 audrey = "0.2"
 gnuplot = "0.0.31"
-num-complex = "0.1"
+
+[dependencies.pitch_calc]
+git = "https://github.com/RustAudio/pitch_calc"
