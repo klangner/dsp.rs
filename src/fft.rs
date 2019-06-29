@@ -2,8 +2,7 @@
 use std::sync::Arc;
 
 use rustfft::{FFTplanner, FFT};
-use crate::signals::Signal;
-use crate::spectrums::Spectrum;
+use num_complex::Complex32;
 
 
 pub struct ForwardFFT {
@@ -27,12 +26,8 @@ impl ForwardFFT {
     }
 
     /// Forward DFT (implemented as FFT)
-    pub fn process(&mut self, v: &Signal) -> Spectrum {
-        let mut raw_vec = v.to_vec();
-        let mut out = raw_vec.clone();
-
-        self.fft.process(&mut raw_vec, &mut out);
-        Spectrum::new(out, v.sample_rate())
+    pub fn process(&mut self, mut input: &mut Vec<Complex32>, mut output: &mut Vec<Complex32>) {
+        self.fft.process(&mut input, &mut output);
     }
 }
 
@@ -48,12 +43,8 @@ impl InverseFFT {
     }
 
     /// Forward DFT (implemented as FFT)
-    pub fn process(&mut self, v: &Spectrum) -> Signal {
-        let mut raw_vec = v.to_vec();
-        let mut out = raw_vec.clone();
-
-        self.fft.process(&mut raw_vec, &mut out);
-        Signal::new(out)
+    pub fn process(&mut self, mut input: &mut Vec<Complex32>, mut output: &mut Vec<Complex32>) {
+        self.fft.process(&mut input, &mut output);
     }
 }
 
@@ -64,26 +55,25 @@ impl InverseFFT {
 mod tests {
     use super::*;
     use num_complex::Complex;
-    use crate::signals::Signal;
-    use crate::spectrums::Spectrum;
 
     #[test]
     fn test_fft() {
-        let v = Signal::from_reals(vec![1., 0., 0., 0.], 4);
+        let mut input = vec![Complex::new(1., 0.), 
+                             Complex::new(0., 0.),
+                             Complex::new(0., 0.),
+                             Complex::new(0., 0.)];
+        let mut output = vec![Complex::new(0., 0.), 
+                              Complex::new(0., 0.),
+                              Complex::new(0., 0.),
+                              Complex::new(0., 0.)];
+        
         let mut ft = ForwardFFT::new(4);
-        let s = ft.process(&v);
-        assert_eq!(
-            s,
-            Spectrum::new(
-                vec![
-                    Complex::new(1., 0.),
-                    Complex::new(1., 0.),
-                    Complex::new(1., 0.),
-                    Complex::new(1., 0.)
-                ],
-                4
-            )
-        );
+        ft.process(&mut input, &mut output);
+        let expected = vec![
+                Complex::new(1., 0.),
+                Complex::new(1., 0.),
+                Complex::new(1., 0.),
+                Complex::new(1., 0.)];
+        assert_eq!(&output, &expected);
     }
-
 }
