@@ -1,5 +1,5 @@
 use gnuplot::{Figure, Color};
-use dsp::generators::{cosine};
+use dsp::generators::{SignalGen, SineGen};
 use dsp::fft::{ForwardFFT, InverseFFT};
 
 // Dimension
@@ -8,9 +8,12 @@ static N: usize = 256;
 
 fn main() {
     // Our testing signal has 4Hz
-    let signal = cosine(17.0/(N as f32), 0.).generate((0..N).map(|x| x as f32).collect());
+    let mut gen = SineGen::new(4.0, 100);
+    let mut buffer = vec![0.0; N];
+    gen.next(&mut buffer);
+
     let mut ft = ForwardFFT::new(N);
-    let spectrum = ft.process(&signal);
+    let spectrum = ft.process(&buffer);
     let mut fti = InverseFFT::new(N);
     let xs2 = fti.process(&spectrum);
     let idx: Vec<usize> = (0..signal.len()).collect();

@@ -180,7 +180,6 @@ mod tests {
 
     use super::*;
     use num_complex::Complex;
-    use crate::generators2::step;
 
     #[test]
     fn test_base_rectangular() {
@@ -195,7 +194,7 @@ mod tests {
     #[test]
     fn test_apply() {
         let w = triangular(10);
-        let s = step().generate((0..10u8).map(|i| i.into()).collect());
+        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 10], 10);
 
         assert_eq!(w.to_vec(), w.apply(&s).to_vec());
     }
@@ -203,7 +202,7 @@ mod tests {
     #[test]
     fn test_apply_with_center() {
         let w = triangular(11);
-        let s = step().generate((0..20u8).map(|i| i.into()).collect());
+        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 20], 20);
 
         let new_signal = w.apply_with_center(&s, 10);
 

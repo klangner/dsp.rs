@@ -7,4 +7,5 @@ edition = "2018"
 
 [dependencies]
 dsp = { path = "../.." }
+clap = "2"
 gnuplot = "0.0.31"

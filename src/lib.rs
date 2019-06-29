@@ -5,7 +5,6 @@
 
 pub mod fft;
 pub mod generators;
-pub mod generators2;
 pub mod signals;
 pub mod spectrums;
 mod vectors;

@@ -15,3 +15,6 @@ edition = "2018"
 rustfft = "2"
 rand = "0.6"
 num-complex = "0.1"
+
+[dev-dependencies]
+assert_approx_eq = "1.1.0"
