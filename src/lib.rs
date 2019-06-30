@@ -15,7 +15,7 @@ use num_complex::Complex32;
 
 
 /// Time domain data buffer
-pub type Frame = Vec<f32>;
+pub type Samples = Vec<f32>;
 
 /// Frequency domain data buffer based on complex numbers
 pub type Spectrum = Vec<Complex32>;
@@ -26,7 +26,7 @@ pub trait SourceNode {
     /// Generate next batch of data samples.
     /// Data is generate into provided buffer
     /// Return number of generated samples
-    fn next(&mut self, output: &mut Frame) -> usize;
+    fn next(&mut self, output: &mut Samples) -> usize;
 }
 
 
@@ -34,7 +34,7 @@ pub trait SourceNode {
 pub trait ProcessingNode {
     /// Generate next batch of data samples based on input data
     /// Return number of processed samples
-    fn process(&mut self, input: &Frame, output: &mut Frame) -> usize;
+    fn process(&mut self, input: &Samples, output: &mut Samples) -> usize;
 }
 
 
@@ -42,5 +42,5 @@ pub trait ProcessingNode {
 pub trait DestinationNode {
     /// Consume input data.
     /// Return number of consumed samples
-    fn consume(&mut self, input: &Frame) -> usize;
+    fn consume(&mut self, input: &Samples) -> usize;
 }
