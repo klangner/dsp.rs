@@ -1,6 +1,7 @@
 use gnuplot::{Figure, Color};
 use num_complex::Complex32;
-use dsp::generators::{SignalGen, SineGen};
+use dsp::SourceNode;
+use dsp::generators::{SineGen};
 use dsp::fft::{ForwardFFT, InverseFFT};
 
 

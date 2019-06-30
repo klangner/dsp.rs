@@ -4,15 +4,11 @@
 //! Most generators have state and can fill buffer with data.
 //! 
 
-use rand::distributions::{Normal, Distribution};
-
 use std::f32;
 use std::f32::consts::PI;
+use rand::distributions::{Normal, Distribution};
+use crate::SourceNode;
 
-
-pub trait SignalGen {
-    fn next(&mut self, buffer: &mut Vec<f32>) -> usize;
-}
 
 /// Impulse signal
 /// x[n] = 1 if n == impulse_pos
@@ -21,7 +17,8 @@ pub trait SignalGen {
 /// Example
 /// 
 /// ```
-/// use dsp::generators::{SignalGen, ImpulseGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::ImpulseGen;
 /// 
 /// let mut gen = ImpulseGen::new(3);
 /// let mut buffer = vec![0.0; 5];
@@ -41,7 +38,7 @@ impl ImpulseGen {
     }
 }
 
-impl SignalGen for ImpulseGen {
+impl SourceNode for ImpulseGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         for sample in buffer.iter_mut() {                        
@@ -59,7 +56,8 @@ impl SignalGen for ImpulseGen {
 /// Example
 /// 
 /// ```
-/// use dsp::generators::{SignalGen, StepGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::StepGen;
 /// 
 /// let mut gen = StepGen::new(3);
 /// let mut buffer = vec![0.0; 5];
@@ -79,7 +77,7 @@ impl StepGen {
     }
 }
 
-impl SignalGen for StepGen {
+impl SourceNode for StepGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         for sample in buffer.iter_mut() {                        
@@ -96,7 +94,8 @@ impl SignalGen for StepGen {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::{SignalGen, SineGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::SineGen;
 /// 
 /// let mut gen = SineGen::new(2.0, 8);
 /// let mut buffer = vec![0.0; 4];
@@ -121,7 +120,7 @@ impl SineGen {
     }
 }
 
-impl SignalGen for SineGen {
+impl SourceNode for SineGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         let w = 2.0 * PI * self.freq;
@@ -140,7 +139,8 @@ impl SignalGen for SineGen {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::{SignalGen, TriangleGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::TriangleGen;
 /// 
 /// let mut gen = TriangleGen::new(2.0, 8);
 /// let mut buffer = vec![0.0; 5];
@@ -166,7 +166,7 @@ impl TriangleGen {
     }
 }
 
-impl SignalGen for TriangleGen {
+impl SourceNode for TriangleGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         let w = self.sample_rate / self.freq;
@@ -186,7 +186,8 @@ impl SignalGen for TriangleGen {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::{SignalGen, SquareGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::SquareGen;
 /// 
 /// let mut gen = SquareGen::new(2.0, 8);
 /// let mut buffer = vec![0.0; 5];
@@ -212,7 +213,7 @@ impl SquareGen {
     }
 }
 
-impl SignalGen for SquareGen {
+impl SourceNode for SquareGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         let w = self.sample_rate / self.freq;
@@ -231,7 +232,8 @@ impl SignalGen for SquareGen {
 /// Example
 /// 
 /// ```
-/// use dsp::generators::{SignalGen, NoiseGen};
+/// use dsp::SourceNode;
+/// use dsp::generators::NoiseGen;
 /// 
 /// let mut gen = NoiseGen::new(0.1);
 /// let mut buffer = vec![0.0; 5];
@@ -250,7 +252,7 @@ impl NoiseGen {
     }
 }
 
-impl SignalGen for NoiseGen {
+impl SourceNode for NoiseGen {
 
     fn next(&mut self, buffer: &mut Vec<f32>) -> usize {
         for sample in buffer.iter_mut() {     
@@ -266,6 +268,7 @@ impl SignalGen for NoiseGen {
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
+    use crate::SourceNode;
     use super::*;
 
     #[test]

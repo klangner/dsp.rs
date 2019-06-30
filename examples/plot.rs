@@ -3,6 +3,7 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
+use dsp::SourceNode;
 use dsp::generators::*;
 
 // Application params
@@ -40,7 +41,7 @@ fn parse_params() -> Params {
 }
 
 /// Create Signal generator based on given params
-fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
+fn create_generator(params: &Params) -> Box<SourceNode + 'static> {
     match params.gen_name.as_ref() {
         "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_rate)),
         "square"    => Box::new(SquareGen::new(params.freq, params.sample_rate)),
