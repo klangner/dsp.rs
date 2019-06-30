@@ -1,8 +1,9 @@
 //! Standard Windows functions
 
-use num_complex::Complex;
-use crate::signals::Signal;
-use crate::vectors::{Vector, VectorImpl};
+use std::f32::consts::PI;
+use crate::Frame;
+use crate::vectors;
+
 
 /// A window function. Can be applied to a signal
 #[derive(Clone, Debug, PartialEq)]
@@ -16,83 +17,56 @@ impl Window {
         self.samples.len()
     }
 
-    /// Returns a `Vector` comsuming this window.
-    pub fn into_vector(self) -> Vector {
-        self.samples
-            .into_iter()
-            .map(|x| Complex::new(x, 0.0))
-            .collect()
-    }
-
     /// Returns a `Vector` without comsuming this window.
-    pub fn to_vec(&self) -> Vector {
-        self.samples
-            .iter()
-            .map(|x| Complex::new(x.clone(), 0.0))
-            .collect()
+    pub fn to_vec(&self) -> &Vec<f32> {
+        &self.samples
     }
 
-    /// Apply this window to the given signal
-    ///
-    /// # Panics
-    ///
-    /// Panics if the signal and the window have different lengths.
-    ///
-    /// # Returns
-    ///
-    /// A new `Signal` obtained windowing the original.
-    pub fn apply(&self, signal: &Signal) -> Signal {
-        assert_eq!(
-            self.samples.len(),
-            signal.len(),
-            "Signal and window should have the same length"
-        );
-        Signal::from_samples(
-            signal.to_vec().multiply(&(self.to_vec())),
-            signal.sample_rate(),
-        )
+    /// Apply this window to the given frame
+    pub fn apply(&self, input: &Frame, mut output: &mut Frame) {
+        vectors::multiply(&self.samples, &input, &mut output);
     }
 
     /// Apply this window to the given signal centering the window in the
     /// position specified. Works even when window and signal have different lengths
-    pub fn apply_with_center(&self, signal: &Signal, center: isize) -> Signal {
-        // If the window is applied such that it does not intersect the signal,
-        // or at least one between the signal and the windows has zero length,
-        // we return an empty signal immediately
-        let maxr = center + (self.len() / 2) as isize;
-        if maxr < 0 || self.len() == 0 || signal.len() == 0 {
-            return Signal::from_samples(vec![], signal.sample_rate());
-        }
+    pub fn apply_with_center(&self, _input: &Frame, _center: usize, _output: &mut Frame) {
+        // // If the window is applied such that it does not intersect the signal,
+        // // or at least one between the signal and the windows has zero length,
+        // // we return an empty signal immediately
+        // let maxr = center + (self.len() / 2) as isize;
+        // if maxr < 0 || self.len() == 0 || signal.len() == 0 {
+        //     return Signal::from_samples(vec![], signal.sample_rate());
+        // }
 
-        // Compute the length of the resulting signal. It is the minimum between
-        // the length of the source signal and the right end of the translated window.
-        // Also compute the right end of the portion of window to consider in the multiplication
-        let mut rs = maxr as usize;
-        let mut rw = self.len();
-        if rs > signal.len() {
-            rw = self.len() - (rs - signal.len());
-            rs = signal.len();
-        }
-        let mut samples = Vector::with_capacity(rs);
-        // Compute the left end of the singal and of the portion of window to consider
-        let mut ls = center - (self.len() / 2) as isize;
-        let lw;
-        if ls > 0 {
-            lw = 0;
-            // If the signal to consider starts after the 0, fill the first part of the result
-            // with zeros
-            for _ in 0..ls {
-                samples.push(Complex::new(0.0, 0.0));
-            }
-        } else {
-            lw = -ls;
-            ls = 0;
-        }
-        let (ls, lw) = (ls as usize, lw as usize);
+        // // Compute the length of the resulting signal. It is the minimum between
+        // // the length of the source signal and the right end of the translated window.
+        // // Also compute the right end of the portion of window to consider in the multiplication
+        // let mut rs = maxr as usize;
+        // let mut rw = self.len();
+        // if rs > signal.len() {
+        //     rw = self.len() - (rs - signal.len());
+        //     rs = signal.len();
+        // }
+        // let mut samples = Vector::with_capacity(rs);
+        // // Compute the left end of the singal and of the portion of window to consider
+        // let mut ls = center - (self.len() / 2) as isize;
+        // let lw;
+        // if ls > 0 {
+        //     lw = 0;
+        //     // If the signal to consider starts after the 0, fill the first part of the result
+        //     // with zeros
+        //     for _ in 0..ls {
+        //         samples.push(Complex::new(0.0, 0.0));
+        //     }
+        // } else {
+        //     lw = -ls;
+        //     ls = 0;
+        // }
+        // let (ls, lw) = (ls as usize, lw as usize);
 
-        // FIXME: using a good linalg crate it should be possible to use less allocations here
-        samples.append(&mut signal.to_vec()[ls..rs].multiply(&self.to_vec()[lw..rw].to_vec()));
-        Signal::from_samples(samples, signal.sample_rate())
+        // // FIXME: using a good linalg crate it should be possible to use less allocations here
+        // samples.append(&mut signal.to_vec()[ls..rs].multiply(&self.to_vec()[lw..rw].to_vec()));
+        // Signal::from_samples(samples, signal.sample_rate())
     }
 }
 
@@ -128,7 +102,6 @@ pub fn welch(frame_length: usize) -> Window {
             .collect(),
     }
 }
-use std::f32::consts::PI;
 
 pub fn sine(frame_length: usize) -> Window {
     Window {
@@ -179,34 +152,33 @@ pub fn blackman(frame_length: usize) -> Window {
 mod tests {
 
     use super::*;
-    use num_complex::Complex;
 
     #[test]
     fn test_base_rectangular() {
         let w = rectangular(10);
         assert_eq!(w.len(), 10);
-        assert_eq!(
-            w.to_vec(),
-            (0..10).map(|_| Complex::new(1.0, 0.0)).collect::<Vec<_>>()
-        );
+        assert_eq!(w.to_vec(), &vec![1.0f32; 10]);
     }
 
     #[test]
     fn test_apply() {
         let w = triangular(10);
-        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 10], 10);
+        let frame: Frame = vec![1.0; 10];
+        let mut output: Frame = vec![0.0; 10];
 
-        assert_eq!(w.to_vec(), w.apply(&s).to_vec());
+        w.apply(&frame, &mut output);
+        assert_eq!(w.to_vec(), &output);
     }
 
-    #[test]
-    fn test_apply_with_center() {
-        let w = triangular(11);
-        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 20], 20);
+    // #[test]
+    // fn test_apply_with_center() {
+    //     let w = triangular(11);
+    //     let frame: Frame = vec![1.0; 20];
+    //     let mut output: Frame = vec![0.0; 20];
 
-        let new_signal = w.apply_with_center(&s, 10);
+    //     w.apply_with_center(&frame, 10, &mut output);
 
-        assert_eq!(Complex::new(0.0, 0.0), new_signal.get(2));
-        assert_eq!(Complex::new(1.0, 0.0), new_signal.get(10));
-    }
+    //     assert_eq!(0.0, output[2]);
+    //     assert_eq!(1.0, output[10]);
+    // }
 }

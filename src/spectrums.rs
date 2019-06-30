@@ -1,7 +1,7 @@
 //! Analyze discrete signal in frequency domain
 
 use num_complex::Complex32;
-use crate::vectors::{Vector, VectorImpl};
+use crate::vectors_old::{Vector, VectorImpl};
 
 
 #[derive(Debug, PartialEq)]
