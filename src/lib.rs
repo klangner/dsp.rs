@@ -3,19 +3,28 @@
 //! Signals can be processed in Time or Frequency domain
 //!
 
-pub mod fft;
 pub mod generators;
-pub mod signals;
-pub mod spectrums;
+pub mod fft;
+// pub mod spectrums;
 mod vectors;
 pub mod windows;
+
+use num_complex::Complex32;
+
+
+/// Time domain data buffer
+pub type Samples = Vec<f32>;
+
+/// Frequency domain data buffer based on complex numbers
+pub type Spectrum = Vec<Complex32>;
+
 
 /// This trait is implemented by node which is used to generate signals
 pub trait SourceNode {
     /// Generate next batch of data samples.
     /// Data is generate into provided buffer
     /// Return number of generated samples
-    fn next(&mut self, output: &mut Vec<f32>) -> usize;
+    fn next(&mut self, output: &mut Samples) -> usize;
 }
 
 
@@ -23,7 +32,7 @@ pub trait SourceNode {
 pub trait ProcessingNode {
     /// Generate next batch of data samples based on input data
     /// Return number of processed samples
-    fn process(&mut self, input: &Vec<f32>, output: &mut Vec<f32>) -> usize;
+    fn process(&mut self, input: &Samples, output: &mut Samples) -> usize;
 }
 
 
@@ -31,5 +40,5 @@ pub trait ProcessingNode {
 pub trait DestinationNode {
     /// Consume input data.
     /// Return number of consumed samples
-    fn consume(&mut self, input: &Vec<f32>) -> usize;
+    fn consume(&mut self, input: &Samples) -> usize;
 }

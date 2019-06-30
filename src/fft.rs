@@ -1,8 +1,7 @@
 //! Analyze discrete signal in frequency domain
 use std::sync::Arc;
-
 use rustfft::{FFTplanner, FFT};
-use num_complex::Complex32;
+use crate::Spectrum;
 
 
 pub struct ForwardFFT {
@@ -26,7 +25,7 @@ impl ForwardFFT {
     }
 
     /// Forward DFT (implemented as FFT)
-    pub fn process(&mut self, mut input: &mut Vec<Complex32>, mut output: &mut Vec<Complex32>) {
+    pub fn process(&mut self, mut input: &mut Spectrum, mut output: &mut Spectrum) {
         self.fft.process(&mut input, &mut output);
     }
 }
@@ -43,7 +42,7 @@ impl InverseFFT {
     }
 
     /// Forward DFT (implemented as FFT)
-    pub fn process(&mut self, mut input: &mut Vec<Complex32>, mut output: &mut Vec<Complex32>) {
+    pub fn process(&mut self, mut input: &mut Spectrum, mut output: &mut Spectrum) {
         self.fft.process(&mut input, &mut output);
     }
 }
