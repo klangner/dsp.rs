@@ -4,14 +4,12 @@ use dsp::signals::{Signal};
 use dsp::generators::{cosine};
 use dsp::fft::{ForwardFFT};
 
-const N: usize = 4096;
-
-
 fn main() {
+    let sample_rate: usize = 4096;
     // Our testing signal has 1Hz
-    let signal = cosine(2./(N as f32), 0.).generate((0..N).map(|x| x as f32).collect());
+    let signal = SineGen::new(1_000.0, sample_rate);
     // Our carrier signal has 20Hz
-    let carrier = cosine(20./(N as f32), 0.).generate((0..N).map(|x| x as f32).collect());
+    let carrier = SineGen::new(20_000.0, sample_rate);
     // Modulated signal
     let modulated = signal.modulate(&carrier);
 

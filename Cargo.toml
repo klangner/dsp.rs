@@ -12,6 +12,14 @@ edition = "2018"
 
 
 [dependencies]
-rustfft = "2"
+rustfft = "3"
 rand = "0.6"
-num-complex = "0.1"
+num-complex = "0.2"
+
+[dev-dependencies]
+assert_approx_eq = "1.1.0"
+gnuplot = "0.0.31"
+clap = "2"
+
+[dev-dependencies.pitch_calc]
+git = "https://github.com/RustAudio/pitch_calc"

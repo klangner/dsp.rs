@@ -239,7 +239,6 @@ impl<'a> FrameSlice<'a> {
 mod tests {
     use super::*;
     use num_complex::Complex;
-    use crate::generators::step;
     use crate::windows::hamming;
 
     #[test]
@@ -385,14 +384,14 @@ mod tests {
 
     #[test]
     fn test_frames() {
-        let s = step().generate((0..100u8).map(|i| i.into()).collect());
+        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 100], 10);
 
         assert_eq!(10, s.frames(10, 10).count());
     }
 
     #[test]
     fn test_window_frames() {
-        let s = step().generate((0..100u8).map(|i| i.into()).collect());
+        let s = Signal::from_samples(vec![Complex::new(1.0, 0.0); 100], 20);
         let w = hamming(10);
 
         assert_eq!(10, s.frames(10, 10).windowed(w).count());
