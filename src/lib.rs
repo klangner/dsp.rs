@@ -5,11 +5,9 @@
 
 pub mod generators;
 pub mod fft;
-pub mod spectrums;
+// pub mod spectrums;
 mod vectors;
 pub mod windows;
-// Remove this
-mod vectors_old;
 
 use num_complex::Complex32;
 
