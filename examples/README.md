@@ -5,6 +5,7 @@
   * [ ] tuner - Simple tuner.
   * [ ] modulation - How to modulate and demodulate signal.
   * [ ] sonar - measure distance with sound wave.
+  * [ ] heart - Calculate heart rate based on ECG signal. https://en.ecgpedia.org/
 
 
 ## Example projects

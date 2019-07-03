@@ -7,7 +7,7 @@
 use std::f32;
 use std::f32::consts::PI;
 use rand::distributions::{Normal, Distribution};
-use crate::{Samples, SourceNode};
+use crate::{RealBuffer, SourceNode};
 
 
 /// Impulse signal
@@ -40,7 +40,7 @@ impl ImpulseGen {
 
 impl SourceNode for ImpulseGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         for sample in buffer.iter_mut() {                        
             *sample = if self.current_sample == self.impulse_pos { 1.0 } else { 0.0 };
             self.current_sample += 1;
@@ -79,7 +79,7 @@ impl StepGen {
 
 impl SourceNode for StepGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         for sample in buffer.iter_mut() {                        
             *sample = if self.current_sample >= self.step_pos { 1.0 } else { 0.0 };
             self.current_sample += 1;
@@ -122,7 +122,7 @@ impl SineGen {
 
 impl SourceNode for SineGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         let w = 2.0 * PI * self.freq;
         for sample in buffer.iter_mut() {     
             let k = self.current_sample / self.sample_rate;
@@ -168,7 +168,7 @@ impl TriangleGen {
 
 impl SourceNode for TriangleGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         let w = self.sample_rate / self.freq;
         for sample in buffer.iter_mut() {     
             let k = (self.current_sample / w).fract();
@@ -215,7 +215,7 @@ impl SquareGen {
 
 impl SourceNode for SquareGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         let w = self.sample_rate / self.freq;
         for sample in buffer.iter_mut() {     
             let k = (self.current_sample / w).fract();
@@ -254,7 +254,7 @@ impl NoiseGen {
 
 impl SourceNode for NoiseGen {
 
-    fn next(&mut self, buffer: &mut Samples) -> usize {
+    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
         for sample in buffer.iter_mut() {     
             *sample = self.normal.sample(&mut rand::thread_rng()) as f32;
         }

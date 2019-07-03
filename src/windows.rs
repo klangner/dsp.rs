@@ -2,7 +2,7 @@
 
 use std::cmp;
 use std::f32::consts::PI;
-use crate::Samples;
+use crate::RealBuffer;
 use crate::vectors;
 
 
@@ -19,7 +19,7 @@ impl Window {
     }
 
     /// Apply this window to the given frame
-    pub fn apply(&self, input: &Samples, mut output: &mut Samples) {
+    pub fn apply(&self, input: &RealBuffer, mut output: &mut RealBuffer) {
         vectors::multiply(&self.samples, &input, &mut output);
     }
 

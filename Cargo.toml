@@ -20,6 +20,7 @@ num-complex = "0.2"
 assert_approx_eq = "1.1.0"
 gnuplot = "0.0.31"
 clap = "2"
+audrey = "0.2"
 
 [dev-dependencies.pitch_calc]
 git = "https://github.com/RustAudio/pitch_calc"
