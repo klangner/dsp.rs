@@ -2,14 +2,16 @@
 use std::env;
 use gnuplot::{Figure, Color};
 use num_complex::Complex32;
-use dsp::{SourceNode, ComplexBuffer, RealBuffer};
+use dsp::{RealBuffer, ComplexBuffer};
 use dsp::{fft, spectrums};
+use dsp::generators::SignalGen;
 use pitch_calc::calc::step_from_hz;
 use pitch_calc::step::Step;
 
 
 const SAMPLE_RATE: usize = 44100;
 const SAMPLE_SIZE: usize = 4096;
+
 
 // Audio generator
 pub struct AudioFileGen {
@@ -25,18 +27,17 @@ impl AudioFileGen {
     }
 }
 
-impl SourceNode for AudioFileGen {
+impl SignalGen for AudioFileGen {
 
-    fn next(&mut self, buffer: &mut RealBuffer) -> usize {
-        for sample in buffer.iter_mut() {     
-            if self.pos < self.samples.len() { 
-                *sample = self.samples[self.pos];
-                self.pos += 1;
-            } else {
-                *sample = 0.0;
-            };
-        }
-        buffer.len()
+    fn next(&mut self) -> f32 {
+        let sample = if self.pos < self.samples.len() { 
+            self.samples[self.pos]
+        } else {
+            0.0
+        };
+        self.pos += 1;
+        sample
+
     }
 
     fn has_next(&self) -> bool {
@@ -49,13 +50,14 @@ fn main() {
     let file_path = env::args().nth(1).unwrap_or("examples/assets/sine_440hz.wav".to_string());
     let mut ft = fft::ForwardFFT::new(SAMPLE_SIZE);
     let mut gen = AudioFileGen::new(&file_path);
-    let mut samples: RealBuffer = vec![0.0; SAMPLE_SIZE];
+    let mut samples: Vec<Complex32> = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
     let mut output = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
 
     while gen.has_next() {
-        gen.next(&mut samples);
-        let mut input = samples.iter().map(|&x| Complex32::new(x, 0.0)).collect();
-        ft.process(&mut input, &mut output);
+        for sample in samples.iter_mut() {
+            *sample = Complex32::new(gen.next(), 0.0);
+        }
+        ft.process(&mut samples, &mut output);
 
         // Print estimated frequency
         let freq = spectrums::max_freq(&output, SAMPLE_RATE);
