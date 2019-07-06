@@ -23,10 +23,6 @@ impl AudioFileGen {
         let samples = reader.samples().map(Result::unwrap).collect();
         AudioFileGen { samples, pos: 0 }
     }
-
-    pub fn has_next(&self) -> bool {
-        self.pos < self.samples.len()
-    }
 }
 
 impl SourceNode for AudioFileGen {
@@ -41,6 +37,10 @@ impl SourceNode for AudioFileGen {
             };
         }
         buffer.len()
+    }
+
+    fn has_next(&self) -> bool {
+        self.pos < self.samples.len()
     }
 }
 

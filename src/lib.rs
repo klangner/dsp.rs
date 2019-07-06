@@ -25,6 +25,10 @@ pub trait SourceNode {
     /// Data is generate into provided buffer
     /// Return number of generated samples
     fn next(&mut self, output: &mut RealBuffer) -> usize;
+
+    /// Function for checking if generator has next frame of data
+    /// Return true if it has.
+    fn has_next(&self) -> bool { true }
 }
 
 
