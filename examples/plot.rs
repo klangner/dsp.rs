@@ -46,6 +46,7 @@ fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
         "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_rate)),
         "square"    => Box::new(SquareGen::new(params.freq, params.sample_rate)),
         "noise"     => Box::new(NoiseGen::new(0.4)),
+        "chirp"     => Box::new(ChirpGen::new(1.0, 50.0, 1.0, params.sample_rate)),
         _           => Box::new(SineGen::new(params.freq, params.sample_rate)),
     }
 }

@@ -253,6 +253,43 @@ impl SignalGen for NoiseGen {
 }
 
 
+/// A chirp is a signal in which frequency increases with time.
+pub struct ChirpGen {
+    current_sample: f32, 
+    start_freq: f32,
+    end_freq: f32,
+    sweep_samples: f32,
+    sample_rate: f32,
+}
+
+impl ChirpGen {
+    /// Create chirp signal
+    ///   * start_freq - Start frequency in Hz
+    ///   * end_freq - End frequency in Hz
+    ///   * length - in seconds
+    ///   * sample_rate - How many samples per second
+    pub fn new(start_freq: f32, end_freq: f32, sweep_time: f32, sample_rate: usize) -> ChirpGen {
+        let sweep_samples = sweep_time * (sample_rate as f32);
+        ChirpGen { current_sample : 0.0, start_freq, end_freq, sweep_samples, sample_rate: sample_rate as f32}
+    }
+}
+
+impl SignalGen for ChirpGen {
+
+    fn next(&mut self) -> f32 {
+        if self.current_sample > self.sweep_samples {
+            0.0
+        } else {
+            let slope = (self.end_freq - self.start_freq) / (self.sweep_samples);
+            let sweep_pos = self.current_sample % self.sweep_samples;
+            let freq = slope * sweep_pos + self.start_freq;
+            let w = 2.0 * PI * freq * self.current_sample / self.sample_rate;
+            self.current_sample += 1.0;
+            f32::sin(w)
+        }
+    }
+}
+
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
