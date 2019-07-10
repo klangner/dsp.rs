@@ -1,8 +1,8 @@
 
 use std::env;
-use gnuplot::{Figure, Color};
+use gnuplot::{Figure, Caption};
 use num_complex::Complex32;
-use dsp::{RealBuffer, ComplexBuffer};
+use dsp::{RealBuffer};
 use dsp::{fft, spectrums};
 use dsp::generators::SignalGen;
 use pitch_calc::calc::step_from_hz;
@@ -11,6 +11,7 @@ use pitch_calc::step::Step;
 
 const SAMPLE_RATE: usize = 44100;
 const SAMPLE_SIZE: usize = 4096;
+const REDUCE_FREQ: usize = 32;
 
 
 // Audio generator
@@ -52,12 +53,15 @@ fn main() {
     let mut gen = AudioFileGen::new(&file_path);
     let mut samples: Vec<Complex32> = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
     let mut output = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
+    let mut spectrum: Vec<f32> = Vec::new();
 
     while gen.has_next() {
         for sample in samples.iter_mut() {
             *sample = Complex32::new(gen.next(), 0.0);
         }
         ft.process(&mut samples, &mut output);
+        let out: Vec<f32> = output[0..SAMPLE_SIZE/REDUCE_FREQ].iter().map(|c| c.norm()).collect();
+        spectrum.extend(out);
 
         // Print estimated frequency
         let freq = spectrums::max_freq(&output, SAMPLE_RATE);
@@ -69,12 +73,26 @@ fn main() {
             println!("Freq: {}Hz", freq);
         }
     }
+
+    plot_spectrogram(
+        SAMPLE_SIZE/REDUCE_FREQ, 
+        REDUCE_FREQ * spectrum.len() / SAMPLE_SIZE, 
+        &spectrum, 
+        SAMPLE_RATE as f32/REDUCE_FREQ as f32);
 }
 
-pub fn plot_spectrum(spectrum: &ComplexBuffer) {
-    let powers: Vec<f32> = spectrum.iter().map(|x| x.re).collect();
-    let idx: Vec<f32> = (0..powers.len()/2).map(|x| (x as f32)* (SAMPLE_RATE as f32)/(SAMPLE_SIZE as f32)).collect();
-    let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, &powers, &[Color("blue")]);
-    fg.show();
+fn plot_spectrogram(height: usize, width: usize, data: &Vec<f32>, max_freq: f32) {
+    let mut transposed = vec![0.0; height*width];
+    transpose::transpose(&data, &mut transposed, height, width);
+    let t = (width * SAMPLE_SIZE) as f64 / SAMPLE_RATE as f64;
+
+	let mut fg = Figure::new();
+    fg.axes2d().image(
+		transposed.iter(),
+		height,
+		width,
+		Some((0.0, 0.0, t, max_freq as f64)),
+		&[Caption("Frequency in Hz.")],
+	);
+	fg.show();    
 }

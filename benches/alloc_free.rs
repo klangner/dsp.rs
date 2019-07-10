@@ -10,14 +10,14 @@ use criterion::black_box;
 use dsp::generators::{SignalGen, SineGen};
 
 
-static SAMPLE_RATE: usize = 1000;
+static SAMPLE_FREQ: f32 = 1000.0;
 static SIGNAL_LENGTH: usize = 1;
 
 
 fn generate_sine(n : usize) -> f32 {
-    let mut gen = SineGen::new(4.0, SAMPLE_RATE);
+    let mut gen = SineGen::new(4.0, SAMPLE_FREQ);
     let mut s = 0.0;
-    for _ in 0..(n*SAMPLE_RATE) {
+    for _ in 0..(n*SAMPLE_FREQ as usize) {
         s = gen.next();
     }
     s
