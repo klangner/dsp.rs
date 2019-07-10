@@ -106,7 +106,7 @@ impl SignalGen for StepGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, SineGen};
 /// 
-/// let mut gen = SineGen::new(2.0, 8);
+/// let mut gen = SineGen::new(2.0, 8.0);
 /// assert_approx_eq!(gen.next(), 0.0, 1e-5f32);
 /// assert_approx_eq!(gen.next(), 1.0, 1e-5f32);
 /// assert_approx_eq!(gen.next(), 0.0, 1e-5f32);
@@ -115,15 +115,15 @@ impl SignalGen for StepGen {
 pub struct SineGen {
     current_sample: f32, 
     freq: f32,
-    sample_rate: f32,
+    sample_freq: f32,
 }
 
 impl SineGen {
     /// Create new Impulse generator with impulse moved to specyfic position
     ///   * freq - Frequency in Hz
-    ///   * sample_rate - How many samples per second
-    pub fn new(freq: f32, sample_rate: usize) -> SineGen {
-        SineGen { current_sample : 0.0, freq, sample_rate: sample_rate as f32 }
+    ///   * sample_freq - How many samples per second
+    pub fn new(freq: f32, sample_freq: f32) -> SineGen {
+        SineGen { current_sample : 0.0, freq, sample_freq }
     }
 }
 
@@ -131,7 +131,7 @@ impl SignalGen for SineGen {
 
     fn next(&mut self) -> f32 {
         let w = 2.0 * PI * self.freq;
-        let sample = f32::sin(w * self.current_sample / self.sample_rate);
+        let sample = f32::sin(w * self.current_sample / self.sample_freq);
         self.current_sample += 1.0;
         sample
     }
@@ -146,7 +146,7 @@ impl SignalGen for SineGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, TriangleGen};
 /// 
-/// let mut gen = TriangleGen::new(2.0, 8);
+/// let mut gen = TriangleGen::new(2.0, 8.0);
 /// assert_approx_eq!(gen.next(), -1.0, 1e-5f32);
 /// assert_approx_eq!(gen.next(), -0.5, 1e-5f32);
 /// assert_approx_eq!(gen.next(), 0.0, 1e-5f32);
@@ -156,22 +156,22 @@ impl SignalGen for SineGen {
 pub struct TriangleGen {
     current_sample: f32, 
     freq: f32,
-    sample_rate: f32,
+    sample_freq: f32,
 }
 
 impl TriangleGen {
     /// Create new Traingle generator
     ///   * freq - Frequency in Hz
     ///   * sample_rate - How many samples per second
-    pub fn new(freq: f32, sample_rate: usize) -> TriangleGen {
-        TriangleGen { current_sample : 0.0, freq, sample_rate: sample_rate as f32}
+    pub fn new(freq: f32, sample_freq: f32) -> TriangleGen {
+        TriangleGen { current_sample : 0.0, freq, sample_freq }
     }
 }
 
 impl SignalGen for TriangleGen {
 
     fn next(&mut self) -> f32 {
-        let w = self.sample_rate / self.freq;
+        let w = self.sample_freq / self.freq;
         let k = (self.current_sample / w).fract();
         let sample = 2.0 * k - 1.0;
         self.current_sample += 1.0;
@@ -188,7 +188,7 @@ impl SignalGen for TriangleGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, SquareGen};
 /// 
-/// let mut gen = SquareGen::new(2.0, 8);
+/// let mut gen = SquareGen::new(2.0, 8.0);
 /// assert_approx_eq!(gen.next(), 1.0, 1e-5f32);
 /// assert_approx_eq!(gen.next(), 1.0, 1e-5f32);
 /// assert_approx_eq!(gen.next(), -1.0, 1e-5f32);
@@ -198,22 +198,22 @@ impl SignalGen for TriangleGen {
 pub struct SquareGen {
     current_sample: f32, 
     freq: f32,
-    sample_rate: f32,
+    sample_freq: f32,
 }
 
 impl SquareGen {
     /// Create square signal
     ///   * freq - Frequency in Hz
     ///   * sample_rate - How many samples per second
-    pub fn new(freq: f32, sample_rate: usize) -> SquareGen {
-        SquareGen { current_sample : 0.0, freq, sample_rate: sample_rate as f32}
+    pub fn new(freq: f32, sample_freq: f32) -> SquareGen {
+        SquareGen { current_sample : 0.0, freq, sample_freq}
     }
 }
 
 impl SignalGen for SquareGen {
 
     fn next(&mut self) -> f32 {
-        let w = self.sample_rate / self.freq;
+        let w = self.sample_freq / self.freq;
         let k = (self.current_sample / w).fract();
         let sample = if k < 0.5 { 1.0 } else { -1.0 };
         self.current_sample += 1.0;
@@ -261,7 +261,7 @@ pub struct ChirpGen {
     start_freq: f32,
     end_freq: f32,
     sweep_time: f32,
-    sample_rate: f32,
+    sample_freq: f32,
 }
 
 impl ChirpGen {
@@ -270,15 +270,15 @@ impl ChirpGen {
     ///   * end_freq - End frequency in Hz
     ///   * length - in seconds
     ///   * sample_rate - How many samples per second
-    pub fn new(start_freq: f32, end_freq: f32, sweep_time: f32, sample_rate: usize) -> ChirpGen {
-        ChirpGen { current_sample : 0.0, start_freq, end_freq, sweep_time, sample_rate: sample_rate as f32}
+    pub fn new(start_freq: f32, end_freq: f32, sweep_time: f32, sample_freq: f32) -> ChirpGen {
+        ChirpGen { current_sample : 0.0, start_freq, end_freq, sweep_time, sample_freq}
     }
 }
 
 impl SignalGen for ChirpGen {
 
     fn next(&mut self) -> f32 {
-        let t = self.current_sample / self.sample_rate;
+        let t = self.current_sample / self.sample_freq;
         self.current_sample += 1.0;
         if t > self.sweep_time {
             0.0

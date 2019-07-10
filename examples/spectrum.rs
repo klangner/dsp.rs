@@ -16,7 +16,7 @@ const SIGNAL_LENGTH: f32 = 10.0;
 // Application params
 struct Params {
     gen_name: String,
-    sample_rate: usize,
+    sample_freq: f32,
     freq: f32
 }
 
@@ -40,21 +40,21 @@ fn parse_params() -> Params {
                     .takes_value(true))
                 .get_matches();
     let gen_name = args.value_of("gen").unwrap_or("chirp"); 
-    let sample_rate = value_t!(args, "sample-rate", usize).unwrap_or(44100);
+    let sample_rate = value_t!(args, "sample-rate", f32).unwrap_or(44100.0);
     let freq = value_t!(args, "freq", f32).unwrap_or(5_000.0);
     Params { gen_name: gen_name.to_string(),
-             sample_rate: sample_rate,
+             sample_freq: sample_rate,
              freq: freq }
 }
 
 /// Create Signal generator based on given params
 fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
     match params.gen_name.as_ref() {
-        "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_rate)),
-        "square"    => Box::new(SquareGen::new(params.freq, params.sample_rate)),
+        "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_freq)),
+        "square"    => Box::new(SquareGen::new(params.freq, params.sample_freq)),
         "noise"     => Box::new(NoiseGen::new(0.4)),
-        "chirp"     => Box::new(ChirpGen::new(5_000.0, 10_000.0, SIGNAL_LENGTH, params.sample_rate)),
-        _           => Box::new(SineGen::new(params.freq, params.sample_rate)),
+        "chirp"     => Box::new(ChirpGen::new(5_000.0, 10_000.0, SIGNAL_LENGTH, params.sample_freq)),
+        _           => Box::new(SineGen::new(params.freq, params.sample_freq)),
     }
 }
 
@@ -66,7 +66,7 @@ fn main() {
     let mut spectrum: ComplexBuffer = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
 
     // Take as many spectrums as necessary to cover the whole signal length
-    let num_spectrums = (SIGNAL_LENGTH * (params.sample_rate as f32) / (SAMPLE_SIZE as f32)) as usize;
+    let num_spectrums = (SIGNAL_LENGTH * params.sample_freq / (SAMPLE_SIZE as f32)) as usize;
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|_| {
         let mut xs = (0..SAMPLE_SIZE).map(|_| Complex32::new(gen.next(), 0.0)).collect();
         ft.process(&mut xs, &mut spectrum);
@@ -74,7 +74,7 @@ fn main() {
         out
     }).collect();
 
-    plot_spectrogram(SAMPLE_SIZE / 2, num_spectrums, &ps, (params.sample_rate/2) as f32);
+    plot_spectrogram(SAMPLE_SIZE / 2, num_spectrums, &ps, params.sample_freq/2.0);
 }
 
 fn plot_spectrogram(height: usize, width: usize, data: &Vec<f32>, max_freq: f32) {

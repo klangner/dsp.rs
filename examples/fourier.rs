@@ -5,8 +5,8 @@ use dsp::fft::{ForwardFFT, InverseFFT};
 
 
 fn main() {
-    let sample_rate: usize = 256;
-    let mut gen = SineGen::new(4.0, sample_rate);
+    let sample_rate = 256;
+    let mut gen = SineGen::new(4.0, sample_rate as f32);
     let mut input = (0..sample_rate).map(|_| Complex32::new(gen.next(), 0.0)).collect();
 
     let mut output = vec![Complex32::new(0.0, 0.0); sample_rate];
