@@ -61,10 +61,7 @@ mod tests {
                              Complex::new(0., 0.),
                              Complex::new(0., 0.),
                              Complex::new(0., 0.)];
-        let mut output = vec![Complex::new(0., 0.), 
-                              Complex::new(0., 0.),
-                              Complex::new(0., 0.),
-                              Complex::new(0., 0.)];
+        let mut output = vec![Complex::new(0., 0.); 4];
         
         let mut ft = ForwardFFT::new(4);
         ft.process(&mut input, &mut output);
