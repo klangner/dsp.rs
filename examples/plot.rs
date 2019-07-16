@@ -3,6 +3,7 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
+use dsp::SourceNode;
 use dsp::generators::*;
 
 
@@ -53,13 +54,13 @@ fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
 
 fn main() {
     let params = parse_params();
-    let mut gen = create_generator(&params);
-    let buffer = (0..params.sample_freq as usize).map(|_| gen.next()).collect();
+    let gen = create_generator(&params);
+    let mut gen_node = GenNode::new(gen, params.sample_freq as usize);
+    let buffer = gen_node.next_batch();
 
     // Plot signal
     let idx: Vec<usize> = (0..params.sample_freq as usize).collect();
-    let ys: Vec<f32> = buffer;
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, &ys, &[Color("red")]);
+    fg.axes2d().lines(&idx, buffer, &[Color("red")]);
     fg.show();
 }

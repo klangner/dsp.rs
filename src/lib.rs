@@ -93,7 +93,6 @@ impl ProcessingNode for ComplexToRealNode {
 #[cfg(test)]
 mod tests {
     use num_complex::Complex32;
-    use crate::generators::ImpulseGen;
     use super::*;
 
     #[test]

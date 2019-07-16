@@ -3,10 +3,9 @@ extern crate clap;
 
 use gnuplot::{Figure, Caption};
 use clap::{Arg, App};
-use num_complex::Complex32;
-use dsp::ComplexBuffer;
+use dsp::{SourceNode, ProcessingNode};
 use dsp::generators::*;
-use dsp::fft::{ForwardFFT};
+use dsp::fft::ForwardFFTNode;
 
 
 const SAMPLE_SIZE: usize = 2048;
@@ -61,15 +60,15 @@ fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
 
 fn main() {
     let params = parse_params();
-    let mut gen = create_generator(&params);
-    let mut ft = ForwardFFT::new(SAMPLE_SIZE);
-    let mut spectrum: ComplexBuffer = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
+    let gen = create_generator(&params);
+    let mut gen_node = GenNode::new(gen, SAMPLE_SIZE);
+    let mut fft = ForwardFFTNode::new(SAMPLE_SIZE);
 
     // Take as many spectrums as necessary to cover the whole signal length
     let num_spectrums = (SIGNAL_LENGTH * params.sample_freq / (SAMPLE_SIZE as f32)) as usize;
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|_| {
-        let mut xs = (0..SAMPLE_SIZE).map(|_| Complex32::new(gen.next(), 0.0)).collect();
-        ft.process(&mut xs, &mut spectrum);
+        let signal = gen_node.next_batch();
+        let spectrum = fft.process(signal);
         let out: Vec<f32> = spectrum[0..SAMPLE_SIZE/2].iter().map(|c| c.norm()).collect();
         out
     }).collect();

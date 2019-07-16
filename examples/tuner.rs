@@ -1,10 +1,8 @@
 
 use std::env;
 use gnuplot::{Figure, Caption};
-use num_complex::Complex32;
-use dsp::{RealBuffer};
+use dsp::{RealBuffer, SourceNode, ProcessingNode};
 use dsp::{fft, spectrums};
-use dsp::generators::SignalGen;
 use pitch_calc::calc::step_from_hz;
 use pitch_calc::step::Step;
 
@@ -17,28 +15,16 @@ const REDUCE_FREQ: usize = 32;
 // Audio generator
 pub struct AudioFileGen {
     samples: RealBuffer, 
-    pos: usize
+    pos: usize,
+    output: RealBuffer,
 }
 
 impl AudioFileGen {
-    pub fn new(file_path: &str) -> AudioFileGen {
+    pub fn new(file_path: &str, buffer_size: usize) -> AudioFileGen {
         let mut reader = audrey::open(file_path).unwrap();
         let samples = reader.samples().map(Result::unwrap).collect();
-        AudioFileGen { samples, pos: 0 }
-    }
-}
-
-impl SignalGen for AudioFileGen {
-
-    fn next(&mut self) -> f32 {
-        let sample = if self.pos < self.samples.len() { 
-            self.samples[self.pos]
-        } else {
-            0.0
-        };
-        self.pos += 1;
-        sample
-
+        let output = vec![0.0; buffer_size];
+        AudioFileGen { samples, pos: 0, output }
     }
 
     fn has_next(&self) -> bool {
@@ -46,20 +32,33 @@ impl SignalGen for AudioFileGen {
     }
 }
 
+impl SourceNode for AudioFileGen {
+    type Buffer = RealBuffer;
+
+    fn next_batch(&mut self) -> &RealBuffer {
+        for sample in self.output.iter_mut() {
+            *sample = if self.pos < self.samples.len() { 
+                self.samples[self.pos]
+            } else {
+                0.0
+            };
+            self.pos += 1;
+        }
+        &self.output
+    }
+
+}
+
 
 fn main() {
     let file_path = env::args().nth(1).unwrap_or("examples/assets/sine_440hz.wav".to_string());
-    let mut ft = fft::ForwardFFT::new(SAMPLE_SIZE);
-    let mut gen = AudioFileGen::new(&file_path);
-    let mut samples: Vec<Complex32> = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
-    let mut output = vec![Complex32::new(0.0, 0.0); SAMPLE_SIZE];
+    let mut gen = AudioFileGen::new(&file_path, SAMPLE_SIZE);
+    let mut fft = fft::ForwardFFTNode::new(SAMPLE_SIZE);
     let mut spectrum: Vec<f32> = Vec::new();
 
     while gen.has_next() {
-        for sample in samples.iter_mut() {
-            *sample = Complex32::new(gen.next(), 0.0);
-        }
-        ft.process(&mut samples, &mut output);
+        let samples = gen.next_batch();
+        let output = fft.process(samples);
         let out: Vec<f32> = output[0..SAMPLE_SIZE/REDUCE_FREQ].iter().map(|c| c.norm()).collect();
         spectrum.extend(out);
 
