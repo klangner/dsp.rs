@@ -11,31 +11,6 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 
 # Features
    
-## Time domain
-
-  * [x] Shift (Delay)
-  * [x] Scale
-  * [x] Add signals
-  * [x] Multiply signals (modulation)
-  * [x] Integration
-  * [x] Differentiation
-  * [x] Signal Energy
-  * [x] Signal Power
-  * [x] Modulation
-  * [x] Convolution
-  * [ ] Moving Average
-  * [ ] Leaky integration
-  * [x] Windowing (Hamming)
-  * [ ] Envelope detection (via squaring), i.e. y[n]=|x[n]|2∗h[n]
-
-  
-## Frequency domain
-
-  * [x] FFT forward and inverse using RustFFT crate.
-  * [ ] Convolution
-  * [ ] Filters
-  
-  
 ## Signal generators
 
 Signals are continuous functions f: ℝ -> ℂ 
@@ -46,7 +21,22 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
-  * [ ] Arbitrary (defined by custom function)
+  
+## Window functions
+
+  * [x] Rectangular
+  * [x] Triangular
+  * [x] Welch
+  * [x] Sine
+  * [x] Hann
+  * [x] Hamming
+  * [x] Blackman
+
+
+## Frequency domain
+
+  * [x] FFT forward and inverse using RustFFT crate.
+  * [x] Find peak frequency
   
   
 # License
