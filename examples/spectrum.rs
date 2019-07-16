@@ -49,11 +49,11 @@ fn parse_params() -> Params {
 /// Create Signal generator based on given params
 fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
     match params.gen_name.as_ref() {
-        "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_freq)),
-        "square"    => Box::new(SquareGen::new(params.freq, params.sample_freq)),
+        "triangle"  => Box::new(TriangleGen::new(params.freq)),
+        "square"    => Box::new(SquareGen::new(params.freq)),
         "noise"     => Box::new(NoiseGen::new(0.4)),
-        "chirp"     => Box::new(ChirpGen::new(5_000.0, 10_000.0, SIGNAL_LENGTH, params.sample_freq)),
-        _           => Box::new(SineGen::new(params.freq, params.sample_freq)),
+        "chirp"     => Box::new(ChirpGen::new(5_000.0, 10_000.0, SIGNAL_LENGTH)),
+        _           => Box::new(SineGen::new(params.freq)),
     }
 }
 
@@ -61,7 +61,7 @@ fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
 fn main() {
     let params = parse_params();
     let gen = create_generator(&params);
-    let mut gen_node = GenNode::new(gen, SAMPLE_SIZE);
+    let mut gen_node = GenNode::new(gen, params.sample_freq, SAMPLE_SIZE);
     let mut fft = ForwardFFTNode::new(SAMPLE_SIZE);
 
     // Take as many spectrums as necessary to cover the whole signal length

@@ -14,11 +14,8 @@ use crate::{RealBuffer, SourceNode};
 /// This trait is implemented by node which is used to generate signals
 pub trait SignalGen {
 
-    /// Generate next sample.
-    fn next_sample(&mut self) -> f32;
-
     /// Generate nth sample.
-    // fn sample(&mut self, n: usize) -> f32;
+    fn sample(&self, t: f32) -> f32;
 
     /// Function for checking if generator has next frame of data
     /// Return true if it has.
@@ -36,37 +33,29 @@ pub trait SignalGen {
 /// ```
 /// use dsp::generators::{SignalGen, ImpulseGen};
 /// 
-/// let mut gen = ImpulseGen::new(2);
-/// assert_eq!(gen.next_sample(), 0.0);
-/// assert_eq!(gen.next_sample(), 0.0);
-/// assert_eq!(gen.next_sample(), 1.0);
-/// assert_eq!(gen.next_sample(), 0.0);
+/// let mut gen = ImpulseGen::new(0.2);
+/// assert_eq!(gen.sample(0.0), 0.0);
+/// assert_eq!(gen.sample(0.1), 0.0);
+/// assert_eq!(gen.sample(0.2), 1.0);
+/// assert_eq!(gen.sample(0.3), 0.0);
 /// ```
 pub struct ImpulseGen {
-    current_sample: usize, 
-    impulse_pos: usize,
+    impulse_pos: f32,
 }
 
 impl ImpulseGen {
     /// Create new Impulse generator.
     ///   * impulse_pos - Impulse position
-    pub fn new(impulse_pos: usize) -> ImpulseGen {
-        ImpulseGen { current_sample : 0, impulse_pos }
+    pub fn new(impulse_pos: f32) -> ImpulseGen {
+        ImpulseGen { impulse_pos }
     }
 }
 
 impl SignalGen for ImpulseGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let sample = if self.current_sample == self.impulse_pos { 1.0 } else { 0.0 };
-        self.current_sample += 1;
-        sample
+    fn sample(&self, t: f32) -> f32 {
+        if t == self.impulse_pos { 1.0 } else { 0.0 }
     }
-
-    // fn sample(&mut self, n: usize) -> f32 {
-    //     let sample = if n == self.impulse_pos { 1.0 } else { 0.0 };
-    //     sample
-    // }
 }
 
 /// Step signal
@@ -78,31 +67,28 @@ impl SignalGen for ImpulseGen {
 /// ```
 /// use dsp::generators::{SignalGen, StepGen};
 /// 
-/// let mut gen = StepGen::new(2);
-/// assert_eq!(gen.next_sample(), 0.0);
-/// assert_eq!(gen.next_sample(), 0.0);
-/// assert_eq!(gen.next_sample(), 1.0);
-/// assert_eq!(gen.next_sample(), 1.0);
+/// let mut gen = StepGen::new(0.2);
+/// assert_eq!(gen.sample(0.0), 0.0);
+/// assert_eq!(gen.sample(0.1), 0.0);
+/// assert_eq!(gen.sample(0.2), 1.0);
+/// assert_eq!(gen.sample(0.3), 1.0);
 /// ```
 pub struct StepGen {
-    current_sample: i64, 
-    step_pos: i64,
+    step_pos: f32,
 }
 
 impl StepGen {
     /// Create new Step generator 
     ///   * step_pos - Position of the step
-    pub fn new(step_pos: i64) -> StepGen {
-        StepGen { current_sample : 0, step_pos }
+    pub fn new(step_pos: f32) -> StepGen {
+        StepGen { step_pos }
     }
 }
 
 impl SignalGen for StepGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let sample = if self.current_sample >= self.step_pos { 1.0 } else { 0.0 };
-        self.current_sample += 1;
-        sample
+    fn sample(&self, t: f32) -> f32 {
+        if t >= self.step_pos { 1.0 } else { 0.0 }
     }
 }
 
@@ -114,34 +100,29 @@ impl SignalGen for StepGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, SineGen};
 /// 
-/// let mut gen = SineGen::new(2.0, 8.0);
-/// assert_approx_eq!(gen.next_sample(), 0.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 0.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), -1.0, 1e-5f32);
+/// let mut gen = SineGen::new(2.0);
+/// assert_approx_eq!(gen.sample(0.0), 0.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.125), 1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.25), 0.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.375), -1.0, 1e-5f32);
 /// ```
 pub struct SineGen {
-    current_sample: f32, 
     freq: f32,
-    sample_freq: f32,
 }
 
 impl SineGen {
     /// Create new Impulse generator with impulse moved to specyfic position
     ///   * freq - Frequency in Hz
     ///   * sample_freq - How many samples per second
-    pub fn new(freq: f32, sample_freq: f32) -> SineGen {
-        SineGen { current_sample : 0.0, freq, sample_freq }
+    pub fn new(freq: f32) -> SineGen {
+        SineGen { freq }
     }
 }
 
 impl SignalGen for SineGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let w = 2.0 * PI * self.freq;
-        let sample = f32::sin(w * self.current_sample / self.sample_freq);
-        self.current_sample += 1.0;
-        sample
+    fn sample(&self, t: f32) -> f32 {
+        f32::sin(2.0 * PI * t * self.freq)
     }
 }
 
@@ -154,36 +135,31 @@ impl SignalGen for SineGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, TriangleGen};
 /// 
-/// let mut gen = TriangleGen::new(2.0, 8.0);
-/// assert_approx_eq!(gen.next_sample(), -1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), -0.5, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 0.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 0.5, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), -1.0, 1e-5f32);
+/// let mut gen = TriangleGen::new(2.0);
+/// assert_approx_eq!(gen.sample(0.0), -1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.125), -0.5, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.25), 0.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.375), 0.5, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.5), -1.0, 1e-5f32);
 /// ```
 pub struct TriangleGen {
-    current_sample: f32, 
     freq: f32,
-    sample_freq: f32,
 }
 
 impl TriangleGen {
     /// Create new Traingle generator
     ///   * freq - Frequency in Hz
     ///   * sample_rate - How many samples per second
-    pub fn new(freq: f32, sample_freq: f32) -> TriangleGen {
-        TriangleGen { current_sample : 0.0, freq, sample_freq }
+    pub fn new(freq: f32) -> TriangleGen {
+        TriangleGen { freq }
     }
 }
 
 impl SignalGen for TriangleGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let w = self.sample_freq / self.freq;
-        let k = (self.current_sample / w).fract();
-        let sample = 2.0 * k - 1.0;
-        self.current_sample += 1.0;
-        sample
+    fn sample(&self, t: f32) -> f32 {
+        let k = (t * self.freq).fract();
+        2.0 * k - 1.0
     }
 }
 
@@ -196,36 +172,31 @@ impl SignalGen for TriangleGen {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generators::{SignalGen, SquareGen};
 /// 
-/// let mut gen = SquareGen::new(2.0, 8.0);
-/// assert_approx_eq!(gen.next_sample(), 1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), -1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), -1.0, 1e-5f32);
-/// assert_approx_eq!(gen.next_sample(), 1.0, 1e-5f32);
+/// let mut gen = SquareGen::new(2.0);
+/// assert_approx_eq!(gen.sample(0.0), 1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.125), 1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.25), -1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.375), -1.0, 1e-5f32);
+/// assert_approx_eq!(gen.sample(0.5), 1.0, 1e-5f32);
 /// ```
 pub struct SquareGen {
-    current_sample: f32, 
     freq: f32,
-    sample_freq: f32,
 }
 
 impl SquareGen {
     /// Create square signal
     ///   * freq - Frequency in Hz
     ///   * sample_rate - How many samples per second
-    pub fn new(freq: f32, sample_freq: f32) -> SquareGen {
-        SquareGen { current_sample : 0.0, freq, sample_freq}
+    pub fn new(freq: f32) -> SquareGen {
+        SquareGen { freq }
     }
 }
 
 impl SignalGen for SquareGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let w = self.sample_freq / self.freq;
-        let k = (self.current_sample / w).fract();
-        let sample = if k < 0.5 { 1.0 } else { -1.0 };
-        self.current_sample += 1.0;
-        sample
+    fn sample(&self, t: f32) -> f32 {
+        let k = (t * self.freq).fract();
+        if k < 0.5 { 1.0 } else { -1.0 }
     }
 }
 
@@ -238,7 +209,7 @@ impl SignalGen for SquareGen {
 /// use dsp::generators::{SignalGen, NoiseGen};
 /// 
 /// let mut gen = NoiseGen::new(0.1);
-/// gen.next_sample();
+/// gen.sample(0.0);
 /// ```
 pub struct NoiseGen {
     normal: Normal, 
@@ -255,7 +226,7 @@ impl NoiseGen {
 
 impl SignalGen for NoiseGen {
 
-    fn next_sample(&mut self) -> f32 {
+    fn sample(&self, _t: f32) -> f32 {
         self.normal.sample(&mut rand::thread_rng()) as f32
     }
 }
@@ -265,11 +236,9 @@ impl SignalGen for NoiseGen {
 /// Based on:
 /// https://en.wikipedia.org/wiki/Chirp#Linear
 pub struct ChirpGen {
-    current_sample: f32, 
     start_freq: f32,
     end_freq: f32,
     sweep_time: f32,
-    sample_freq: f32,
 }
 
 impl ChirpGen {
@@ -278,16 +247,14 @@ impl ChirpGen {
     ///   * end_freq - End frequency in Hz
     ///   * length - in seconds
     ///   * sample_rate - How many samples per second
-    pub fn new(start_freq: f32, end_freq: f32, sweep_time: f32, sample_freq: f32) -> ChirpGen {
-        ChirpGen { current_sample : 0.0, start_freq, end_freq, sweep_time, sample_freq}
+    pub fn new(start_freq: f32, end_freq: f32, sweep_time: f32) -> ChirpGen {
+        ChirpGen { start_freq, end_freq, sweep_time }
     }
 }
 
 impl SignalGen for ChirpGen {
 
-    fn next_sample(&mut self) -> f32 {
-        let t = self.current_sample / self.sample_freq;
-        self.current_sample += 1.0;
+    fn sample(&self, t: f32) -> f32 {
         if t > self.sweep_time {
             0.0
         } else {
@@ -302,11 +269,13 @@ impl SignalGen for ChirpGen {
 pub struct GenNode {
     gen: Box<SignalGen>,
     output: RealBuffer,
+    sample_freq: f32,
+    current_sample: f32,
 }
 
 impl GenNode {
-    pub fn new(gen: Box<SignalGen>, buffer_size: usize) -> GenNode {
-        GenNode { gen, output: vec![0.0; buffer_size] }
+    pub fn new(gen: Box<SignalGen>, sample_freq: f32, buffer_size: usize) -> GenNode {
+        GenNode { gen, output: vec![0.0; buffer_size], sample_freq, current_sample: 0.0 }
     }
 }
 
@@ -315,7 +284,8 @@ impl SourceNode for GenNode {
     
     fn next_frame(&mut self) -> &RealBuffer {
         for i in self.output.iter_mut() {
-            *i = self.gen.next_sample();
+            *i = self.gen.sample(self.current_sample / self.sample_freq);
+            self.current_sample += 1.0;
         }
         &self.output
     }
@@ -330,16 +300,16 @@ mod tests {
 
     #[test]
     fn test_impulse() {
-        let mut gen = ImpulseGen::new(2);
-        assert_eq!(gen.next_sample(), 0.0);
-        assert_eq!(gen.next_sample(), 0.0);
-        assert_eq!(gen.next_sample(), 1.0);
-        assert_eq!(gen.next_sample(), 0.0);
+        let gen = ImpulseGen::new(0.2);
+        assert_eq!(gen.sample(0.0), 0.0);
+        assert_eq!(gen.sample(0.1), 0.0);
+        assert_eq!(gen.sample(0.2), 1.0);
+        assert_eq!(gen.sample(0.3), 0.0);
     }
     
     #[test]
     fn test_gen_node() {
-        let mut node = GenNode::new(Box::new(ImpulseGen::new(2)), 4);
+        let mut node = GenNode::new(Box::new(ImpulseGen::new(0.2)), 10.0, 4);
         let output = node.next_frame();
         let expected = vec![0.0, 0.0, 1.0, 0.0];
         assert_eq!(output, &expected);

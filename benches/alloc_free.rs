@@ -15,10 +15,10 @@ static SIGNAL_LENGTH: usize = 1;
 
 
 fn generate_sine(n : usize) -> f32 {
-    let mut gen = SineGen::new(4.0, SAMPLE_FREQ);
+    let gen = SineGen::new(4.0);
     let mut s = 0.0;
-    for _ in 0..(n*SAMPLE_FREQ as usize) {
-        s = gen.next_sample();
+    for i in 0..(n*SAMPLE_FREQ as usize) {
+        s = gen.sample(i as f32 / SAMPLE_FREQ);
     }
     s
 }

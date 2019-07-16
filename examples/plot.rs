@@ -44,18 +44,18 @@ fn parse_params() -> Params {
 /// Create Signal generator based on given params
 fn create_generator(params: &Params) -> Box<SignalGen + 'static> {
     match params.gen_name.as_ref() {
-        "triangle"  => Box::new(TriangleGen::new(params.freq, params.sample_freq)),
-        "square"    => Box::new(SquareGen::new(params.freq, params.sample_freq)),
+        "triangle"  => Box::new(TriangleGen::new(params.freq)),
+        "square"    => Box::new(SquareGen::new(params.freq)),
         "noise"     => Box::new(NoiseGen::new(0.4)),
-        "chirp"     => Box::new(ChirpGen::new(1.0, 50.0, 1.0, params.sample_freq)),
-        _           => Box::new(SineGen::new(params.freq, params.sample_freq)),
+        "chirp"     => Box::new(ChirpGen::new(1.0, 50.0, 1.0)),
+        _           => Box::new(SineGen::new(params.freq)),
     }
 }
 
 fn main() {
     let params = parse_params();
     let gen = create_generator(&params);
-    let mut gen_node = GenNode::new(gen, params.sample_freq as usize);
+    let mut gen_node = GenNode::new(gen, params.sample_freq, params.sample_freq as usize);
     let buffer = gen_node.next_frame();
 
     // Plot signal

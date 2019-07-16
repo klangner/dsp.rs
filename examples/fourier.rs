@@ -11,7 +11,7 @@ static FRAME_SIZE: usize = SAMPLE_FREQ as usize;
 fn main() {
     
     // Nodes
-    let mut gen = GenNode::new(Box::new(SineGen::new(4.0, SAMPLE_FREQ)), FRAME_SIZE);
+    let mut gen = GenNode::new(Box::new(SineGen::new(4.0)), SAMPLE_FREQ, FRAME_SIZE);
     let mut fft = ForwardFFTNode::new(FRAME_SIZE);
     let mut ifft = InverseFFTNode::new(FRAME_SIZE);
 
