@@ -56,7 +56,7 @@ fn main() {
     let params = parse_params();
     let gen = create_generator(&params);
     let mut gen_node = GenNode::new(gen, params.sample_freq as usize);
-    let buffer = gen_node.next_batch();
+    let buffer = gen_node.next_frame();
 
     // Plot signal
     let idx: Vec<usize> = (0..params.sample_freq as usize).collect();

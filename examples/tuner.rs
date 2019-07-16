@@ -35,7 +35,7 @@ impl AudioFileGen {
 impl SourceNode for AudioFileGen {
     type Buffer = RealBuffer;
 
-    fn next_batch(&mut self) -> &RealBuffer {
+    fn next_frame(&mut self) -> &RealBuffer {
         for sample in self.output.iter_mut() {
             *sample = if self.pos < self.samples.len() { 
                 self.samples[self.pos]
@@ -46,7 +46,6 @@ impl SourceNode for AudioFileGen {
         }
         &self.output
     }
-
 }
 
 
@@ -57,7 +56,7 @@ fn main() {
     let mut spectrum: Vec<f32> = Vec::new();
 
     while gen.has_next() {
-        let samples = gen.next_batch();
+        let samples = gen.next_frame();
         let output = fft.process(samples);
         let out: Vec<f32> = output[0..SAMPLE_SIZE/REDUCE_FREQ].iter().map(|c| c.norm()).collect();
         spectrum.extend(out);

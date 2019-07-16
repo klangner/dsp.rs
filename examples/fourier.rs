@@ -16,7 +16,7 @@ fn main() {
     let mut ifft = InverseFFTNode::new(FRAME_SIZE);
 
     // Process graph
-    let input = gen.next_batch();
+    let input = gen.next_frame();
     let spectrum = fft.process(input);
     let output_real = ifft.process(spectrum);
 

@@ -18,7 +18,7 @@ fn generate_sine(n : usize) -> f32 {
     let mut gen = SineGen::new(4.0, SAMPLE_FREQ);
     let mut s = 0.0;
     for _ in 0..(n*SAMPLE_FREQ as usize) {
-        s = gen.next();
+        s = gen.next_sample();
     }
     s
 }

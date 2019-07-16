@@ -7,7 +7,6 @@ pub mod generators;
 pub mod fft;
 pub mod spectrums;
 pub mod windows;
-pub mod signalops;
 mod vectors;
 
 use num_complex::Complex32;
@@ -23,7 +22,7 @@ pub type ComplexBuffer = Vec<Complex32>;
 pub trait SourceNode {
     type Buffer;
     
-    fn next_batch(&mut self) -> &Self::Buffer;
+    fn next_frame(&mut self) -> &Self::Buffer;
 }
 
 // signal transformation
@@ -41,6 +40,7 @@ pub trait SinkNode {
     fn consume(&mut self, input: &Self::Buffer);
 }
 
+/// Convert Real buffer into Complex
 pub struct RealToComplexNode {
     output: ComplexBuffer,
 }
@@ -64,6 +64,7 @@ impl ProcessingNode for RealToComplexNode {
     }
 }
 
+/// Convert Complex buffer into Real
 pub struct ComplexToRealNode {
     output: RealBuffer,
 }

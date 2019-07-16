@@ -67,7 +67,7 @@ fn main() {
     // Take as many spectrums as necessary to cover the whole signal length
     let num_spectrums = (SIGNAL_LENGTH * params.sample_freq / (SAMPLE_SIZE as f32)) as usize;
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|_| {
-        let signal = gen_node.next_batch();
+        let signal = gen_node.next_frame();
         let spectrum = fft.process(signal);
         let out: Vec<f32> = spectrum[0..SAMPLE_SIZE/2].iter().map(|c| c.norm()).collect();
         out

@@ -32,7 +32,7 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
 ## Frequency domain
 
   * [x] FFT forward and inverse using RustFFT crate.
-  * [x] Convolution
+  * [ ] Convolution
   * [ ] Filters
   
   
@@ -46,7 +46,7 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
-  * [x] Arbitrary (defined by custom function)
+  * [ ] Arbitrary (defined by custom function)
   
   
 # License
