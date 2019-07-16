@@ -24,9 +24,7 @@ audrey = "0.2"
 lewton = "0.9.4"
 criterion = "0.2"
 transpose = "0.2.0"
-
-[dev-dependencies.pitch_calc]
-git = "https://github.com/RustAudio/pitch_calc"
+pitch_calc = "0.11"
 
 [[bench]]
 name = "alloc_free"
