@@ -1,7 +1,8 @@
 //! Analyze discrete signal in frequency domain
 use std::sync::Arc;
 use rustfft::{FFTplanner, FFT};
-use crate::ComplexBuffer;
+use num_complex::Complex32;
+use crate::{ComplexBuffer, RealBuffer, ProcessingNode};
 
 
 pub struct ForwardFFT {
@@ -47,6 +48,74 @@ impl InverseFFT {
     }
 }
 
+
+pub struct ForwardFFTNode {
+    fft: Arc<FFT<f32>>,
+    input_complex: ComplexBuffer,
+    output: ComplexBuffer,
+}
+
+impl ForwardFFTNode {
+    pub fn new(size: usize) -> ForwardFFTNode {
+        let mut fft = FFTplanner::new(false);
+        let fft = fft.plan_fft(size);
+        let input_complex = vec![Complex32::new(0.0, 0.0); size];
+        let output = vec![Complex32::new(0.0, 0.0); size];
+        ForwardFFTNode {fft, input_complex, output}
+    }
+}
+
+impl ProcessingNode for ForwardFFTNode {
+    type InBuffer = RealBuffer;
+    type OutBuffer = ComplexBuffer;
+    
+    fn process(&mut self, input: &RealBuffer) -> &ComplexBuffer {
+        let n = usize::min(input.len(), self.input_complex.len());
+        for i in 0..n {
+            self.input_complex[i] = Complex32::new(input[i], 0.0);
+        }
+        self.fft.process(&mut self.input_complex, &mut self.output);
+        &self.output
+    }
+}
+
+
+pub struct InverseFFTNode {
+    fft: Arc<FFT<f32>>,
+    input_complex: ComplexBuffer,
+    output_complex: ComplexBuffer,
+    output: RealBuffer,
+}
+
+impl InverseFFTNode {
+    pub fn new(size: usize) -> InverseFFTNode {
+        let mut fft = FFTplanner::new(true);
+        let fft = fft.plan_fft(size);
+        let input_complex = vec![Complex32::new(0.0, 0.0); size];
+        let output_complex = vec![Complex32::new(0.0, 0.0); size];
+        let output = vec![0.0; size];
+        InverseFFTNode {fft, input_complex, output_complex, output}
+    }
+}
+
+impl ProcessingNode for InverseFFTNode {
+    type InBuffer = ComplexBuffer;
+    type OutBuffer = RealBuffer;
+    
+    fn process(&mut self, input: &ComplexBuffer) -> &RealBuffer {
+        let n = usize::min(input.len(), self.input_complex.len());
+        for i in 0..n {
+            self.input_complex[i] = input[i];
+        }
+        self.fft.process(&mut self.input_complex, &mut self.output_complex);;
+        for i in 0..n {
+            self.output[i] = self.output_complex[i].re;
+        }
+        &self.output
+    }
+}
+
+
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
@@ -61,10 +130,7 @@ mod tests {
                              Complex::new(0., 0.),
                              Complex::new(0., 0.),
                              Complex::new(0., 0.)];
-        let mut output = vec![Complex::new(0., 0.), 
-                              Complex::new(0., 0.),
-                              Complex::new(0., 0.),
-                              Complex::new(0., 0.)];
+        let mut output = vec![Complex::new(0., 0.); 4];
         
         let mut ft = ForwardFFT::new(4);
         ft.process(&mut input, &mut output);
