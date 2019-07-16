@@ -8,7 +8,7 @@ use std::f32;
 use std::f32::consts::PI;
 use rand::distributions::{Normal, Distribution};
 
-use crate::{SourceNode, RealBuffer};
+use crate::{RealBuffer, SourceNode};
 
 
 /// This trait is implemented by node which is used to generate signals
@@ -17,37 +17,12 @@ pub trait SignalGen {
     /// Generate next sample.
     fn next(&mut self) -> f32;
 
-    /// Add listener to this generator
-    // fn add_listener(&self, f: Fn(f32) -> ());
-
     /// Function for checking if generator has next frame of data
     /// Return true if it has.
     fn has_next(&self) -> bool { true }
 
 }
 
-
-// Create Source node based on generator
-pub struct GenNode {
-    gen: Box<SignalGen>,
-}
-
-impl GenNode {
-    pub fn new(gen: Box<SignalGen>) -> GenNode {
-        GenNode { gen }
-    }
-}
-
-impl SourceNode for GenNode {
-    type Buffer = RealBuffer;
-    
-    fn next_batch(&mut self, output: &mut RealBuffer) {
-        for i in output.iter_mut() {
-            *i = self.gen.next();
-        }
-    }
-
-}
 
 /// Impulse signal
 /// x[n] = 1 if n == impulse_pos
@@ -315,6 +290,30 @@ impl SignalGen for ChirpGen {
     }
 }
 
+/// Create Source node based on generator
+pub struct GenNode {
+    gen: Box<SignalGen>,
+    output: RealBuffer,
+}
+
+impl GenNode {
+    pub fn new(gen: Box<SignalGen>, buffer_size: usize) -> GenNode {
+        GenNode { gen, output: vec![0.0; buffer_size] }
+    }
+}
+
+impl SourceNode for GenNode {
+    type Buffer = RealBuffer;
+    
+    fn next_batch(&mut self) -> &RealBuffer {
+        for i in self.output.iter_mut() {
+            *i = self.gen.next();
+        }
+        &self.output
+    }
+
+}
+
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
@@ -330,13 +329,12 @@ mod tests {
         assert_eq!(gen.next(), 1.0);
         assert_eq!(gen.next(), 0.0);
     }
-
+    
     #[test]
-    fn test_source_node() {
-        let mut node = GenNode::new(Box::new(ImpulseGen::new(2)));
-        let mut output = vec![0.0; 4];
-        node.next_batch(&mut output);
-        assert_eq!(output, [0.0, 0.0, 1.0, 0.0]);
+    fn test_gen_node() {
+        let mut node = GenNode::new(Box::new(ImpulseGen::new(2)), 4);
+        let output = node.next_batch();
+        let expected = vec![0.0, 0.0, 1.0, 0.0];
+        assert_eq!(output, &expected);
     }
-
 }
