@@ -2,13 +2,14 @@
 
 use std::cmp;
 use std::f32::consts::PI;
+use crate::{RealBuffer, ProcessingNode};
 use crate::vectors;
 
 
 /// A window function. Can be applied to a signal
 #[derive(Clone, Debug, PartialEq)]
 pub struct Window {
-    pub samples: Vec<f32>,
+    samples: Vec<f32>,
 }
 
 impl Window {
@@ -18,12 +19,34 @@ impl Window {
     }
 
     /// Apply this window to the given frame
-    pub fn apply(&self, input: &Vec<f32>, mut output: &mut Vec<f32>) {
+    pub fn apply(&self, input: &RealBuffer, mut output: &mut RealBuffer) {
         vectors::multiply(&self.samples, &input, &mut output);
     }
-
 }
 
+
+/// Window as a ProcessingNode
+pub struct WindowNode {
+    window: Window,
+    output: RealBuffer,
+}
+
+impl WindowNode {
+    pub fn new(window: Window) -> WindowNode {
+        let output = vec![0.0; window.len()];
+        WindowNode { window, output }
+    }
+}
+
+impl ProcessingNode for WindowNode {
+    type InBuffer = RealBuffer;
+    type OutBuffer = RealBuffer;
+    
+    fn process(&mut self, input: &RealBuffer) -> &RealBuffer {
+        self.window.apply(input, &mut self.output);
+        &self.output
+    }
+}
 /// Compute a simple rectangular window, a.k.a. __boxcar__ or __Dirichlet__ window
 /// 
 /// Example
@@ -32,7 +55,10 @@ impl Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::rectangular(3, 1, 6);
-/// assert_eq!(win.samples, vec![0.0, 1.0, 1.0, 1.0, 0.0, 0.0]);
+/// let frame = vec![1.0; 6];
+/// let mut output = vec![0.0; 6];
+/// win.apply(&frame, &mut output);
+/// assert_eq!(output, vec![0.0, 1.0, 1.0, 1.0, 0.0, 0.0]);
 /// ```
 pub fn rectangular(width: usize, offset: usize, window_length: usize) -> Window {
     let mut samples = vec![0.0; window_length];
@@ -51,7 +77,10 @@ pub fn rectangular(width: usize, offset: usize, window_length: usize) -> Window 
 /// use dsp::windows;
 /// 
 /// let win = windows::triangular(5, 1, 7);
-/// assert_eq!(win.samples, vec![0.0, 0.0, 0.5, 1.0, 0.5, 0.0, 0.0]);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_eq!(output, vec![0.0, 0.0, 0.5, 1.0, 0.5, 0.0, 0.0]);
 /// ```
 pub fn triangular(width: usize, offset: usize, window_length: usize) -> Window {
     let mut samples = vec![0.0; window_length];
@@ -73,7 +102,10 @@ pub fn triangular(width: usize, offset: usize, window_length: usize) -> Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::welch(5, 1, 7);
-/// assert_eq!(win.samples, vec![0.0, 0.0, 0.75, 1.0, 0.75, 0.0, 0.0]);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_eq!(output, vec![0.0, 0.0, 0.75, 1.0, 0.75, 0.0, 0.0]);
 /// ```
 pub fn welch(width: usize, offset: usize, window_length: usize) -> Window {
     let mut samples = vec![0.0; window_length];
@@ -97,13 +129,16 @@ pub fn welch(width: usize, offset: usize, window_length: usize) -> Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::sine(5, 1, 7);
-/// assert_approx_eq!(win.samples[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[1], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[2], 0.707, 1e-3f32);
-/// assert_approx_eq!(win.samples[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(win.samples[4], 0.707, 1e-3f32);
-/// assert_approx_eq!(win.samples[5], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[6], 0.0, 1e-5f32);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[2], 0.707, 1e-3f32);
+/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.707, 1e-3f32);
+/// assert_approx_eq!(output[5], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
 /// ```
 pub fn sine(width: usize, offset: usize, window_length: usize) -> Window {
     let mut samples = vec![0.0; window_length];
@@ -125,13 +160,16 @@ pub fn sine(width: usize, offset: usize, window_length: usize) -> Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::hann(5, 1, 7);
-/// assert_approx_eq!(win.samples[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[1], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[2], 0.5, 1e-3f32);
-/// assert_approx_eq!(win.samples[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(win.samples[4], 0.5, 1e-3f32);
-/// assert_approx_eq!(win.samples[5], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[6], 0.0, 1e-5f32);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[2], 0.5, 1e-3f32);
+/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.5, 1e-3f32);
+/// assert_approx_eq!(output[5], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
 /// ```
 pub fn hann(width: usize, offset: usize, window_length: usize) -> Window {
     let mut samples = vec![0.0; window_length];
@@ -153,13 +191,16 @@ pub fn hann(width: usize, offset: usize, window_length: usize) -> Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::hamming(5, 1, 7);
-/// assert_approx_eq!(win.samples[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[1], 0.0869, 1e-3f32);
-/// assert_approx_eq!(win.samples[2], 0.54347825, 1e-3f32);
-/// assert_approx_eq!(win.samples[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(win.samples[4], 0.54347825, 1e-3f32);
-/// assert_approx_eq!(win.samples[5], 0.0869, 1e-3f32);
-/// assert_approx_eq!(win.samples[6], 0.0, 1e-5f32);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.0869, 1e-3f32);
+/// assert_approx_eq!(output[2], 0.54347825, 1e-3f32);
+/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.54347825, 1e-3f32);
+/// assert_approx_eq!(output[5], 0.0869, 1e-3f32);
+/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
 /// ```
 pub fn hamming(width: usize, offset: usize, window_length: usize) -> Window {
     let a0 = 25.0 / 46.0;
@@ -184,13 +225,16 @@ pub fn hamming(width: usize, offset: usize, window_length: usize) -> Window {
 /// use dsp::windows;
 /// 
 /// let win = windows::blackman(5, 1, 7);
-/// assert_approx_eq!(win.samples[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[1], 0.00687, 1e-5f32);
-/// assert_approx_eq!(win.samples[2], 0.34974, 1e-5f32);
-/// assert_approx_eq!(win.samples[3], 1.0, 1e-5f32);
-/// assert_approx_eq!(win.samples[4], 0.34974, 1e-5f32);
-/// assert_approx_eq!(win.samples[5], 0.00687, 1e-5f32);
-/// assert_approx_eq!(win.samples[6], 0.0, 1e-5f32);
+/// let frame = vec![1.0; 7];
+/// let mut output = vec![0.0; 7];
+/// win.apply(&frame, &mut output);
+/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.00687, 1e-5f32);
+/// assert_approx_eq!(output[2], 0.34974, 1e-5f32);
+/// assert_approx_eq!(output[3], 1.0, 1e-5f32);
+/// assert_approx_eq!(output[4], 0.34974, 1e-5f32);
+/// assert_approx_eq!(output[5], 0.00687, 1e-5f32);
+/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
 /// ```
 pub fn blackman(width: usize, offset: usize, window_length: usize) -> Window {
     let a0 = 7938.0 / 18608.0;
@@ -214,21 +258,26 @@ pub fn blackman(width: usize, offset: usize, window_length: usize) -> Window {
 #[cfg(test)]
 mod tests {
 
+    use assert_approx_eq::assert_approx_eq;
     use super::*;
 
     #[test]
     fn test_window() {
         let win = rectangular(3, 1, 5);
-        assert_eq!(win.samples, vec![0.0, 1.0, 1.0, 1.0, 0.0]);
+        let frame = vec![1.0; 5];
+        let mut output = vec![0.0; 5];
+        win.apply(&frame, &mut output);
+        assert_eq!(output, vec![0.0, 1.0, 1.0, 1.0, 0.0]);
     }
 
     #[test]
     fn test_apply() {
-        let w = triangular(10, 0, 10);
-        let frame = vec![1.0; 10];
-        let mut output = vec![0.0; 10];
+        let w = triangular(1000, 0, 1000);
+        let frame = vec![1.0; 1000];
+        let mut output = vec![0.0; 1000];
 
         w.apply(&frame, &mut output);
-        assert_eq!(w.samples, output);
+        let area: f32 = output.iter().sum();
+        assert_approx_eq!(area / 1000.0, 0.5, 0.2);
     }
 }

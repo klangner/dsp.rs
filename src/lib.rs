@@ -3,8 +3,8 @@
 //! Signals can be processed in Time or Frequency domain
 //!
 
-pub mod generators;
 pub mod fft;
+pub mod generators;
 pub mod spectrums;
 pub mod windows;
 mod vectors;
@@ -79,7 +79,7 @@ impl ProcessingNode for ComplexToRealNode {
     type InBuffer = ComplexBuffer;
     type OutBuffer = RealBuffer;
     
-    fn process(&mut self, input: &ComplexBuffer) ->&RealBuffer {
+    fn process(&mut self, input: &ComplexBuffer) -> &RealBuffer {
         let n = usize::min(input.len(), self.output.len());
         for i in 0..n {
             self.output[i] = input[i].re;
