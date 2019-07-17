@@ -27,5 +27,5 @@ transpose = "0.2.0"
 pitch_calc = "0.11"
 
 [[bench]]
-name = "alloc_free"
+name = "gen_bench"
 harness = false

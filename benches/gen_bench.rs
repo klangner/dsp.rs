@@ -1,5 +1,5 @@
-// dsp library tries to minimize number of allocations.
-// Is it worth it?
+// How fast can Sine generator crate samples
+// What max frequency can we generate
 
 #[macro_use]
 extern crate criterion;
@@ -10,22 +10,21 @@ use criterion::black_box;
 use dsp::generators::{SignalGen, SineGen};
 
 
-static SAMPLE_FREQ: f32 = 1000.0;
-static SIGNAL_LENGTH: usize = 1;
+static SAMPLE_FREQ: f32 = 1_000.0;
 
 
 fn generate_sine(n : usize) -> f32 {
-    let gen = SineGen::new(4.0);
+    let gen = SineGen::new(220.0);
     let mut s = 0.0;
     for i in 0..(n*SAMPLE_FREQ as usize) {
-        s = gen.sample(i as f32 / SAMPLE_FREQ);
+        s += gen.sample(i as f32 / SAMPLE_FREQ);
     }
     s
 }
 
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("alloc free 1K", |b| b.iter(|| generate_sine(black_box(SIGNAL_LENGTH))));
+    c.bench_function("Sine 1M samples", |b| b.iter(|| generate_sine(black_box(1_000))));
 }
 
 criterion_group!(benches, criterion_benchmark);
