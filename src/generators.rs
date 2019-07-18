@@ -111,7 +111,7 @@ pub struct SineGen {
 }
 
 impl SineGen {
-    /// Create new Impulse generator with impulse moved to specyfic position
+    /// Create a new Sine generator with a given frequency.
     ///   * freq - Frequency in Hz
     ///   * sample_freq - How many samples per second
     pub fn new(freq: f32) -> SineGen {
