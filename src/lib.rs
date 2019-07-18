@@ -3,8 +3,9 @@
 //! Signals can be processed in Time or Frequency domain
 //!
 
-pub mod fft;
 pub mod generators;
+pub mod signals;
+pub mod fft;
 pub mod spectrums;
 pub mod windows;
 mod vectors;
@@ -18,14 +19,14 @@ pub type RealBuffer = Vec<f32>;
 /// Frequency domain data buffer based on complex numbers
 pub type ComplexBuffer = Vec<Complex32>;
 
-/// Node which produces signal
+/// Node which produces signal. E.g generators
 pub trait SourceNode {
     type Buffer;
     
     fn next_frame(&mut self) -> &Self::Buffer;
 }
 
-// signal transformation
+/// Signal transformation node. e.g Fourier transform
 pub trait ProcessingNode {
     type InBuffer;
     type OutBuffer;
@@ -33,7 +34,7 @@ pub trait ProcessingNode {
     fn process(&mut self, input: &Self::InBuffer) -> &Self::OutBuffer;
 }
 
-// Consume signal
+/// Consume signal
 pub trait SinkNode {
     type Buffer;
     

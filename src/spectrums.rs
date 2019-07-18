@@ -1,4 +1,4 @@
-//! Analyze discrete signal in frequency domain using xomplex numbers
+//! Analyze discrete signal in frequency domain using complex numbers
 
 use crate::ComplexBuffer;
 use crate::vectors;
