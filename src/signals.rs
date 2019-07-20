@@ -10,10 +10,10 @@ use crate::{RealBuffer, ProcessingNode};
 /// use assert_approx_eq::assert_approx_eq;    
 /// use dsp::{ProcessingNode, SourceNode};
 /// use dsp::generators::{SineGen, GenNode};
-/// use dsp::signals::AmplitudeNode;
+/// use dsp::signals::GainNode;
 /// 
 /// let mut gen = GenNode::new(Box::new(SineGen::new(1.0)), 4.0, 4);
-/// let mut amplitude_node = AmplitudeNode::new(2.0, 4);
+/// let mut amplitude_node = GainNode::new(2.0, 4);
 /// let signal = gen.next_frame();
 /// let scaled_signal = amplitude_node.process(signal);
 /// assert_approx_eq!(scaled_signal[0], 0.0, 1e-5f32);
@@ -21,18 +21,18 @@ use crate::{RealBuffer, ProcessingNode};
 /// assert_approx_eq!(scaled_signal[2], 0.0, 1e-5f32);
 /// assert_approx_eq!(scaled_signal[3], -2.0, 1e-5f32);
 /// ```
-pub struct AmplitudeNode {
+pub struct GainNode {
     scale: f32,
     output: RealBuffer,
 }
 
-impl AmplitudeNode {
-    pub fn new(scale: f32, frame_size: usize) -> AmplitudeNode {
-        AmplitudeNode { scale, output: vec![0.0; frame_size] }
+impl GainNode {
+    pub fn new(scale: f32, frame_size: usize) -> GainNode {
+        GainNode { scale, output: vec![0.0; frame_size] }
     }
 }
 
-impl ProcessingNode for AmplitudeNode {
+impl ProcessingNode for GainNode {
     type InBuffer = RealBuffer;
     type OutBuffer = RealBuffer;
     
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn test_gen_node() {
         let mut gen = GenNode::new(Box::new(SineGen::new(1.0)), 4.0, 4);
-        let mut amplitude_node = AmplitudeNode::new(2.0, 4);
+        let mut amplitude_node = GainNode::new(2.0, 4);
         let signal = gen.next_frame();
         let scaled_signal = amplitude_node.process(signal);
         assert_approx_eq!(scaled_signal[0], 0.0, 1e-5f32);
