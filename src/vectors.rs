@@ -2,7 +2,7 @@
 /// All operations here should be alloc free 
 use std::ops::Mul;
 use std::f32;
-use num_complex::Complex32;
+use crate::num_complex::Complex32;
 
 
 /// Multiply vectors element wise

@@ -10,7 +10,8 @@ pub mod spectrums;
 pub mod windows;
 mod vectors;
 
-use num_complex::Complex32;
+pub use num_complex;
+use crate::num_complex::Complex32;
 
 
 /// Time domain data buffer. Uses Real number
@@ -94,7 +95,7 @@ impl ProcessingNode for ComplexToRealNode {
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
-    use num_complex::Complex32;
+    use crate::num_complex::Complex32;
     use super::*;
 
     #[test]
