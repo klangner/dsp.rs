@@ -1,7 +1,7 @@
 //! Analyze discrete signal in frequency domain
 use std::sync::Arc;
 use rustfft::{FFTplanner, FFT};
-use num_complex::Complex32;
+use crate::num_complex::Complex32;
 use crate::{ComplexBuffer, RealBuffer, ProcessingNode};
 
 
@@ -122,7 +122,7 @@ impl ProcessingNode for InverseFFTNode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use num_complex::Complex;
+    use crate::num_complex::Complex;
 
     #[test]
     fn test_fft() {
