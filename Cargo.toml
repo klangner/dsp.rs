@@ -12,9 +12,11 @@ edition = "2018"
 
 
 [dependencies]
+arraydeque = { version = "0.4", default-features = false }
+itertools = "0.8"
+num-complex = "0.2"
 rustfft = "3"
 rand = "0.6"
-num-complex = "0.2"
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"

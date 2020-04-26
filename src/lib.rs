@@ -5,6 +5,7 @@
 
 pub mod generators;
 pub mod signals;
+pub mod filters;
 pub mod fft;
 pub mod spectrums;
 pub mod windows;
