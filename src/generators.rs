@@ -267,14 +267,14 @@ impl SignalGen for ChirpGen {
 
 /// Create Source node based on generator
 pub struct GenNode {
-    gen: Box<SignalGen>,
+    gen: Box<dyn SignalGen>,
     output: RealBuffer,
     sample_freq: f32,
     current_sample: f32,
 }
 
 impl GenNode {
-    pub fn new(gen: Box<SignalGen>, sample_freq: f32, buffer_size: usize) -> GenNode {
+    pub fn new(gen: Box<dyn SignalGen>, sample_freq: f32, buffer_size: usize) -> GenNode {
         GenNode { gen, output: vec![0.0; buffer_size], sample_freq, current_sample: 0.0 }
     }
 }

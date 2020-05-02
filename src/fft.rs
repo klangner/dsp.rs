@@ -6,11 +6,11 @@ use crate::{ComplexBuffer, RealBuffer, ProcessingNode};
 
 
 pub struct ForwardFFT {
-    fft: Arc<FFT<f32>>,
+    fft: Arc<dyn FFT<f32>>,
 }
 
 pub struct InverseFFT {
-    fft: Arc<FFT<f32>>,
+    fft: Arc<dyn FFT<f32>>,
 }
 
 impl ForwardFFT {
@@ -50,7 +50,7 @@ impl InverseFFT {
 
 
 pub struct ForwardFFTNode {
-    fft: Arc<FFT<f32>>,
+    fft: Arc<dyn FFT<f32>>,
     input_complex: ComplexBuffer,
     output: ComplexBuffer,
 }
@@ -81,7 +81,7 @@ impl ProcessingNode for ForwardFFTNode {
 
 
 pub struct InverseFFTNode {
-    fft: Arc<FFT<f32>>,
+    fft: Arc<dyn FFT<f32>>,
     input_complex: ComplexBuffer,
     output_complex: ComplexBuffer,
     output: RealBuffer,
@@ -107,7 +107,7 @@ impl ProcessingNode for InverseFFTNode {
         for i in 0..n {
             self.input_complex[i] = input[i];
         }
-        self.fft.process(&mut self.input_complex, &mut self.output_complex);;
+        self.fft.process(&mut self.input_complex, &mut self.output_complex);
         for i in 0..n {
             self.output[i] = self.output_complex[i].re;
         }
