@@ -2,7 +2,7 @@
 /// All operations here should be alloc free 
 use std::ops::Mul;
 use std::f32;
-use crate::num_complex::Complex32;
+use crate::RealBuffer;
 
 
 /// Multiply vectors element wise
@@ -18,11 +18,11 @@ where
 }
 
 /// Calculate arg max for complex numbers
-pub fn argmax(xs: &Vec<Complex32>) -> usize {
+pub fn argmax(xs: &RealBuffer) -> usize {
     let mut max_value = f32::MIN;
     let mut arg_max = 0;
     for i in 0..xs.len() {
-        let v = xs[i].norm();
+        let v = xs[i];
         if max_value < v {
             max_value = v;
             arg_max = i;
