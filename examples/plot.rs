@@ -3,14 +3,17 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
-use dsp::SourceNode;
+use dsp::RealBuffer;
 use dsp::generators::*;
+
+
+const SIGNAL_LENGTH: usize = 1_000;
 
 
 // Application params
 struct Params {
     gen_name: String,
-    sample_freq: f32,
+    sample_rate: usize,
     freq: f32
 }
 
@@ -30,37 +33,35 @@ fn parse_params() -> Params {
                 .arg(Arg::with_name("sample-rate")
                     .short("s")
                     .long("sample-rate")
-                    .help("Sampling frequency")
+                    .help("Number of samples per period")
                     .takes_value(true))
                 .get_matches();
     let gen_name = args.value_of("gen").unwrap_or("sine"); 
-    let sample_rate = value_t!(args, "sample-rate", f32).unwrap_or(512.0);
+    let sample_rate = value_t!(args, "sample-rate", usize).unwrap_or(512);
     let freq = value_t!(args, "freq", f32).unwrap_or(4.0);
     Params { gen_name: gen_name.to_string(),
-             sample_freq: sample_rate,
+             sample_rate: sample_rate,
              freq: freq }
 }
 
-/// Create Signal generator based on given params
-fn create_generator(params: &Params) -> Box<dyn SignalGen + 'static> {
+/// Create signal
+fn create_signal(params: &Params) -> RealBuffer {
     match params.gen_name.as_ref() {
-        "triangle"  => Box::new(TriangleGen::new(params.freq)),
-        "square"    => Box::new(SquareGen::new(params.freq)),
-        "noise"     => Box::new(NoiseGen::new(0.4)),
-        "chirp"     => Box::new(ChirpGen::new(1.0, 50.0, 1.0)),
-        _           => Box::new(SineGen::new(params.freq)),
+        "triangle"  => traingle(SIGNAL_LENGTH, params.freq, params.sample_rate),
+        "square"    => square(SIGNAL_LENGTH, params.freq, params.sample_rate),
+        "noise"     => noise(SIGNAL_LENGTH, 0.1),
+        "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, params.sample_rate),
+        _           => sine(SIGNAL_LENGTH, params.freq, params.sample_rate),
     }
 }
 
 fn main() {
     let params = parse_params();
-    let gen = create_generator(&params);
-    let mut gen_node = GenNode::new(gen, params.sample_freq, params.sample_freq as usize);
-    let buffer = gen_node.next_frame();
+    let signal = create_signal(&params);
 
     // Plot signal
-    let idx: Vec<usize> = (0..params.sample_freq as usize).collect();
+    let idx: Vec<usize> = (0..signal.len()).collect();
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, buffer, &[Color("red")]);
+    fg.axes2d().lines(&idx, signal, &[Color("red")]);
     fg.show();
 }

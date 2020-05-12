@@ -1,21 +1,20 @@
 #[macro_use]
 extern crate clap;
 
-use gnuplot::{Figure, Caption};
+use gnuplot::*;
 use clap::{Arg, App};
-use dsp::{SourceNode, ProcessingNode};
+use dsp::RealBuffer;
 use dsp::generators::*;
-use dsp::fft::ForwardFFTNode;
+use dsp::fft::*;
 
 
-const SAMPLE_SIZE: usize = 2048;
-const SIGNAL_LENGTH: f32 = 10.0;
+const SIGNAL_LENGTH: usize = 10*256;
 
 
 // Application params
+#[derive(Debug)]
 struct Params {
     gen_name: String,
-    sample_freq: f32,
     freq: f32
 }
 
@@ -32,48 +31,40 @@ fn parse_params() -> Params {
                     .long("frequency")
                     .help("Frequency in Hz")
                     .takes_value(true))
-                .arg(Arg::with_name("sample-rate")
-                    .short("s")
-                    .long("sample-rate")
-                    .help("Sampling frequency")
-                    .takes_value(true))
                 .get_matches();
-    let gen_name = args.value_of("gen").unwrap_or("chirp"); 
-    let sample_rate = value_t!(args, "sample-rate", f32).unwrap_or(44100.0);
-    let freq = value_t!(args, "freq", f32).unwrap_or(5_000.0);
+    let gen_name = args.value_of("gen").unwrap_or("sine"); 
+    let freq = value_t!(args, "freq", f32).unwrap_or(4.0);
     Params { gen_name: gen_name.to_string(),
-             sample_freq: sample_rate,
              freq: freq }
 }
 
-/// Create Signal generator based on given params
-fn create_generator(params: &Params) -> Box<dyn SignalGen + 'static> {
-    match params.gen_name.as_ref() {
-        "triangle"  => Box::new(TriangleGen::new(params.freq)),
-        "square"    => Box::new(SquareGen::new(params.freq)),
-        "noise"     => Box::new(NoiseGen::new(0.4)),
-        "chirp"     => Box::new(ChirpGen::new(5_000.0, 10_000.0, SIGNAL_LENGTH)),
-        _           => Box::new(SineGen::new(params.freq)),
+/// Create signal
+fn create_signal(gen_name: &str, freq: f32, sample_rate:usize) -> RealBuffer {
+    match gen_name.as_ref() {
+        "triangle"  => traingle(SIGNAL_LENGTH, freq, sample_rate),
+        "square"    => square(SIGNAL_LENGTH, freq, sample_rate),
+        "noise"     => noise(SIGNAL_LENGTH, 0.1),
+        "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, sample_rate),
+        _           => sine(SIGNAL_LENGTH, freq, sample_rate),
     }
 }
 
 
 fn main() {
     let params = parse_params();
-    let gen = create_generator(&params);
-    let mut gen_node = GenNode::new(gen, params.sample_freq, SAMPLE_SIZE);
-    let mut fft = ForwardFFTNode::new(SAMPLE_SIZE);
+    let num_spectrums = 10;
+    let window_size = SIGNAL_LENGTH / num_spectrums;
+    let signal = create_signal(&params.gen_name, params.freq, window_size);
+    let mut fft = ForwardFFT::new(window_size);
 
-    // Take as many spectrums as necessary to cover the whole signal length
-    let num_spectrums = (SIGNAL_LENGTH * params.sample_freq / (SAMPLE_SIZE as f32)) as usize;
-    let ps: Vec<f32> = (0..num_spectrums).flat_map(|_| {
-        let signal = gen_node.next_frame();
-        let spectrum = fft.process(signal);
-        let out: Vec<f32> = spectrum[0..SAMPLE_SIZE/2].iter().map(|c| c.norm()).collect();
-        out
+    // Split signal into frames
+    let ps: Vec<f32> = (0..num_spectrums).flat_map(|i| {
+        let (x1, x2) = (i*window_size, ((i+1)*window_size));
+        let output: RealBuffer = fft.process_real(&signal[x1..x2]);
+        output.iter().take(window_size/2).map(|i| *i).collect::<Vec<f32>>()
     }).collect();
 
-    plot_spectrogram(SAMPLE_SIZE / 2, num_spectrums, &ps, params.sample_freq/2.0);
+    plot_spectrogram(window_size/2, num_spectrums, &ps, window_size as f32/2.0);
 }
 
 fn plot_spectrogram(height: usize, width: usize, data: &Vec<f32>, max_freq: f32) {
@@ -84,7 +75,7 @@ fn plot_spectrogram(height: usize, width: usize, data: &Vec<f32>, max_freq: f32)
     fg.axes2d().image(
 		transposed.iter(),
 		height,
-		width,
+        width,
 		Some((0.0, 0.0, SIGNAL_LENGTH as f64, max_freq as f64)),
 		&[Caption("Frequency in Hz.")],
 	);
