@@ -19,3 +19,21 @@ pub type RealBuffer = Vec<f32>;
 
 /// Frequency domain data buffer based on complex numbers
 pub type ComplexBuffer = Vec<Complex32>;
+
+/// Signal consists of:
+/// * data
+/// * sample_rate which is number of samples per second
+pub struct Signal {
+    pub data: Vec<f32>,
+    pub sample_rate: usize
+}
+
+impl Signal {
+
+    /// create new signal with a given length and sample rate
+    pub fn new(length: usize, sample_rate: usize) -> Signal {
+        let data = vec![0.0;length];
+        Signal { data, sample_rate }
+    }
+
+}
