@@ -36,4 +36,9 @@ impl Signal {
         Signal { data, sample_rate }
     }
 
+    /// Length of the signal buffer
+    pub fn length(&self) -> usize {
+        self.data.len()
+    }
+
 }
