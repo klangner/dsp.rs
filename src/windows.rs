@@ -2,7 +2,7 @@
 
 use std::cmp;
 use std::f32::consts::PI;
-use crate::{RealBuffer, ProcessingNode};
+use crate::RealBuffer;
 use crate::vectors;
 
 
@@ -25,28 +25,6 @@ impl Window {
 }
 
 
-/// Window as a ProcessingNode
-pub struct WindowNode {
-    window: Window,
-    output: RealBuffer,
-}
-
-impl WindowNode {
-    pub fn new(window: Window) -> WindowNode {
-        let output = vec![0.0; window.len()];
-        WindowNode { window, output }
-    }
-}
-
-impl ProcessingNode for WindowNode {
-    type InBuffer = RealBuffer;
-    type OutBuffer = RealBuffer;
-    
-    fn process(&mut self, input: &RealBuffer) -> &RealBuffer {
-        self.window.apply(input, &mut self.output);
-        &self.output
-    }
-}
 /// Compute a simple rectangular window, a.k.a. __boxcar__ or __Dirichlet__ window
 /// 
 /// Example

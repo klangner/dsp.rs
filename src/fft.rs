@@ -1,4 +1,4 @@
-//! Analyze discrete signal in frequency domain
+//! Helper functions for FFT.
 use std::sync::Arc;
 use rustfft::{FFTplanner, FFT};
 use crate::num_complex::Complex32;

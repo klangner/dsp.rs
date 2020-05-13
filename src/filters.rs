@@ -1,7 +1,7 @@
 /// Basic implementations of common discrete filters
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::{izip};
-use crate::{RealBuffer, ProcessingNode};
+use crate::RealBuffer;
 
 
 /// A biquad filter (IIR)
@@ -10,8 +10,7 @@ pub struct BiquadNode {
     x: ArrayDeque<[f32; 3], Wrapping>,
     y: ArrayDeque<[f32; 3], Wrapping>,
     b: [f32; 3],
-    a: [f32; 3],
-    output: RealBuffer,
+    a: [f32; 3]
 }
 
 
@@ -48,8 +47,7 @@ impl BiquadNode {
         // New filter with x/y initalized to same length as a/b
         BiquadNode {
             x, y,
-            b: b_arr, a: neg_a_arr,
-            output: Default::default()
+            b: b_arr, a: neg_a_arr
         }
     }
 
@@ -76,27 +74,12 @@ impl BiquadNode {
         self.y.push_front(sum);
         sum
     }
-}
-
-impl ProcessingNode for BiquadNode {
-    type InBuffer = RealBuffer;
-    type OutBuffer = RealBuffer;
 
     /// Processes in_slice as a slice of samples as inputs to the filter,
     /// writing results to out_slice.
-    fn process(&mut self, input: &RealBuffer) -> &RealBuffer {
-
-        // Re-allocate our output buffer to match our input size
-        self.output = Vec::with_capacity(input.len());
-
-        // Run process_one() for all elements in the input, updating the output
-        for in_samp in input.iter() {
-            let out_samp = self.process_one(*in_samp);
-            self.output.push(out_samp);
-        }
-
-        // Return a ref to the now-valid output buffer
-        &self.output
+    pub fn process(&mut self, input: &RealBuffer, output: &mut RealBuffer) {
+        let size = std::cmp::min(input.len(), output.len());
+        (0..size).for_each(|i| output[i] = self.process_one(input[i]));
     }
 }
 
@@ -131,15 +114,16 @@ mod tests {
         // https://en.wikipedia.org/wiki/Bilinear_transform#Example
         let b = [1.0, 1.0, 0.0];
         let a = [1.0+(2.0*rc/t_samp), 1.0-(2.0*rc/t_samp), 0.0];
-        println!("a: {:#?}", a);
         let mut biquad_rc = BiquadNode::new(&b, &a);
         let dig_unit_step = vec![1.0; 50];
-        let digital_response = biquad_rc.process(&dig_unit_step);
+        let mut digital_response = vec![0.0; 50];
+        biquad_rc.process(&dig_unit_step, &mut digital_response);
         
         // Compare the filter unit step responses. Since there
         // is some difference between the initial state of the
         // filters, use a less aggressive 5% threshold
         for i in 0..50 {
+            println!("{}", i);
             assert_approx_eq!(analog_response[i], digital_response[i], 0.05);
         }
     }
