@@ -8,7 +8,7 @@ use std::f32;
 use std::f32::consts::PI;
 use rand::distributions::{Normal, Distribution};
 
-use crate::RealBuffer;
+use crate::Signal;
 
 
 /// Generate impulse signal
@@ -20,15 +20,16 @@ use crate::RealBuffer;
 /// ```
 /// use dsp::generators::impulse;
 /// 
-/// let signal = impulse(100, 2);
-/// assert_eq!(signal.len(), 100);
-/// assert_eq!(signal[0], 0.0);
-/// assert_eq!(signal[1], 0.0);
-/// assert_eq!(signal[2], 1.0);
-/// assert_eq!(signal[3], 0.0);
+/// let signal = impulse(100, 2, 100);
+/// assert_eq!(signal.length(), 100);
+/// assert_eq!(signal.data[0], 0.0);
+/// assert_eq!(signal.data[1], 0.0);
+/// assert_eq!(signal.data[2], 1.0);
+/// assert_eq!(signal.data[3], 0.0);
 /// ```
-pub fn impulse(length: usize, impulse_pos: usize) -> RealBuffer {
-    (0..length).map(|i| if i == impulse_pos { 1.0 } else { 0.0 }).collect()
+pub fn impulse(length: usize, impulse_pos: usize, sample_rate: usize) -> Signal {
+    let data = (0..length).map(|i| if i == impulse_pos { 1.0 } else { 0.0 }).collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -41,14 +42,15 @@ pub fn impulse(length: usize, impulse_pos: usize) -> RealBuffer {
 /// ```
 /// use dsp::generators::step;
 /// 
-/// let signal = step(10, 2);
-/// assert_eq!(signal[0], 0.0);
-/// assert_eq!(signal[1], 0.0);
-/// assert_eq!(signal[2], 1.0);
-/// assert_eq!(signal[3], 1.0);
+/// let signal = step(10, 2, 5);
+/// assert_eq!(signal.data[0], 0.0);
+/// assert_eq!(signal.data[1], 0.0);
+/// assert_eq!(signal.data[2], 1.0);
+/// assert_eq!(signal.data[3], 1.0);
 /// ```
-pub fn step(length: usize, step_pos: usize) -> RealBuffer {
-    (0..length).map(|i| if i >= step_pos { 1.0 } else { 0.0 }).collect()
+pub fn step(length: usize, step_pos: usize, sample_rate: usize) -> Signal {
+    let data = (0..length).map(|i| if i >= step_pos { 1.0 } else { 0.0 }).collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -64,14 +66,15 @@ pub fn step(length: usize, step_pos: usize) -> RealBuffer {
 /// use dsp::generators::sine;
 /// 
 /// let signal = sine(10, 2.0, 8);
-/// assert_approx_eq!(signal[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal[1], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal[2], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal[3], -1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[1], 1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[2], 0.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[3], -1.0, 1e-5f32);
 /// ```
-pub fn sine(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
+pub fn sine(length: usize, freq: f32, sample_rate: usize) -> Signal {
     let w = 2.0 * PI * freq / (sample_rate as f32);
-   (0..length).map(|i| f32::sin((i as f32) * w)).collect()
+    let data = (0..length).map(|i| f32::sin((i as f32) * w)).collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -84,17 +87,18 @@ pub fn sine(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::traingle;
+/// use dsp::generators::sawtooth;
 /// 
-/// let signal = traingle(16, 4.0, 16);
-/// assert_approx_eq!(signal[0], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal[1], -0.5, 1e-5f32);
-/// assert_approx_eq!(signal[2], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal[3], 0.5, 1e-5f32);
-/// assert_approx_eq!(signal[4], -1.0, 1e-5f32);
+/// let signal = sawtooth(16, 4.0, 16);
+/// assert_approx_eq!(signal.data[0], -1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[1], -0.5, 1e-5f32);
+/// assert_approx_eq!(signal.data[2], 0.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[3], 0.5, 1e-5f32);
+/// assert_approx_eq!(signal.data[4], -1.0, 1e-5f32);
 /// ```
-pub fn traingle(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
-    (0..length).map(|i| 2.0 * ((i as f32) * freq / (sample_rate as f32)).fract() - 1.0).collect()
+pub fn sawtooth(length: usize, freq: f32, sample_rate: usize) -> Signal {
+    let data = (0..length).map(|i| 2.0 * ((i as f32) * freq / (sample_rate as f32)).fract() - 1.0).collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -110,16 +114,17 @@ pub fn traingle(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
 /// use dsp::generators::square;
 /// 
 /// let signal = square(10, 4.0, 16);
-/// assert_approx_eq!(signal[0], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal[1], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal[2], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal[3], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal[4], 1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[0], 1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[1], 1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[2], -1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[3], -1.0, 1e-5f32);
+/// assert_approx_eq!(signal.data[4], 1.0, 1e-5f32);
 /// ```
-pub fn square(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
-    (0..length)
+pub fn square(length: usize, freq: f32, sample_rate: usize) -> Signal {
+    let data = (0..length)
         .map(|i| if ((i as f32) * freq/(sample_rate as f32)).fract() < 0.5 {1.0} else {-1.0})
-        .collect()
+        .collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -130,11 +135,12 @@ pub fn square(length: usize, freq: f32, sample_rate: usize) -> RealBuffer {
 /// ```
 /// use dsp::generators::noise;
 /// 
-/// let signal = noise(10, 0.1);
+/// let signal = noise(10, 0.1, 10);
 /// ```
-pub fn noise(length: usize, std: f32) -> RealBuffer {
+pub fn noise(length: usize, std: f32, sample_rate: usize) -> Signal {
     let normal = Normal::new(0.0, std as f64);
-    (0..length).map(|_| normal.sample(&mut rand::thread_rng()) as f32).collect()
+    let data = (0..length).map(|_| normal.sample(&mut rand::thread_rng()) as f32).collect();
+    Signal { data, sample_rate }
 }
 
 
@@ -146,7 +152,7 @@ pub fn noise(length: usize, std: f32) -> RealBuffer {
 ///   * start_freq - Start frequency in Hz
 ///   * end_freq - End frequency in Hz
 ///   * sample_rate - Number of samples/s
-pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) -> RealBuffer {
+pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) -> Signal {
     let sweep_time = length as f32 / sample_rate as f32;
     fn sample(t: f32, start_freq: f32, end_freq: f32, sweep_time: f32) -> f32 {
         let c = (end_freq - start_freq) / sweep_time;
@@ -154,10 +160,11 @@ pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) 
         f32::sin(w)
     }
 
-    (0..length)
+    let data = (0..length)
         .map(|i| sweep_time * i as f32 / length as f32)
         .map(|t|  sample(t, start_freq, end_freq, sweep_time))
-        .collect()
+        .collect();
+    Signal { data, sample_rate }
 }
 
 /// ------------------------------------------------------------------------------------------------

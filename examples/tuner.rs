@@ -19,7 +19,6 @@ fn main() {
     (0..num_frames)
         .map(|i| &samples[(i*FRAME_SIZE)..((i+1)*FRAME_SIZE)])
         .map(|frame| fft.process_real(frame))
-        // .map(|ff| ff.iter().take(FRAME_SIZE/2).map(|i| *i).collect::<Vec<f32>>())
         .map(|output| spectrums::max_freq(&output, SAMPLE_RATE))
         .for_each(|freq|  {
             if freq > 1.0 {

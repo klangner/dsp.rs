@@ -3,7 +3,7 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
-use dsp::RealBuffer;
+use dsp::Signal;
 use dsp::generators::*;
 
 
@@ -45,11 +45,11 @@ fn parse_params() -> Params {
 }
 
 /// Create signal
-fn create_signal(params: &Params) -> RealBuffer {
+fn create_signal(params: &Params) -> Signal {
     match params.gen_name.as_ref() {
-        "triangle"  => traingle(SIGNAL_LENGTH, params.freq, params.sample_rate),
+        "sawtooth"  => sawtooth(SIGNAL_LENGTH, params.freq, params.sample_rate),
         "square"    => square(SIGNAL_LENGTH, params.freq, params.sample_rate),
-        "noise"     => noise(SIGNAL_LENGTH, 0.1),
+        "noise"     => noise(SIGNAL_LENGTH, 0.1, params.sample_rate),
         "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, params.sample_rate),
         _           => sine(SIGNAL_LENGTH, params.freq, params.sample_rate),
     }
@@ -60,8 +60,9 @@ fn main() {
     let signal = create_signal(&params);
 
     // Plot signal
-    let idx: Vec<usize> = (0..signal.len()).collect();
+    let idx: Vec<usize> = (0..signal.length()).collect();
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, signal, &[Color("red")]);
+    fg.axes2d().lines(&idx, signal.data, &[Color("red")]);
     fg.show();
 }
+// 

@@ -3,7 +3,7 @@ extern crate clap;
 
 use gnuplot::*;
 use clap::{Arg, App};
-use dsp::RealBuffer;
+use dsp::Signal;
 use dsp::generators::*;
 use dsp::fft::*;
 
@@ -39,11 +39,11 @@ fn parse_params() -> Params {
 }
 
 /// Create signal
-fn create_signal(gen_name: &str, freq: f32, sample_rate:usize) -> RealBuffer {
+fn create_signal(gen_name: &str, freq: f32, sample_rate:usize) -> Signal {
     match gen_name.as_ref() {
-        "triangle"  => traingle(SIGNAL_LENGTH, freq, sample_rate),
+        "sawtooth"  => sawtooth(SIGNAL_LENGTH, freq, sample_rate),
         "square"    => square(SIGNAL_LENGTH, freq, sample_rate),
-        "noise"     => noise(SIGNAL_LENGTH, 0.1),
+        "noise"     => noise(SIGNAL_LENGTH, 0.1, sample_rate),
         "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, sample_rate),
         _           => sine(SIGNAL_LENGTH, freq, sample_rate),
     }
@@ -60,7 +60,7 @@ fn main() {
     // Split signal into frames
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|i| {
         let (x1, x2) = (i*window_size, ((i+1)*window_size));
-        let output: RealBuffer = fft.process_real(&signal[x1..x2]);
+        let output: Vec<f32> = fft.process_real(&signal.data[x1..x2]);
         output.iter().take(window_size/2).map(|i| *i).collect::<Vec<f32>>()
     }).collect();
 
