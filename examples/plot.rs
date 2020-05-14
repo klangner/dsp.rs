@@ -47,7 +47,7 @@ fn parse_params() -> Params {
 /// Create signal
 fn create_signal(params: &Params) -> Signal {
     match params.gen_name.as_ref() {
-        "triangle"  => traingle(SIGNAL_LENGTH, params.freq, params.sample_rate),
+        "sawtooth"  => sawtooth(SIGNAL_LENGTH, params.freq, params.sample_rate),
         "square"    => square(SIGNAL_LENGTH, params.freq, params.sample_rate),
         "noise"     => noise(SIGNAL_LENGTH, 0.1, params.sample_rate),
         "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, params.sample_rate),
@@ -65,3 +65,4 @@ fn main() {
     fg.axes2d().lines(&idx, signal.data, &[Color("red")]);
     fg.show();
 }
+// 

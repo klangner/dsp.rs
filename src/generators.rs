@@ -87,16 +87,16 @@ pub fn sine(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::traingle;
+/// use dsp::generators::sawtooth;
 /// 
-/// let signal = traingle(16, 4.0, 16);
+/// let signal = sawtooth(16, 4.0, 16);
 /// assert_approx_eq!(signal.data[0], -1.0, 1e-5f32);
 /// assert_approx_eq!(signal.data[1], -0.5, 1e-5f32);
 /// assert_approx_eq!(signal.data[2], 0.0, 1e-5f32);
 /// assert_approx_eq!(signal.data[3], 0.5, 1e-5f32);
 /// assert_approx_eq!(signal.data[4], -1.0, 1e-5f32);
 /// ```
-pub fn traingle(length: usize, freq: f32, sample_rate: usize) -> Signal {
+pub fn sawtooth(length: usize, freq: f32, sample_rate: usize) -> Signal {
     let data = (0..length).map(|i| 2.0 * ((i as f32) * freq / (sample_rate as f32)).fract() - 1.0).collect();
     Signal { data, sample_rate }
 }

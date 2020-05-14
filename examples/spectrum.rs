@@ -41,7 +41,7 @@ fn parse_params() -> Params {
 /// Create signal
 fn create_signal(gen_name: &str, freq: f32, sample_rate:usize) -> Signal {
     match gen_name.as_ref() {
-        "triangle"  => traingle(SIGNAL_LENGTH, freq, sample_rate),
+        "sawtooth"  => sawtooth(SIGNAL_LENGTH, freq, sample_rate),
         "square"    => square(SIGNAL_LENGTH, freq, sample_rate),
         "noise"     => noise(SIGNAL_LENGTH, 0.1, sample_rate),
         "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, sample_rate),
