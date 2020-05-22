@@ -22,7 +22,7 @@ pub type ComplexBuffer = Vec<Complex32>;
 
 /// Signal consists of:
 /// * data
-/// * sample_rate which is number of samples per second
+/// * sample_rate which is number of samples per second (Sampling frequency)
 pub struct Signal {
     pub data: Vec<f32>,
     pub sample_rate: usize
