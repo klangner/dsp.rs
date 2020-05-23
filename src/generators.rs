@@ -21,7 +21,7 @@ use crate::Signal;
 /// use dsp::generators::impulse;
 /// 
 /// let signal = impulse(100, 2, 100);
-/// assert_eq!(signal.length(), 100);
+/// assert_eq!(signal.len(), 100);
 /// assert_eq!(signal.data[0], 0.0);
 /// assert_eq!(signal.data[1], 0.0);
 /// assert_eq!(signal.data[2], 1.0);

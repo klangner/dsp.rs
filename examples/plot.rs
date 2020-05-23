@@ -60,7 +60,7 @@ fn main() {
     let signal = create_signal(&params);
 
     // Plot signal
-    let idx: Vec<usize> = (0..signal.length()).collect();
+    let idx: Vec<usize> = (0..signal.len()).collect();
     let mut fg = Figure::new();
     fg.axes2d().lines(&idx, signal.data, &[Color("red")]);
     fg.show();

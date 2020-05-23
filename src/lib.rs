@@ -31,13 +31,12 @@ pub struct Signal {
 impl Signal {
 
     /// create new signal with a given length and sample rate
-    pub fn new(length: usize, sample_rate: usize) -> Signal {
-        let data = vec![0.0;length];
+    pub fn new(data: Vec<f32>, sample_rate: usize) -> Signal {
         Signal { data, sample_rate }
     }
 
     /// Length of the signal buffer
-    pub fn length(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.data.len()
     }
 
