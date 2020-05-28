@@ -56,6 +56,14 @@ impl InverseFFT {
     }
 
     /// Forward DFT (implemented as FFT)
+    pub fn process(&mut self, spectrum: &Spectrum) ->  Signal {
+        let mut input: ComplexBuffer = spectrum.data.to_owned();
+        let mut output: ComplexBuffer = input.iter().map(|_| Complex32::new(0.0, 0.0)).collect();
+        self.fft.process(&mut input, &mut output);
+        Signal::new(output.iter().map(|c| c.re).collect(), spectrum.sample_rate)
+    }
+
+    /// Forward DFT (implemented as FFT)
     pub fn process_real(&mut self, input: &[f32]) ->  RealBuffer {
         let mut input: ComplexBuffer = input.iter().map(|i| Complex32::new(*i, 0.0)).collect();
         let mut output: ComplexBuffer = input.iter().map(|_| Complex32::new(0.0, 0.0)).collect();
@@ -73,11 +81,12 @@ mod tests {
 
     #[test]
     fn test_fft() {
-        let input = vec![1., 0., 0., 0.];
+        let signal = Signal::new(vec![1., 0., 0., 0.], 4);
         
         let mut ft = ForwardFFT::new(4);
-        let output = ft.process_real(&input);
-        let expected = vec![1.0, 1.0, 1.0, 1.0];
-        assert_eq!(&output, &expected);
+        let spectrum = ft.process(&signal);
+        let expected: Vec<f32> = vec![1.0, 1.0, 1.0, 1.0];
+        assert_eq!(spectrum.sample_rate, signal.sample_rate);
+        assert_eq!(&spectrum.to_real(), &expected);
     }
 }

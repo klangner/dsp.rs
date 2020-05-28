@@ -154,6 +154,7 @@ pub fn noise(length: usize, std: f32, sample_rate: usize) -> Signal {
 ///   * sample_rate - Number of samples/s
 pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) -> Signal {
     let sweep_time = length as f32 / sample_rate as f32;
+    
     fn sample(t: f32, start_freq: f32, end_freq: f32, sweep_time: f32) -> f32 {
         let c = (end_freq - start_freq) / sweep_time;
         let w = 2.0 * PI * (c/2.0*t.powi(2) + start_freq*t);
