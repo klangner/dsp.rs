@@ -1,6 +1,6 @@
-
 use std::env;
-use dsp::{fft, spectrums};
+use dsp::Signal;
+use dsp::fft;
 use pitch_calc::calc::step_from_hz;
 use pitch_calc::step::Step;
 
@@ -18,8 +18,9 @@ fn main() {
 
     (0..num_frames)
         .map(|i| &samples[(i*FRAME_SIZE)..((i+1)*FRAME_SIZE)])
-        .map(|frame| fft.process_real(frame))
-        .map(|output| spectrums::max_freq(&output, SAMPLE_RATE))
+        .map(|f| Signal::new(f.to_vec(), SAMPLE_RATE))
+        .map(|frame| fft.process(&frame))
+        .map(|spectrum| spectrum.max_freq())
         .for_each(|freq|  {
             if freq > 1.0 {
                 let step = step_from_hz(freq);

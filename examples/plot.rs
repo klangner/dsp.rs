@@ -65,4 +65,3 @@ fn main() {
     fg.axes2d().lines(&idx, signal.data, &[Color("red")]);
     fg.show();
 }
-// 

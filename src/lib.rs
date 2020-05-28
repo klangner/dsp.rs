@@ -6,7 +6,7 @@
 pub mod generators;
 pub mod filters;
 pub mod fft;
-pub mod spectrums;
+pub mod spectrum;
 pub mod windows;
 mod vectors;
 
@@ -30,7 +30,7 @@ pub struct Signal {
 
 impl Signal {
 
-    /// create new signal with a given length and sample rate
+    /// create new signal from provided data
     pub fn new(data: Vec<f32>, sample_rate: usize) -> Signal {
         Signal { data, sample_rate }
     }
@@ -39,5 +39,4 @@ impl Signal {
     pub fn len(&self) -> usize {
         self.data.len()
     }
-
 }

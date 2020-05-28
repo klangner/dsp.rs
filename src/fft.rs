@@ -2,6 +2,8 @@
 use std::sync::Arc;
 use rustfft::{FFTplanner, FFT};
 use crate::num_complex::Complex32;
+use crate::Signal;
+use crate::spectrum::Spectrum;
 use crate::{ComplexBuffer, RealBuffer};
 
 
@@ -23,6 +25,14 @@ impl ForwardFFT {
         ForwardFFT {
             fft: fft.plan_fft(sample_size),
         }
+    }
+
+    /// Forward DFT (implemented as FFT)
+    pub fn process(&mut self, signal: &Signal) -> Spectrum {
+        let mut input: ComplexBuffer = signal.data.iter().map(|i| Complex32::new(*i, 0.0)).collect();
+        let mut output: ComplexBuffer = input.iter().map(|_| Complex32::new(0.0, 0.0)).collect();
+        self.fft.process(&mut input, &mut output);
+        Spectrum::new(output, signal.sample_rate)
     }
 
     /// Forward DFT (implemented as FFT)
