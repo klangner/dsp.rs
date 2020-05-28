@@ -7,7 +7,7 @@ extern crate criterion;
 use criterion::Criterion;
 use criterion::black_box;
 
-use dsp::Signal;
+use dsp::signal::Signal;
 use dsp::generators::*;
 
 

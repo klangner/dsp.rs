@@ -4,7 +4,7 @@ extern crate clap;
 use gnuplot::*;
 use clap::{Arg, App};
 use dsp::signal::Signal;
-use dsp::generators::*;
+use dsp::generator::*;
 use dsp::fft::*;
 
 

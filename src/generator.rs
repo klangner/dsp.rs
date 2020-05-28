@@ -1,7 +1,7 @@
-//! Signal generators
+//! Signal generator
 //! 
-//! Signal generators are used to generate different potentially infinite signals
-//! Most generators have state and can fill buffer with data.
+//! Signal generator are used to generate different potentially infinite signals
+//! Most generator have state and can fill buffer with data.
 //! 
 
 use std::f32;
@@ -18,7 +18,7 @@ use crate::signal::Signal;
 /// Example
 /// 
 /// ```
-/// use dsp::generators::impulse;
+/// use dsp::generator::impulse;
 /// 
 /// let signal = impulse(100, 2, 100);
 /// assert_eq!(signal.len(), 100);
@@ -40,7 +40,7 @@ pub fn impulse(length: usize, impulse_pos: usize, sample_rate: usize) -> Signal 
 /// Example
 /// 
 /// ```
-/// use dsp::generators::step;
+/// use dsp::generator::step;
 /// 
 /// let signal = step(10, 2, 5);
 /// assert_eq!(signal.data[0], 0.0);
@@ -63,7 +63,7 @@ pub fn step(length: usize, step_pos: usize, sample_rate: usize) -> Signal {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::sine;
+/// use dsp::generator::sine;
 /// 
 /// let signal = sine(10, 2.0, 8);
 /// assert_approx_eq!(signal.data[0], 0.0, 1e-5f32);
@@ -87,7 +87,7 @@ pub fn sine(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::sawtooth;
+/// use dsp::generator::sawtooth;
 /// 
 /// let signal = sawtooth(16, 4.0, 16);
 /// assert_approx_eq!(signal.data[0], -1.0, 1e-5f32);
@@ -111,7 +111,7 @@ pub fn sawtooth(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generators::square;
+/// use dsp::generator::square;
 /// 
 /// let signal = square(10, 4.0, 16);
 /// assert_approx_eq!(signal.data[0], 1.0, 1e-5f32);
@@ -133,7 +133,7 @@ pub fn square(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// Example
 /// 
 /// ```
-/// use dsp::generators::noise;
+/// use dsp::generator::noise;
 /// 
 /// let signal = noise(10, 0.1, 10);
 /// ```
@@ -183,7 +183,7 @@ impl Sine {
 /// 
 /// ```
 /// use dsp::fft::ForwardFFT;
-/// use dsp::generators::{synth, Sine};
+/// use dsp::generator::{synth, Sine};
 /// 
 /// let sines = vec![Sine::new(20.0, 2.0), Sine::new(50.0, 0.5)];
 /// let signal = synth(1024, sines, 512);

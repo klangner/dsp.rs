@@ -3,13 +3,13 @@
 //! Signals can be processed in Time or Frequency domain
 //!
 
-pub mod generators;
-pub mod filters;
+pub mod generator;
+pub mod filter;
 pub mod fft;
 pub mod signal;
 pub mod spectrum;
-pub mod windows;
-mod vectors;
+pub mod window;
+mod vector;
 
 pub use num_complex;
 use crate::num_complex::Complex32;

@@ -3,7 +3,7 @@
 use std::cmp;
 use std::f32::consts::PI;
 use crate::RealBuffer;
-use crate::vectors;
+use crate::vector;
 
 
 /// A window function. Can be applied to a signal
@@ -20,7 +20,7 @@ impl Window {
 
     /// Apply this window to the given frame
     pub fn apply(&self, input: &RealBuffer, mut output: &mut RealBuffer) {
-        vectors::multiply(&self.samples, &input, &mut output);
+        vector::multiply(&self.samples, &input, &mut output);
     }
 }
 
@@ -30,9 +30,9 @@ impl Window {
 /// Example
 /// 
 /// ```
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::rectangular(3, 1, 6);
+/// let win = window::rectangular(3, 1, 6);
 /// let frame = vec![1.0; 6];
 /// let mut output = vec![0.0; 6];
 /// win.apply(&frame, &mut output);
@@ -52,9 +52,9 @@ pub fn rectangular(width: usize, offset: usize, window_length: usize) -> Window 
 /// Example
 /// 
 /// ```
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::triangular(5, 1, 7);
+/// let win = window::triangular(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);
@@ -77,9 +77,9 @@ pub fn triangular(width: usize, offset: usize, window_length: usize) -> Window {
 /// Example
 /// 
 /// ```
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::welch(5, 1, 7);
+/// let win = window::welch(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);
@@ -104,9 +104,9 @@ pub fn welch(width: usize, offset: usize, window_length: usize) -> Window {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::sine(5, 1, 7);
+/// let win = window::sine(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);
@@ -129,15 +129,15 @@ pub fn sine(width: usize, offset: usize, window_length: usize) -> Window {
 }
 
 /// Create the Hann window
-/// https://en.wikipedia.org/wiki/Window_function#Hann_and_Hamming_windows
+/// https://en.wikipedia.org/wiki/Window_function#Hann_and_Hamming_window
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::hann(5, 1, 7);
+/// let win = window::hann(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);
@@ -160,15 +160,15 @@ pub fn hann(width: usize, offset: usize, window_length: usize) -> Window {
 }
 
 /// Compute a hamming window of the given size
-/// https://en.wikipedia.org/wiki/Window_function#Hann_and_Hamming_windows
+/// https://en.wikipedia.org/wiki/Window_function#Hann_and_Hamming_window
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::hamming(5, 1, 7);
+/// let win = window::hamming(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);
@@ -200,9 +200,9 @@ pub fn hamming(width: usize, offset: usize, window_length: usize) -> Window {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::windows;
+/// use dsp::window;
 /// 
-/// let win = windows::blackman(5, 1, 7);
+/// let win = window::blackman(5, 1, 7);
 /// let frame = vec![1.0; 7];
 /// let mut output = vec![0.0; 7];
 /// win.apply(&frame, &mut output);

@@ -4,7 +4,7 @@ extern crate clap;
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
 use dsp::signal::Signal;
-use dsp::generators::*;
+use dsp::generator::*;
 
 
 const SIGNAL_LENGTH: usize = 1_000;

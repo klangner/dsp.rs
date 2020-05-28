@@ -1,7 +1,7 @@
 //! Analyze discrete signal in frequency domain using complex numbers
 
 use num_complex::Complex32;
-use crate::vectors;
+use crate::vector;
 
 
 /// Spectrum of the signal
@@ -28,7 +28,7 @@ impl Spectrum {
     /// 
     /// ```
     /// use dsp::fft::ForwardFFT;
-    /// use dsp::generators::sine;
+    /// use dsp::generator::sine;
     ///
     /// let signal = sine(1024, 20.0, 512);
     /// let mut ft = ForwardFFT::new(1024);
@@ -45,7 +45,7 @@ impl Spectrum {
     /// 
     /// ```
     /// use dsp::fft::ForwardFFT;
-    /// use dsp::generators::sine;
+    /// use dsp::generator::sine;
     ///
     /// let signal = sine(1024, 28.0, 512);
     /// let mut ft = ForwardFFT::new(1024);
@@ -53,7 +53,7 @@ impl Spectrum {
     /// assert_eq!(spectrum.max_freq(), 28.0);
     /// ```
     pub fn max_freq(&self) -> f32 {
-        let idx = vectors::argmax(&self.to_real());
+        let idx = vector::argmax(&self.to_real());
         if idx < self.len() / 2 {
             self.item_freq(idx)
         } else {
@@ -73,7 +73,7 @@ impl Spectrum {
 #[cfg(test)]
 mod tests {
     use crate::fft::ForwardFFT;
-    use crate::generators::sine;
+    use crate::generator::sine;
 
     #[test]
     fn test_item_freq() {
