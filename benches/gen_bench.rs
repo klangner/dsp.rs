@@ -8,7 +8,7 @@ use criterion::Criterion;
 use criterion::black_box;
 
 use dsp::signal::Signal;
-use dsp::generators::*;
+use dsp::generator::*;
 
 
 fn generate_sine(n : usize) -> Signal {
