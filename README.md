@@ -21,6 +21,10 @@ Signals are continuous functions f: ℝ -> ℂ
   * [x] Triangle
   * [x] Square
   * [x] Chirp
+
+## Filters
+
+  * [x] Biquad
   
 ## Window functions
 
