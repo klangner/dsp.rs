@@ -6,7 +6,7 @@ use crate::RealBuffer;
 
 /// A biquad filter (IIR)
 #[derive(Clone,Debug)]
-pub struct BiquadNode {
+pub struct BiquadFilter {
     x: ArrayDeque<[f32; 3], Wrapping>,
     y: ArrayDeque<[f32; 3], Wrapping>,
     b: [f32; 3],
@@ -14,10 +14,10 @@ pub struct BiquadNode {
 }
 
 
-impl BiquadNode {
+impl BiquadFilter {
 
     /// Returns a new biquad IIR filter. Failure if a/b not correct lengths
-    pub fn new(b: &[f32], a: &[f32]) -> BiquadNode {
+    pub fn new(b: &[f32], a: &[f32]) -> BiquadFilter {
 
         // Sanity check
         assert_eq!(b.len(), 3);
@@ -45,7 +45,7 @@ impl BiquadNode {
         }
 
         // New filter with x/y initalized to same length as a/b
-        BiquadNode {
+        BiquadFilter {
             x, y,
             b: b_arr, a: neg_a_arr
         }
@@ -114,7 +114,7 @@ mod tests {
         // https://en.wikipedia.org/wiki/Bilinear_transform#Example
         let b = [1.0, 1.0, 0.0];
         let a = [1.0+(2.0*rc/t_samp), 1.0-(2.0*rc/t_samp), 0.0];
-        let mut biquad_rc = BiquadNode::new(&b, &a);
+        let mut biquad_rc = BiquadFilter::new(&b, &a);
         let dig_unit_step = vec![1.0; 50];
         let mut digital_response = vec![0.0; 50];
         biquad_rc.process(&dig_unit_step, &mut digital_response);
