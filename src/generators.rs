@@ -8,7 +8,7 @@ use std::f32;
 use std::f32::consts::PI;
 use rand::distributions::{Normal, Distribution};
 
-use crate::Signal;
+use crate::signal::Signal;
 
 
 /// Generate impulse signal
@@ -154,7 +154,7 @@ pub fn noise(length: usize, std: f32, sample_rate: usize) -> Signal {
 ///   * sample_rate - Number of samples/s
 pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) -> Signal {
     let sweep_time = length as f32 / sample_rate as f32;
-    
+
     fn sample(t: f32, start_freq: f32, end_freq: f32, sweep_time: f32) -> f32 {
         let c = (end_freq - start_freq) / sweep_time;
         let w = 2.0 * PI * (c/2.0*t.powi(2) + start_freq*t);
@@ -166,6 +166,48 @@ pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) 
         .map(|t|  sample(t, start_freq, end_freq, sweep_time))
         .collect();
     Signal { data, sample_rate }
+}
+
+
+pub struct Sine { freq: f32, amplitude: f32 }
+
+impl Sine {
+    pub fn new(freq: f32, amplitude: f32) -> Sine {
+        Sine { freq, amplitude }
+    }
+}
+
+/// Create signal as a synthesis of multiple sine signals with different amplitude
+/// 
+/// Example
+/// 
+/// ```
+/// use dsp::fft::ForwardFFT;
+/// use dsp::generators::{synth, Sine};
+/// 
+/// let sines = vec![Sine::new(20.0, 2.0), Sine::new(50.0, 0.5)];
+/// let signal = synth(1024, sines, 512);
+/// let mut ft = ForwardFFT::new(1024);
+/// let spectrum = ft.process(&signal);
+/// assert_eq!(spectrum.max_freq(), 20.0);
+/// ```
+pub fn synth(length: usize, gens: Vec<Sine>, sample_rate: usize) -> Signal {
+    if gens.is_empty() {
+        Signal::empty(sample_rate)
+    } else {
+        let norm: f32 = gens.len() as f32;
+        let mut buffer = sine(length, gens[0].freq, sample_rate)
+                            .rescale(gens[0].amplitude / norm)
+                            .data
+                            .to_owned();
+        for g in &gens[1..] {
+            let signal = sine(length, g.freq, sample_rate).rescale(g.amplitude / norm);
+            for i in 0..length {
+                buffer[i] += signal.data[i];
+            }
+        }
+        Signal::new(buffer, sample_rate)
+    }
 }
 
 /// ------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 use std::env;
-use dsp::Signal;
+use dsp::signal::Signal;
 use dsp::fft;
 use pitch_calc::calc::step_from_hz;
 use pitch_calc::step::Step;

@@ -2,7 +2,7 @@
 use std::sync::Arc;
 use rustfft::{FFTplanner, FFT};
 use crate::num_complex::Complex32;
-use crate::Signal;
+use crate::signal::Signal;
 use crate::spectrum::Spectrum;
 use crate::{ComplexBuffer, RealBuffer};
 
