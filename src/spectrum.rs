@@ -36,7 +36,9 @@ impl Spectrum {
     /// assert_eq!(spectrum.item_freq(40), 20.0);
     /// ```
     pub fn item_freq(&self, i: usize) -> f32 {
-        (i * self.sample_rate) as f32 / self.len() as f32
+        let pos = i % self.len();
+        let half_pos = if pos < self.len()/2 { pos } else {self.len() - pos};
+        (half_pos * self.sample_rate) as f32 / self.len() as f32
     }
 
     /// Return max frequency
@@ -81,5 +83,7 @@ mod tests {
         let mut ft = ForwardFFT::new(1024);
         let spectrum = ft.process(&signal);
         assert_eq!(spectrum.item_freq(40), 20.0);
+        assert_eq!(spectrum.item_freq(spectrum.len()+40), 20.0);
+        assert_eq!(spectrum.item_freq(spectrum.len()-40), 20.0);
     }
 }
