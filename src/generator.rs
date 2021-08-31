@@ -6,7 +6,8 @@
 
 use std::f32;
 use std::f32::consts::PI;
-use rand::distributions::{Normal, Distribution};
+use rand_distr::{Normal, Distribution};
+use rand;
 
 use crate::signal::Signal;
 
@@ -138,7 +139,7 @@ pub fn square(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// let signal = noise(10, 0.1, 10);
 /// ```
 pub fn noise(length: usize, std: f32, sample_rate: usize) -> Signal {
-    let normal = Normal::new(0.0, std as f64);
+    let normal = Normal::new(0.0, std as f64).unwrap();
     let data = (0..length).map(|_| normal.sample(&mut rand::thread_rng()) as f32).collect();
     Signal { data, sample_rate }
 }

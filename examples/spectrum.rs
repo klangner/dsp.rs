@@ -79,5 +79,5 @@ fn plot_spectrogram(height: usize, width: usize, data: &Vec<f32>, max_freq: f32)
 		Some((0.0, 0.0, SIGNAL_LENGTH as f64, max_freq as f64)),
 		&[Caption("Frequency in Hz.")],
 	);
-	fg.show();    
+	fg.show().unwrap();    
 }

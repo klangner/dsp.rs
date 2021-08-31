@@ -12,21 +12,22 @@ edition = "2018"
 
 
 [dependencies]
-arraydeque = { version = "0.4", default-features = false }
-itertools = "0.8"
-num-complex = "0.2"
-rustfft = "3"
-rand = "0.6"
+arraydeque = "0.4"
+itertools = "0.10"
+num-complex = "0.4"
+rustfft = "6"
+rand_distr = "0.4"
+rand = "0.8"
 
 [dev-dependencies]
-assert_approx_eq = "1.1.0"
-gnuplot = "0.0.31"
+assert_approx_eq = "1.1"
+gnuplot = "0.0.37"
 clap = "2"
-audrey = "0.2"
-lewton = "0.9.4"
-criterion = "0.2"
-transpose = "0.2.0"
-pitch_calc = "0.11"
+audrey = "0.3"
+lewton = "0.10"
+criterion = "0.3"
+transpose = "0.2"
+pitch_calc = "0.12"
 
 [[bench]]
 name = "gen_bench"
