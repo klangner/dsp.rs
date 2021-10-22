@@ -5,21 +5,16 @@
 extern crate criterion;
 
 use criterion::Criterion;
-use criterion::black_box;
 
-use dsp::signal::Signal;
+use dsp::block::SourceBlock;
 use dsp::generator::*;
 
 
-fn generate_sine(n : usize) -> Signal {
-    let signal = sine(n, 50.0, n);
-    signal
-}
-
-
 fn criterion_benchmark(c: &mut Criterion) {
+    let mut signal = Sinusoid::new(1_000.0, 2048);
+    let mut buffer = vec![0.0;1024];
     c.bench_function("Sine generator", |b| {
-        b.iter(|| generate_sine(black_box(1_000)))
+        b.iter(|| signal.write_buffer(&mut buffer))
     });
 }
 

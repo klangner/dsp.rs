@@ -3,7 +3,7 @@ extern crate clap;
 
 use gnuplot::*;
 use clap::{Arg, App};
-use dsp::signal::Signal;
+use dsp::block::SourceBlock;
 use dsp::generator::*;
 use dsp::fft::*;
 
@@ -39,13 +39,13 @@ fn parse_params() -> Params {
 }
 
 /// Create signal
-fn create_signal(gen_name: &str, freq: f32, sample_rate:usize) -> Signal {
+fn create_generator(gen_name: &str, freq: f32, sample_rate:usize) -> Box<dyn SourceBlock<f32>> {
     match gen_name.as_ref() {
-        "sawtooth"  => sawtooth(SIGNAL_LENGTH, freq, sample_rate),
-        "square"    => square(SIGNAL_LENGTH, freq, sample_rate),
-        "noise"     => noise(SIGNAL_LENGTH, 0.1, sample_rate),
-        "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, sample_rate),
-        _           => sine(SIGNAL_LENGTH, freq, sample_rate),
+        "sawtooth"  => Box::new(Sawtooth::new(freq, sample_rate)),
+        "square"    => Box::new(Square::new(freq, sample_rate)),
+        "noise"     => Box::new(Noise::new(0.1)),
+        "chirp"     => Box::new(Chirp::new(4.0, 1.0, 10.0, sample_rate)),
+        _           => Box::new(Sinusoid::new(freq, sample_rate)),
     }
 }
 
@@ -54,13 +54,15 @@ fn main() {
     let params = parse_params();
     let num_spectrums = 10;
     let window_size = SIGNAL_LENGTH / num_spectrums;
-    let signal = create_signal(&params.gen_name, params.freq, window_size);
+    let mut generator = create_generator(&params.gen_name, params.freq, window_size);
+    let mut buffer = vec![0.0; SIGNAL_LENGTH];
+    generator.write_buffer(&mut buffer);
     let mut fft = ForwardFFT::new(window_size);
 
     // Split signal into frames
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|i| {
         let (x1, x2) = (i*window_size, ((i+1)*window_size));
-        let output: Vec<f32> = fft.process_real(&signal.data[x1..x2]);
+        let output: Vec<f32> = fft.process_real(&buffer[x1..x2]);
         output.iter().take(window_size/2).map(|i| *i).collect::<Vec<f32>>()
     }).collect();
 
