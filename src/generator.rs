@@ -10,7 +10,6 @@ use rand_distr::{Normal, Distribution};
 use rand;
 
 use crate::block::SourceBlock;
-use crate::signal::Signal;
 
 
 /// Generate impulse signal
@@ -49,11 +48,6 @@ impl SourceBlock<f32> for Impulse {
             self.impulse_send = true;
         }
     }
-}
-
-pub fn impulse(length: usize, impulse_pos: usize, sample_rate: usize) -> Signal {
-    let data = (0..length).map(|i| if i == impulse_pos { 1.0 } else { 0.0 }).collect();
-    Signal { data, sample_rate }
 }
 
 
