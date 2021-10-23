@@ -13,7 +13,8 @@ The folder [examples](https://github.com/klangner/dsp/tree/master/examples) cont
    
 ## Signal generators
 
-Signals are continuous functions f: ℝ -> ℂ 
+Signals generators are nodes with the state. This allows to generate continuos signal across multiple buffers.
+Implemented generators:
   
   * [x] Impulse
   * [x] Step
