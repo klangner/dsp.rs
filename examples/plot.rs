@@ -3,8 +3,8 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
-use dsp::node::SourceNode;
-use dsp::generator::*;
+use dsp::runtime::node::SourceNode;
+use dsp::node::generator::*;
 
 
 const SIGNAL_LENGTH: usize = 1_000;

@@ -1,7 +1,6 @@
 use std::env;
-use dsp::node::*;
-use dsp::fft::*;
-use dsp::audio::file::AudioFileSource;
+use dsp::runtime::node::*;
+use dsp::node::{fft::*, complex::*, audio::audio_file::AudioFileSource};
 use dsp::num_complex::Complex32;
 use dsp::spectrum;
 use pitch_calc::calc::step_from_hz;

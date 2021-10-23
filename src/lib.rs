@@ -4,10 +4,8 @@
 //!
 
 pub mod node;
-pub mod generator;
+pub mod runtime;
 pub mod filter;
-pub mod audio;
-pub mod fft;
 pub mod spectrum;
 pub mod window;
 mod vector;

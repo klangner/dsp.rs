@@ -9,7 +9,7 @@ use std::f32::consts::PI;
 use rand_distr::{Normal, Distribution};
 use rand;
 
-use crate::node::SourceNode;
+use crate::runtime::node::SourceNode;
 
 
 /// Generate impulse signal
@@ -19,8 +19,8 @@ use crate::node::SourceNode;
 /// Example
 /// 
 /// ```
-/// use dsp::node::SourceNode;
-/// use dsp::generator::Impulse;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Impulse;
 /// 
 /// let mut signal = Impulse::new();
 /// let mut buffer = vec![2.0;100];
@@ -58,8 +58,8 @@ impl SourceNode<f32> for Impulse {
 /// Example
 /// 
 /// ```
-/// use dsp::node::SourceNode;
-/// use dsp::generator::Step;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Step;
 /// 
 /// let mut signal = Step::new(2);
 /// let mut buffer = vec![2.0;100];
@@ -99,8 +99,8 @@ impl SourceNode<f32> for Step {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::node::SourceNode;
-/// use dsp::generator::Sinusoid;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Sinusoid;
 /// 
 /// let mut signal = Sinusoid::new(2.0, 8);
 /// let mut buffer = vec![0.0;10];
@@ -145,8 +145,8 @@ impl SourceNode<f32> for Sinusoid {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generator::Sawtooth;
-/// use dsp::node::SourceNode;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Sawtooth;
 /// 
 /// let mut signal = Sawtooth::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -193,8 +193,8 @@ impl SourceNode<f32> for Sawtooth {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generator::Square;
-/// use dsp::node::SourceNode;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Square;
 /// 
 /// let mut signal = Square::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -244,8 +244,8 @@ impl SourceNode<f32> for Square {
 /// Example
 /// 
 /// ```
-/// use dsp::generator::Noise;
-/// use dsp::node::SourceNode;
+/// use dsp::runtime::node::SourceNode;
+/// use dsp::node::generator::Noise;
 /// 
 /// let mut signal = Noise::new(4.0);
 /// let mut buffer = vec![0.0;10];
@@ -320,8 +320,8 @@ impl SourceNode<f32> for Chirp {
 #[cfg(test)]
 mod tests {
     use assert_approx_eq::assert_approx_eq;
-    use crate::node::SourceNode;
-    use crate::generator::Sinusoid;
+    use crate::runtime::node::SourceNode;
+    use crate::node::generator::Sinusoid;
 
     #[test]
     fn test_sine_small_buffer() {

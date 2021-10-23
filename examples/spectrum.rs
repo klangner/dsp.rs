@@ -4,9 +4,8 @@ extern crate clap;
 use gnuplot::*;
 use clap::{Arg, App};
 use dsp::num_complex::Complex32;
-use dsp::node::*;
-use dsp::generator::*;
-use dsp::fft::*;
+use dsp::runtime::node::*;
+use dsp::node::{generator::*, fft::*, complex::*};
 
 
 const SIGNAL_LENGTH: usize = 10*256;

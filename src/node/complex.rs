@@ -1,22 +1,9 @@
-//! Node definition
+//! Node for converting between real and complex numbers
 //! 
-//! Node is basic unit of computation
 //! 
 
 use crate::num_complex::Complex32;
-
-
-pub trait SourceNode<T> {
-    fn write_buffer(&mut self, buffer: &mut [T]);
-}
-
-pub trait SinkNode<T> {
-    fn read_buffer(&self, buffer: &[T]);
-}
-
-pub trait ProcessNode<I, O> {
-    fn process_buffer(&self, input_buffer: &[I], output_buffer: &mut [O]);
-}
+use crate::runtime::node::ProcessNode;
 
 
 /// Implement Real -> complex converter
@@ -24,7 +11,8 @@ pub trait ProcessNode<I, O> {
 /// Example
 /// 
 /// ```
-/// use dsp::node::{RealToComplex, ProcessNode};
+/// use dsp::runtime::node::ProcessNode;
+/// use dsp::node::complex::RealToComplex;
 /// use dsp::num_complex::Complex32;
 /// 
 /// let node = RealToComplex::new();
@@ -59,7 +47,8 @@ impl ProcessNode<f32, Complex32> for RealToComplex {
 /// Example
 /// 
 /// ```
-/// use dsp::node::{ComplexToReal, ProcessNode};
+/// use dsp::runtime::node::ProcessNode;
+/// use dsp::node::complex::ComplexToReal;
 /// use dsp::num_complex::Complex32;
 /// 
 /// let node = ComplexToReal::new();
