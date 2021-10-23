@@ -1,7 +1,7 @@
 use std::env;
 use dsp::node::*;
 use dsp::fft::*;
-use dsp::file::audio::AudioSource;
+use dsp::audio::file::AudioFileSource;
 use dsp::num_complex::Complex32;
 use dsp::spectrum;
 use pitch_calc::calc::step_from_hz;
@@ -15,7 +15,7 @@ const FRAME_SIZE: usize = 4096;
 fn main() {
     let file_path = env::args().nth(1).unwrap_or("examples/assets/sine_440hz.wav".to_string());
 
-    let mut audio_src = AudioSource::new(&file_path);
+    let mut audio_src = AudioFileSource::new(&file_path);
     let r2c = RealToComplex::new();
     let fft = ForwardFFT::new(FRAME_SIZE);
     let mut buffer1 = vec![0.; FRAME_SIZE];

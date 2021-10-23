@@ -6,7 +6,7 @@
 pub mod node;
 pub mod generator;
 pub mod filter;
-pub mod file;
+pub mod audio;
 pub mod fft;
 pub mod spectrum;
 pub mod window;

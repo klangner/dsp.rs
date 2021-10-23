@@ -5,18 +5,18 @@ use crate::node::{SourceNode};
 use audrey::Reader;
 
 
-pub struct AudioSource {
+pub struct AudioFileSource {
     reader: Reader<std::io::BufReader<std::fs::File>>,
 }
 
-impl AudioSource {
-    pub fn new(file_path: &str) -> AudioSource {
+impl AudioFileSource {
+    pub fn new(file_path: &str) -> AudioFileSource {
         let reader = audrey::open(file_path).unwrap();
-        AudioSource {reader}
+        AudioFileSource {reader}
     }
 }
 
-impl SourceNode<f32> for AudioSource {
+impl SourceNode<f32> for AudioFileSource {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         let mut samples = self.reader.samples(); 
         for i in 0..buffer.len() {
