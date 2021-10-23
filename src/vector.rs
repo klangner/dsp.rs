@@ -2,11 +2,10 @@
 /// All operations here should be alloc free 
 use std::ops::Mul;
 use std::f32;
-use crate::RealBuffer;
 
 
 /// Multiply vectors element wise
-pub fn multiply<T>(xs: &Vec<T>, ys: &Vec<T>, output: &mut Vec<T>) 
+pub fn multiply<T>(xs: &[T], ys: &[T], output: &mut [T]) 
 where
     T: Mul<Output = T> + Copy
 {
@@ -18,7 +17,7 @@ where
 }
 
 /// Calculate arg max for complex numbers
-pub fn argmax(xs: &RealBuffer) -> usize {
+pub fn argmax(xs: &[f32]) -> usize {
     let mut max_value = f32::MIN;
     let mut arg_max = 0;
     for i in 0..xs.len() {

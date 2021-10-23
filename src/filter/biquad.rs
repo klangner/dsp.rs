@@ -1,7 +1,6 @@
 /// Basic implementations of common discrete filters
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::{izip};
-use crate::RealBuffer;
 
 
 /// A biquad filter (IIR)
@@ -77,7 +76,7 @@ impl BiquadFilter {
 
     /// Processes in_slice as a slice of samples as inputs to the filter,
     /// writing results to out_slice.
-    pub fn process(&mut self, input: &RealBuffer, output: &mut RealBuffer) {
+    pub fn process(&mut self, input: &[f32], output: &mut [f32]) {
         let size = std::cmp::min(input.len(), output.len());
         (0..size).for_each(|i| output[i] = self.process_one(input[i]));
     }
