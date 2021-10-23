@@ -1,5 +1,5 @@
 use std::env;
-use dsp::block::*;
+use dsp::node::*;
 use dsp::fft::*;
 use dsp::num_complex::Complex32;
 use dsp::spectrum::*;

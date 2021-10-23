@@ -3,7 +3,7 @@
 //! Signals can be processed in Time or Frequency domain
 //!
 
-pub mod block;
+pub mod node;
 pub mod generator;
 pub mod filter;
 pub mod fft;

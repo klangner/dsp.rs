@@ -9,7 +9,7 @@ use std::f32::consts::PI;
 use rand_distr::{Normal, Distribution};
 use rand;
 
-use crate::block::SourceBlock;
+use crate::node::SourceNode;
 
 
 /// Generate impulse signal
@@ -19,7 +19,7 @@ use crate::block::SourceBlock;
 /// Example
 /// 
 /// ```
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// use dsp::generator::Impulse;
 /// 
 /// let mut signal = Impulse::new();
@@ -40,7 +40,7 @@ impl Impulse {
     }
 }
 
-impl SourceBlock<f32> for Impulse {
+impl SourceNode<f32> for Impulse {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = 0.};
         if !self.impulse_send && buffer.len() > 0 {
@@ -58,7 +58,7 @@ impl SourceBlock<f32> for Impulse {
 /// Example
 /// 
 /// ```
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// use dsp::generator::Step;
 /// 
 /// let mut signal = Step::new(2);
@@ -80,7 +80,7 @@ impl Step {
     }
 }
 
-impl SourceBlock<f32> for Step {
+impl SourceNode<f32> for Step {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         for i in 0..buffer.len() {
             if self.step_pos  > 0 {
@@ -99,7 +99,7 @@ impl SourceBlock<f32> for Step {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// use dsp::generator::Sinusoid;
 /// 
 /// let mut signal = Sinusoid::new(2.0, 8);
@@ -126,7 +126,7 @@ impl Sinusoid {
     }
 }
 
-impl SourceBlock<f32> for Sinusoid {
+impl SourceNode<f32> for Sinusoid {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         let w = 2.0 * PI * self.freq / (self.sample_rate as f32);
         for i in 0..buffer.len() {
@@ -146,7 +146,7 @@ impl SourceBlock<f32> for Sinusoid {
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generator::Sawtooth;
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// 
 /// let mut signal = Sawtooth::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -173,7 +173,7 @@ impl Sawtooth {
     }
 }
 
-impl SourceBlock<f32> for Sawtooth {
+impl SourceNode<f32> for Sawtooth {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         for i in 0..buffer.len() {
             let value = 2.0 * ((self.step_pos as f32) * self.freq / (self.sample_rate as f32)).fract() - 1.0;
@@ -194,7 +194,7 @@ impl SourceBlock<f32> for Sawtooth {
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::generator::Square;
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// 
 /// let mut signal = Square::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -221,7 +221,7 @@ impl Square {
     }
 }
 
-impl SourceBlock<f32> for Square {
+impl SourceNode<f32> for Square {
     fn write_buffer(&mut self, buffer: &mut [f32]) {
         for i in 0..buffer.len() {
             let value = if ((self.step_pos as f32) * self.freq/(self.sample_rate as f32)).fract() < 0.5 {
@@ -245,7 +245,7 @@ impl SourceBlock<f32> for Square {
 /// 
 /// ```
 /// use dsp::generator::Noise;
-/// use dsp::block::SourceBlock;
+/// use dsp::node::SourceNode;
 /// 
 /// let mut signal = Noise::new(4.0);
 /// let mut buffer = vec![0.0;10];
@@ -261,7 +261,7 @@ impl Noise {
     }
 }
 
-impl SourceBlock<f32> for Noise {
+impl SourceNode<f32> for Noise {
     fn write_buffer(&mut self, buffer: &mut [f32]) { 
         let normal = Normal::new(0.0, self.std as f64).unwrap();
         for i in 0..buffer.len() {
@@ -300,7 +300,7 @@ impl Chirp {
     }
 }
 
-impl SourceBlock<f32> for Chirp {
+impl SourceNode<f32> for Chirp {
     fn write_buffer(&mut self, buffer: &mut [f32]) { 
         for i in 0..buffer.len() {
             let t = (self.sample_pos + i) as f32 / self.sample_rate as f32;
@@ -320,7 +320,7 @@ impl SourceBlock<f32> for Chirp {
 #[cfg(test)]
 mod tests {
     use assert_approx_eq::assert_approx_eq;
-    use crate::block::SourceBlock;
+    use crate::node::SourceNode;
     use crate::generator::Sinusoid;
 
     #[test]

@@ -6,7 +6,7 @@ extern crate criterion;
 
 use criterion::Criterion;
 
-use dsp::block::SourceBlock;
+use dsp::node::SourceNode;
 use dsp::generator::*;
 
 

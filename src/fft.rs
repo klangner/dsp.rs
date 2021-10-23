@@ -2,7 +2,7 @@
 use std::sync::Arc;
 use rustfft::{Fft, FftPlanner};
 use crate::num_complex::Complex32;
-use crate::block::{ProcessBlock};
+use crate::node::{ProcessNode};
 
 
 pub struct ForwardFFT {
@@ -21,7 +21,7 @@ impl ForwardFFT {
     }
 }
 
-impl ProcessBlock<Complex32, Complex32> for ForwardFFT {
+impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
     fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]){
         let n = usize::min(input_buffer.len(), output_buffer.len());
@@ -49,7 +49,7 @@ impl InverseFFT {
     }
 }
 
-impl ProcessBlock<Complex32, Complex32> for InverseFFT {
+impl ProcessNode<Complex32, Complex32> for InverseFFT {
 
     fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]){
         let n = usize::min(input_buffer.len(), output_buffer.len());
@@ -66,7 +66,7 @@ impl ProcessBlock<Complex32, Complex32> for InverseFFT {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::block::ProcessBlock;
+    use crate::node::ProcessNode;
 
     #[test]
     fn test_fft() {

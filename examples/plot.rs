@@ -3,7 +3,7 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
-use dsp::block::SourceBlock;
+use dsp::node::SourceNode;
 use dsp::generator::*;
 
 
@@ -45,7 +45,7 @@ fn parse_params() -> Params {
 }
 
 /// Create signal
-fn create_generator(params: &Params) -> Box<dyn SourceBlock<f32>> {
+fn create_generator(params: &Params) -> Box<dyn SourceNode<f32>> {
     match params.gen_name.as_ref() {
         "sawtooth"  => Box::new(Sawtooth::new(params.freq, params.sample_rate)),
         "square"    => Box::new(Square::new(params.freq, params.sample_rate)),
