@@ -12,6 +12,7 @@ edition = "2018"
 
 
 [dependencies]
+anyhow = "1.0"
 arraydeque = "^0.4"
 itertools = "^0.10"
 num-complex = "^0.4"

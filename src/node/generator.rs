@@ -7,6 +7,7 @@
 use std::f32;
 use std::f32::consts::PI;
 use rand_distr::{Normal, Distribution};
+use anyhow::Result;
 use rand;
 
 use crate::runtime::node::SourceNode;
@@ -24,7 +25,7 @@ use crate::runtime::node::SourceNode;
 /// 
 /// let mut signal = Impulse::new();
 /// let mut buffer = vec![2.0;100];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// 
 /// assert_eq!(buffer[0], 1.0);
 /// assert_eq!(buffer[1], 0.0);
@@ -41,12 +42,13 @@ impl Impulse {
 }
 
 impl SourceNode<f32> for Impulse {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         for e in buffer.iter_mut() {*e = 0.};
         if !self.impulse_send && buffer.len() > 0 {
             buffer[0] = 1.;
             self.impulse_send = true;
         }
+        Ok(())
     }
 }
 
@@ -63,7 +65,7 @@ impl SourceNode<f32> for Impulse {
 /// 
 /// let mut signal = Step::new(2);
 /// let mut buffer = vec![2.0;100];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// 
 /// assert_eq!(buffer[0], 0.0);
 /// assert_eq!(buffer[1], 0.0);
@@ -81,7 +83,7 @@ impl Step {
 }
 
 impl SourceNode<f32> for Step {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         for i in 0..buffer.len() {
             if self.step_pos  > 0 {
                 buffer[i] = 0.;
@@ -90,6 +92,7 @@ impl SourceNode<f32> for Step {
                 buffer[i] = 1.;
             }
         }
+        Ok(())
     }
 }
 
@@ -104,7 +107,7 @@ impl SourceNode<f32> for Step {
 /// 
 /// let mut signal = Sinusoid::new(2.0, 8);
 /// let mut buffer = vec![0.0;10];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// 
 /// assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
 /// assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
@@ -127,7 +130,7 @@ impl Sinusoid {
 }
 
 impl SourceNode<f32> for Sinusoid {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         let w = 2.0 * PI * self.freq / (self.sample_rate as f32);
         for i in 0..buffer.len() {
             buffer[i] = f32::sin((self.step_pos as f32) * w);
@@ -136,6 +139,7 @@ impl SourceNode<f32> for Sinusoid {
                 self.step_pos = 0;
             }
         }
+        Ok(())
     }
 }
 
@@ -150,7 +154,7 @@ impl SourceNode<f32> for Sinusoid {
 /// 
 /// let mut signal = Sawtooth::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// 
 /// assert_approx_eq!(buffer[0], -1.0, 1e-5f32);
 /// assert_approx_eq!(buffer[1], -0.5, 1e-5f32);
@@ -174,7 +178,7 @@ impl Sawtooth {
 }
 
 impl SourceNode<f32> for Sawtooth {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         for i in 0..buffer.len() {
             let value = 2.0 * ((self.step_pos as f32) * self.freq / (self.sample_rate as f32)).fract() - 1.0;
             buffer[i] = value;
@@ -183,6 +187,7 @@ impl SourceNode<f32> for Sawtooth {
                 self.step_pos = 0;
             }
         }
+        Ok(())
     }
 }
 
@@ -198,7 +203,7 @@ impl SourceNode<f32> for Sawtooth {
 /// 
 /// let mut signal = Square::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// 
 /// assert_approx_eq!(buffer[0], 1.0, 1e-5f32);
 /// assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
@@ -222,7 +227,7 @@ impl Square {
 }
 
 impl SourceNode<f32> for Square {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         for i in 0..buffer.len() {
             let value = if ((self.step_pos as f32) * self.freq/(self.sample_rate as f32)).fract() < 0.5 {
                 1.0
@@ -235,6 +240,7 @@ impl SourceNode<f32> for Square {
                 self.step_pos = 0;
             }
         }
+        Ok(())
     }
 }
 
@@ -249,7 +255,7 @@ impl SourceNode<f32> for Square {
 /// 
 /// let mut signal = Noise::new(4.0);
 /// let mut buffer = vec![0.0;10];
-/// signal.write_buffer(&mut buffer);
+/// let _ = signal.write_buffer(&mut buffer);
 /// ```
 pub struct Noise {
     std: f32,
@@ -262,11 +268,12 @@ impl Noise {
 }
 
 impl SourceNode<f32> for Noise {
-    fn write_buffer(&mut self, buffer: &mut [f32]) { 
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> { 
         let normal = Normal::new(0.0, self.std as f64).unwrap();
         for i in 0..buffer.len() {
             buffer[i] = normal.sample(&mut rand::thread_rng()) as f32;
         }
+        Ok(())
    }
 }
 
@@ -301,7 +308,7 @@ impl Chirp {
 }
 
 impl SourceNode<f32> for Chirp {
-    fn write_buffer(&mut self, buffer: &mut [f32]) { 
+    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> { 
         for i in 0..buffer.len() {
             let t = (self.sample_pos + i) as f32 / self.sample_rate as f32;
             buffer[i] = self.sample(t);
@@ -309,6 +316,7 @@ impl SourceNode<f32> for Chirp {
                 self.sample_pos += 1
             }
         }
+        Ok(())
     }
 }
 
@@ -327,13 +335,13 @@ mod tests {
     fn test_sine_small_buffer() {
         let mut signal = Sinusoid::new(2.0, 8);
         let mut buffer = vec![0.0;3];
-        signal.write_buffer(&mut buffer);
+        let _ = signal.write_buffer(&mut buffer);
 
         assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
         assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
         assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
         
-        signal.write_buffer(&mut buffer);
+        let _ = signal.write_buffer(&mut buffer);
         assert_approx_eq!(buffer[0], -1.0, 1e-5f32);       
         assert_approx_eq!(buffer[1], 0.0, 1e-5f32);
         assert_approx_eq!(buffer[2], 1.0, 1e-5f32);
@@ -343,8 +351,8 @@ mod tests {
     fn test_sine_large_buffer() {
         let mut signal = Sinusoid::new(2.0, 8);
         let mut buffer = vec![0.0;10];
-        signal.write_buffer(&mut buffer);
-        signal.write_buffer(&mut buffer);
+        let _ = signal.write_buffer(&mut buffer);
+        let _ = signal.write_buffer(&mut buffer);
         assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
         assert_approx_eq!(buffer[1], -1.0, 1e-5f32);       
         assert_approx_eq!(buffer[2], 0.0, 1e-5f32);

@@ -1,5 +1,6 @@
 //! Helper functions for FFT.
 use std::sync::Arc;
+use anyhow::Result;
 use rustfft::{Fft, FftPlanner};
 use crate::num_complex::Complex32;
 use crate::runtime::node::{ProcessNode};
@@ -23,12 +24,13 @@ impl ForwardFFT {
 
 impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
-    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]){
+    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i]; 
         }
         self.fft.process(output_buffer);
+        Ok(())
     }
 }
 
@@ -51,12 +53,13 @@ impl InverseFFT {
 
 impl ProcessNode<Complex32, Complex32> for InverseFFT {
 
-    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]){
+    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i]; 
         }
         self.fft.process(output_buffer);
+        Ok(())
     }
 }
 
@@ -78,7 +81,7 @@ mod tests {
         let mut output_buffer = vec![Complex32::new(0., 0.); 4];
         
         let ft = ForwardFFT::new(4);
-        ft.process_buffer(&input_buffer, &mut output_buffer);
+        let _ = ft.process_buffer(&input_buffer, &mut output_buffer);
         let expected = vec![Complex32::new(1., 0.); 4];
         assert_eq!(&output_buffer, &expected);
     }

@@ -23,9 +23,9 @@ fn main() {
 
 
     for _ in 0..10 {
-        audio_src.write_buffer(&mut buffer1);
-        r2c.process_buffer(&buffer1, &mut buffer2);
-        fft.process_buffer(&buffer2, &mut  buffer3);
+        let _ = audio_src.write_buffer(&mut buffer1);
+        let _ = r2c.process_buffer(&buffer1, &mut buffer2);
+        let _ = fft.process_buffer(&buffer2, &mut  buffer3);
 
         let freq = spectrum::max_freq(&buffer3, SAMPLE_RATE);
         if freq > 1.0 {

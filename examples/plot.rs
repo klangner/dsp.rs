@@ -59,7 +59,7 @@ fn main() {
     let params = parse_params();
     let mut generator = create_generator(&params);
     let mut buffer = vec![0.0; SIGNAL_LENGTH];
-    generator.write_buffer(&mut buffer);
+    let _ = generator.write_buffer(&mut buffer);
 
     // Plot signal
     let idx: Vec<usize> = (0..buffer.len()).collect();

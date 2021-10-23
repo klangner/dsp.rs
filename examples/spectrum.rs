@@ -63,14 +63,14 @@ fn main() {
     let mut buffer3 = vec![Complex32::new(0., 0.); window_size];
     let mut buffer4 = vec![0.; window_size];
     
-    generator.write_buffer(&mut buffer1);
-    r2c.process_buffer(&buffer1, &mut buffer2);
+    let _ = generator.write_buffer(&mut buffer1);
+    let _ = r2c.process_buffer(&buffer1, &mut buffer2);
 
     // Split signal into frames
     let ps: Vec<f32> = (0..num_spectrums).flat_map(|i| {
         let (x1, x2) = (i*window_size, ((i+1)*window_size));
-        fft.process_buffer(&buffer2[x1..x2], &mut buffer3);
-        c2r.process_buffer(&buffer3, &mut buffer4);
+        let _ = fft.process_buffer(&buffer2[x1..x2], &mut buffer3);
+        let _ = c2r.process_buffer(&buffer3, &mut buffer4);
         buffer4[0..window_size/2].to_owned()
     }).collect();
 
