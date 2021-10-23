@@ -1,6 +1,6 @@
 //! Signal generator
 //! 
-//! Signal generator are used to generate different potentially infinite signals
+//! Signal generator are used to generate different infinite signals
 //! Most generator have state and can fill buffer with data.
 //! 
 
@@ -9,7 +9,7 @@ use std::f32::consts::PI;
 use rand_distr::{Normal, Distribution};
 use rand;
 
-use crate::signal::Signal;
+use crate::node::SourceNode;
 
 
 /// Generate impulse signal
@@ -19,18 +19,35 @@ use crate::signal::Signal;
 /// Example
 /// 
 /// ```
-/// use dsp::generator::impulse;
+/// use dsp::node::SourceNode;
+/// use dsp::generator::Impulse;
 /// 
-/// let signal = impulse(100, 2, 100);
-/// assert_eq!(signal.len(), 100);
-/// assert_eq!(signal.data[0], 0.0);
-/// assert_eq!(signal.data[1], 0.0);
-/// assert_eq!(signal.data[2], 1.0);
-/// assert_eq!(signal.data[3], 0.0);
+/// let mut signal = Impulse::new();
+/// let mut buffer = vec![2.0;100];
+/// signal.write_buffer(&mut buffer);
+/// 
+/// assert_eq!(buffer[0], 1.0);
+/// assert_eq!(buffer[1], 0.0);
+/// assert_eq!(buffer[2], 0.0);
 /// ```
-pub fn impulse(length: usize, impulse_pos: usize, sample_rate: usize) -> Signal {
-    let data = (0..length).map(|i| if i == impulse_pos { 1.0 } else { 0.0 }).collect();
-    Signal { data, sample_rate }
+pub struct Impulse {
+     impulse_send: bool,
+}
+
+impl Impulse {
+    pub fn new() -> Impulse {
+        Impulse {impulse_send: false}
+    }
+}
+
+impl SourceNode<f32> for Impulse {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = 0.};
+        if !self.impulse_send && buffer.len() > 0 {
+            buffer[0] = 1.;
+            self.impulse_send = true;
+        }
+    }
 }
 
 
@@ -41,91 +58,184 @@ pub fn impulse(length: usize, impulse_pos: usize, sample_rate: usize) -> Signal 
 /// Example
 /// 
 /// ```
-/// use dsp::generator::step;
+/// use dsp::node::SourceNode;
+/// use dsp::generator::Step;
 /// 
-/// let signal = step(10, 2, 5);
-/// assert_eq!(signal.data[0], 0.0);
-/// assert_eq!(signal.data[1], 0.0);
-/// assert_eq!(signal.data[2], 1.0);
-/// assert_eq!(signal.data[3], 1.0);
+/// let mut signal = Step::new(2);
+/// let mut buffer = vec![2.0;100];
+/// signal.write_buffer(&mut buffer);
+/// 
+/// assert_eq!(buffer[0], 0.0);
+/// assert_eq!(buffer[1], 0.0);
+/// assert_eq!(buffer[2], 1.0);
+/// assert_eq!(buffer[3], 1.0);
 /// ```
-pub fn step(length: usize, step_pos: usize, sample_rate: usize) -> Signal {
-    let data = (0..length).map(|i| if i >= step_pos { 1.0 } else { 0.0 }).collect();
-    Signal { data, sample_rate }
+pub struct Step {
+    step_pos: usize,
 }
 
+impl Step {
+    pub fn new(step_pos: usize) -> Step {
+        Step{ step_pos }
+    }
+}
+
+impl SourceNode<f32> for Step {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for i in 0..buffer.len() {
+            if self.step_pos  > 0 {
+                buffer[i] = 0.;
+                self.step_pos -= 1;
+            } else {
+                buffer[i] = 1.;
+            }
+        }
+    }
+}
 
 /// Sinusoidal signal
-///   * length - size of the output vector
-///   * freq - signal frequency
-///   * sample_rate - Number of samples/s
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generator::sine;
+/// use dsp::node::SourceNode;
+/// use dsp::generator::Sinusoid;
 /// 
-/// let signal = sine(10, 2.0, 8);
-/// assert_approx_eq!(signal.data[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[1], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[2], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[3], -1.0, 1e-5f32);
+/// let mut signal = Sinusoid::new(2.0, 8);
+/// let mut buffer = vec![0.0;10];
+/// signal.write_buffer(&mut buffer);
+/// 
+/// assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
+/// assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
+/// assert_approx_eq!(buffer[3], -1.0, 1e-5f32);
 /// ```
-pub fn sine(length: usize, freq: f32, sample_rate: usize) -> Signal {
-    let w = 2.0 * PI * freq / (sample_rate as f32);
-    let data = (0..length).map(|i| f32::sin((i as f32) * w)).collect();
-    Signal { data, sample_rate }
+pub struct Sinusoid {
+    step_pos: usize,
+    freq: f32,
+    sample_rate: usize,
 }
 
+impl Sinusoid {
+    /// Create new sinusoid generator
+    ///   * freq - signal frequency
+    ///   * sample_rate - Number of samples/s
+    pub fn new(freq: f32, sample_rate: usize) -> Sinusoid {
+        Sinusoid { step_pos: 0, freq, sample_rate}
+    }
+}
+
+impl SourceNode<f32> for Sinusoid {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
+        let w = 2.0 * PI * self.freq / (self.sample_rate as f32);
+        for i in 0..buffer.len() {
+            buffer[i] = f32::sin((self.step_pos as f32) * w);
+            self.step_pos += 1;
+            if self.step_pos >= self.sample_rate {
+                self.step_pos = 0;
+            }
+        }
+    }
+}
 
 /// Generate triangular signal
-///   * length - size of the output vector
-///   * freq - signal frequency
-///   * sample_rate - Number of samples/s
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generator::sawtooth;
+/// use dsp::generator::Sawtooth;
+/// use dsp::node::SourceNode;
 /// 
-/// let signal = sawtooth(16, 4.0, 16);
-/// assert_approx_eq!(signal.data[0], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[1], -0.5, 1e-5f32);
-/// assert_approx_eq!(signal.data[2], 0.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[3], 0.5, 1e-5f32);
-/// assert_approx_eq!(signal.data[4], -1.0, 1e-5f32);
+/// let mut signal = Sawtooth::new(4.0, 16);
+/// let mut buffer = vec![0.0;10];
+/// signal.write_buffer(&mut buffer);
+/// 
+/// assert_approx_eq!(buffer[0], -1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[1], -0.5, 1e-5f32);
+/// assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
+/// assert_approx_eq!(buffer[3], 0.5, 1e-5f32);
+/// assert_approx_eq!(buffer[4], -1.0, 1e-5f32);
 /// ```
-pub fn sawtooth(length: usize, freq: f32, sample_rate: usize) -> Signal {
-    let data = (0..length).map(|i| 2.0 * ((i as f32) * freq / (sample_rate as f32)).fract() - 1.0).collect();
-    Signal { data, sample_rate }
+pub struct Sawtooth {
+    step_pos: usize,
+    freq: f32,
+    sample_rate: usize,
+}
+
+impl Sawtooth {
+    /// Create new Triangle generator
+    ///   * freq - signal frequency
+    ///   * sample_rate - Number of samples/s
+    pub fn new(freq: f32, sample_rate: usize) -> Sawtooth {
+        Sawtooth { step_pos: 0, freq, sample_rate}
+    }
+}
+
+impl SourceNode<f32> for Sawtooth {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for i in 0..buffer.len() {
+            let value = 2.0 * ((self.step_pos as f32) * self.freq / (self.sample_rate as f32)).fract() - 1.0;
+            buffer[i] = value;
+            self.step_pos += 1;
+            if self.step_pos >= self.sample_rate {
+                self.step_pos = 0;
+            }
+        }
+    }
 }
 
 
 /// Generate square signal
-///   * length - size of the output vector
-///   * signal frequency
-///   * Number of samples/s
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::generator::square;
+/// use dsp::generator::Square;
+/// use dsp::node::SourceNode;
 /// 
-/// let signal = square(10, 4.0, 16);
-/// assert_approx_eq!(signal.data[0], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[1], 1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[2], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[3], -1.0, 1e-5f32);
-/// assert_approx_eq!(signal.data[4], 1.0, 1e-5f32);
+/// let mut signal = Square::new(4.0, 16);
+/// let mut buffer = vec![0.0;10];
+/// signal.write_buffer(&mut buffer);
+/// 
+/// assert_approx_eq!(buffer[0], 1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[2], -1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[3], -1.0, 1e-5f32);
+/// assert_approx_eq!(buffer[4], 1.0, 1e-5f32);
 /// ```
-pub fn square(length: usize, freq: f32, sample_rate: usize) -> Signal {
-    let data = (0..length)
-        .map(|i| if ((i as f32) * freq/(sample_rate as f32)).fract() < 0.5 {1.0} else {-1.0})
-        .collect();
-    Signal { data, sample_rate }
+pub struct Square {
+    step_pos: usize,
+    freq: f32,
+    sample_rate: usize,
+}
+
+impl Square {
+    /// Create new square function generator
+    ///   * freq - signal frequency
+    ///   * sample_rate - Number of samples/s
+    pub fn new(freq: f32, sample_rate: usize) -> Square {
+        Square { step_pos: 0, freq, sample_rate}
+    }
+}
+
+impl SourceNode<f32> for Square {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for i in 0..buffer.len() {
+            let value = if ((self.step_pos as f32) * self.freq/(self.sample_rate as f32)).fract() < 0.5 {
+                1.0
+            } else {
+                -1.0
+            };
+            buffer[i] = value;
+            self.step_pos += 1;
+            if self.step_pos >= self.sample_rate {
+                self.step_pos = 0;
+            }
+        }
+    }
 }
 
 
@@ -134,82 +244,74 @@ pub fn square(length: usize, freq: f32, sample_rate: usize) -> Signal {
 /// Example
 /// 
 /// ```
-/// use dsp::generator::noise;
+/// use dsp::generator::Noise;
+/// use dsp::node::SourceNode;
 /// 
-/// let signal = noise(10, 0.1, 10);
+/// let mut signal = Noise::new(4.0);
+/// let mut buffer = vec![0.0;10];
+/// signal.write_buffer(&mut buffer);
 /// ```
-pub fn noise(length: usize, std: f32, sample_rate: usize) -> Signal {
-    let normal = Normal::new(0.0, std as f64).unwrap();
-    let data = (0..length).map(|_| normal.sample(&mut rand::thread_rng()) as f32).collect();
-    Signal { data, sample_rate }
+pub struct Noise {
+    std: f32,
+}
+
+impl Noise {
+    pub fn new(std: f32) -> Noise {
+        Noise { std }
+    }
+}
+
+impl SourceNode<f32> for Noise {
+    fn write_buffer(&mut self, buffer: &mut [f32]) { 
+        let normal = Normal::new(0.0, self.std as f64).unwrap();
+        for i in 0..buffer.len() {
+            buffer[i] = normal.sample(&mut rand::thread_rng()) as f32;
+        }
+   }
 }
 
 
 /// A chirp is a signal in which frequency increases with time.
 /// Based on:
 /// https://en.wikipedia.org/wiki/Chirp#Linear
-/// Create chirp signal
-///   * length - in samples
-///   * start_freq - Start frequency in Hz
-///   * end_freq - End frequency in Hz
-///   * sample_rate - Number of samples/s
-pub fn chirp(length: usize, start_freq: f32, end_freq: f32, sample_rate: usize) -> Signal {
-    let sweep_time = length as f32 / sample_rate as f32;
+/// 
+pub struct Chirp {
+    sweep_time: f32, 
+    start_freq: f32, 
+    end_freq: f32, 
+    sample_rate: usize,
+    sample_pos: usize
+}
 
-    fn sample(t: f32, start_freq: f32, end_freq: f32, sweep_time: f32) -> f32 {
-        let c = (end_freq - start_freq) / sweep_time;
-        let w = 2.0 * PI * (c/2.0*t.powi(2) + start_freq*t);
+impl Chirp {
+    /// Create chirp signal
+    ///   * length - in seconds
+    ///   * start_freq - Start frequency in Hz
+    ///   * end_freq - End frequency in Hz
+    ///   * sample_rate - Number of samples/s
+    pub fn new(sweep_time: f32, start_freq: f32, end_freq: f32, sample_rate: usize) -> Chirp {
+        Chirp {sweep_time, start_freq, end_freq, sample_rate, sample_pos: 0}
+    }
+        
+    fn sample(&self, t: f32) -> f32 {
+        let c = (self.end_freq - self.start_freq) / self.sweep_time;
+        let w = 2.0 * PI * (c/2.0*t.powi(2) + self.start_freq*t);
         f32::sin(w)
     }
-
-    let data = (0..length)
-        .map(|i| sweep_time * i as f32 / length as f32)
-        .map(|t|  sample(t, start_freq, end_freq, sweep_time))
-        .collect();
-    Signal { data, sample_rate }
 }
 
-
-pub struct Sine { freq: f32, amplitude: f32 }
-
-impl Sine {
-    pub fn new(freq: f32, amplitude: f32) -> Sine {
-        Sine { freq, amplitude }
-    }
-}
-
-/// Create signal as a synthesis of multiple sine signals with different amplitude
-/// 
-/// Example
-/// 
-/// ```
-/// use dsp::fft::ForwardFFT;
-/// use dsp::generator::{synth, Sine};
-/// 
-/// let sines = vec![Sine::new(20.0, 2.0), Sine::new(50.0, 0.5)];
-/// let signal = synth(1024, sines, 512);
-/// let mut ft = ForwardFFT::new(1024);
-/// let spectrum = ft.process(&signal);
-/// assert_eq!(spectrum.max_freq(), 20.0);
-/// ```
-pub fn synth(length: usize, gens: Vec<Sine>, sample_rate: usize) -> Signal {
-    if gens.is_empty() {
-        Signal::empty(sample_rate)
-    } else {
-        let norm: f32 = gens.len() as f32;
-        let mut buffer = sine(length, gens[0].freq, sample_rate)
-                            .rescale(gens[0].amplitude / norm)
-                            .data
-                            .to_owned();
-        for g in &gens[1..] {
-            let signal = sine(length, g.freq, sample_rate).rescale(g.amplitude / norm);
-            for i in 0..length {
-                buffer[i] += signal.data[i];
+impl SourceNode<f32> for Chirp {
+    fn write_buffer(&mut self, buffer: &mut [f32]) { 
+        for i in 0..buffer.len() {
+            let t = (self.sample_pos + i) as f32 / self.sample_rate as f32;
+            buffer[i] = self.sample(t);
+            if t <= self.sweep_time { 
+                self.sample_pos += 1
             }
         }
-        Signal::new(buffer, sample_rate)
     }
 }
+
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
@@ -217,4 +319,35 @@ pub fn synth(length: usize, gens: Vec<Sine>, sample_rate: usize) -> Signal {
 
 #[cfg(test)]
 mod tests {
+    use assert_approx_eq::assert_approx_eq;
+    use crate::node::SourceNode;
+    use crate::generator::Sinusoid;
+
+    #[test]
+    fn test_sine_small_buffer() {
+        let mut signal = Sinusoid::new(2.0, 8);
+        let mut buffer = vec![0.0;3];
+        signal.write_buffer(&mut buffer);
+
+        assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
+        assert_approx_eq!(buffer[1], 1.0, 1e-5f32);
+        assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
+        
+        signal.write_buffer(&mut buffer);
+        assert_approx_eq!(buffer[0], -1.0, 1e-5f32);       
+        assert_approx_eq!(buffer[1], 0.0, 1e-5f32);
+        assert_approx_eq!(buffer[2], 1.0, 1e-5f32);
+    }
+
+    #[test]
+    fn test_sine_large_buffer() {
+        let mut signal = Sinusoid::new(2.0, 8);
+        let mut buffer = vec![0.0;10];
+        signal.write_buffer(&mut buffer);
+        signal.write_buffer(&mut buffer);
+        assert_approx_eq!(buffer[0], 0.0, 1e-5f32);
+        assert_approx_eq!(buffer[1], -1.0, 1e-5f32);       
+        assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
+        assert_approx_eq!(buffer[3], 1.0, 1e-5f32);
+    }
 }

@@ -3,7 +3,7 @@ extern crate clap;
 
 use gnuplot::{Figure, Color};
 use clap::{Arg, App};
-use dsp::signal::Signal;
+use dsp::node::SourceNode;
 use dsp::generator::*;
 
 
@@ -45,23 +45,25 @@ fn parse_params() -> Params {
 }
 
 /// Create signal
-fn create_signal(params: &Params) -> Signal {
+fn create_generator(params: &Params) -> Box<dyn SourceNode<f32>> {
     match params.gen_name.as_ref() {
-        "sawtooth"  => sawtooth(SIGNAL_LENGTH, params.freq, params.sample_rate),
-        "square"    => square(SIGNAL_LENGTH, params.freq, params.sample_rate),
-        "noise"     => noise(SIGNAL_LENGTH, 0.1, params.sample_rate),
-        "chirp"     => chirp(SIGNAL_LENGTH, 1.0, 50.0, params.sample_rate),
-        _           => sine(SIGNAL_LENGTH, params.freq, params.sample_rate),
+        "sawtooth"  => Box::new(Sawtooth::new(params.freq, params.sample_rate)),
+        "square"    => Box::new(Square::new(params.freq, params.sample_rate)),
+        "noise"     => Box::new(Noise::new(0.1)),
+        "chirp"     => Box::new(Chirp::new(4.0, 1.0, 10.0, params.sample_rate)),
+        _           => Box::new(Sinusoid::new(params.freq, params.sample_rate)),
     }
 }
 
 fn main() {
     let params = parse_params();
-    let signal = create_signal(&params);
+    let mut generator = create_generator(&params);
+    let mut buffer = vec![0.0; SIGNAL_LENGTH];
+    generator.write_buffer(&mut buffer);
 
     // Plot signal
-    let idx: Vec<usize> = (0..signal.len()).collect();
+    let idx: Vec<usize> = (0..buffer.len()).collect();
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, signal.data, &[Color("red")]);
+    fg.axes2d().lines(&idx, buffer, &[Color("red")]);
     fg.show().unwrap();
 }
