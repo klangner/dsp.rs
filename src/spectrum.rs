@@ -4,93 +4,30 @@ use num_complex::Complex32;
 use crate::vector;
 
 
-/// Spectrum of the signal
-pub struct Spectrum {
-    pub data: Vec<Complex32>,
-    pub sample_rate: usize
+/// Calculated frequency of a given component
+/// 
+pub fn item_freq(data: &[Complex32], sample_rate: usize, i: usize) -> f32 {
+    let pos = i % data.len();
+    let half_pos = if pos < data.len()/2 { pos } else {data.len() - pos};
+    (half_pos * sample_rate) as f32 / data.len() as f32
 }
 
-impl Spectrum {
-
-    /// create new spectrum from the given data
-    pub fn new(data: Vec<Complex32>, sample_rate: usize) -> Spectrum {
-        Spectrum { data, sample_rate }
-    }
-
-    /// Length of the spectrum signal
-    pub fn len(&self) -> usize {
-        self.data.len()
-    }
-
-    /// Calculated frequency of a given component
-    /// 
-    /// Example
-    /// 
-    /// ```
-    /// /*
-    /// use dsp::fft::ForwardFFT;
-    /// use dsp::generator::sine;
-    ///
-    /// let signal = sine(1024, 20.0, 512);
-    /// let mut ft = ForwardFFT::new(1024);
-    /// let spectrum = ft.process(&signal);
-    /// assert_eq!(spectrum.item_freq(40), 20.0);
-    /// */
-    /// ```
-    pub fn item_freq(&self, i: usize) -> f32 {
-        let pos = i % self.len();
-        let half_pos = if pos < self.len()/2 { pos } else {self.len() - pos};
-        (half_pos * self.sample_rate) as f32 / self.len() as f32
-    }
-
-    /// Return max frequency
-    /// 
-    /// Example
-    /// 
-    /// ```
-    /// /*
-    /// use dsp::fft::ForwardFFT;
-    /// use dsp::generator::sine;
-    ///
-    /// let signal = sine(1024, 28.0, 512);
-    /// let mut ft = ForwardFFT::new(1024);
-    /// let spectrum = ft.process(&signal);
-    /// assert_eq!(spectrum.max_freq(), 28.0);
-    /// */
-    /// ```
-    pub fn max_freq(&self) -> f32 {
-        let idx = vector::argmax(&self.to_real());
-        if idx < self.len() / 2 {
-            self.item_freq(idx)
-        } else {
-            self.item_freq(self.len() - idx)
-        }
-    }
-
-    /// Convert Complex buffer into Real one
-    pub fn to_real(&self) -> Vec<f32> {
-        self.data.iter().map(|v| v.norm()).collect()
+/// Return max frequency of spectrogram data
+/// 
+pub fn max_freq(data: &[Complex32], sample_rate: usize) -> f32 {
+    let buffer: Vec<f32> = data.iter().map(|v| v.norm()).collect();
+    let idx = vector::argmax(&buffer);
+    if idx < data.len() / 2 {
+        item_freq(&data, sample_rate, idx)
+    } else {
+        item_freq(&data, sample_rate, data.len() - idx)
     }
 }
+
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
-    // use crate::block::SourceBlock;
-    // use crate::fft::ForwardFFT;
-    // use crate::generator::Sinusoide;
-
-    // #[test]
-    // fn test_item_freq() {
-    //     let mut signal = Sinusoide::new(20.0, 512);
-    //     let mut buffer = vec![0.0;1024];
-    //     signal.write_buffer(&mut buffer);
-    //     let mut ft = ForwardFFT::new(1024);
-    //     let spectrum = ft.process(&buffer);
-    //     assert_eq!(spectrum.item_freq(40), 20.0);
-    //     assert_eq!(spectrum.item_freq(spectrum.len()+40), 20.0);
-    //     assert_eq!(spectrum.item_freq(spectrum.len()-40), 20.0);
-    // }
 }

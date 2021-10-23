@@ -3,7 +3,7 @@ use dsp::node::*;
 use dsp::fft::*;
 use dsp::file::audio::AudioSource;
 use dsp::num_complex::Complex32;
-use dsp::spectrum::*;
+use dsp::spectrum;
 use pitch_calc::calc::step_from_hz;
 use pitch_calc::step::Step;
 
@@ -27,9 +27,8 @@ fn main() {
         audio_src.write_buffer(&mut buffer1);
         r2c.process_buffer(&buffer1, &mut buffer2);
         fft.process_buffer(&buffer2, &mut  buffer3);
-        
-        let spectrum = Spectrum::new(buffer3.to_owned(), SAMPLE_RATE);
-        let freq = spectrum.max_freq();
+
+        let freq = spectrum::max_freq(&buffer3, SAMPLE_RATE);
         if freq > 1.0 {
             let step = step_from_hz(freq);
             let letter = Step(step).letter_octave();
