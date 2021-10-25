@@ -22,6 +22,7 @@ Implemented generators:
   * [x] Triangle
   * [x] Square
   * [x] Chirp
+  * [x] Noise
 
 ## Filters
 
@@ -42,6 +43,17 @@ Implemented generators:
 
   * [x] FFT forward and inverse using RustFFT crate.
   * [x] Find peak frequency
+
+
+## Runtime
+There is minimal support for runtime. 
+Runtime is designed as a graph of nodes. 
+Node is a single computation which takes buffer as an input and generate data 
+to provided output buffer. It means that node do not allocate memory for data.
+There are 3 types of node:
+  * SourceNode - Generate new data
+  * ProcessingNode - Processing data between buffers
+  * SinkNode - Takes data from buffer and consumes it.
   
   
 # License
