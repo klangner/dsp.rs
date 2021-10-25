@@ -10,7 +10,7 @@ pub trait SourceNode<T> {
 }
 
 pub trait SinkNode<T> {
-    fn read_buffer(&self, buffer: &[T]) -> Result<()>;
+    fn read_buffer(&mut self, buffer: &[T]) -> Result<()>;
 }
 
 pub trait ProcessNode<I, O> {

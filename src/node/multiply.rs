@@ -11,7 +11,7 @@ use crate::runtime::node::ProcessNode;
 /// 
 /// ```
 /// use dsp::runtime::node::ProcessNode;
-/// use dsp::node::multiply_const::MultiplyConst;
+/// use dsp::node::multiply::MultiplyConst;
 /// 
 /// let node = MultiplyConst::new(3.);
 /// let input_buffer = vec![1., 2., 3.];
