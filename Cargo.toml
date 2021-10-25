@@ -31,9 +31,10 @@ assert_approx_eq = "^1.1"
 gnuplot = "^0.0.37"
 clap = "^2"
 lewton = "^0.10"
-criterion = "^0.3"
+criterion = "^0.3.5"
 transpose = "^0.2"
 pitch_calc = "^0.12"
+crossbeam-deque = "0.8"
 
 [[bench]]
 name = "gen_bench"
