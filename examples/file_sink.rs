@@ -32,8 +32,7 @@ fn parse_params() -> Params {
                 .get_matches();
     let sample_rate = value_t!(args, "sample-rate", usize).unwrap_or(512);
     let freq = value_t!(args, "freq", f32).unwrap_or(4.0);
-    Params { sample_rate: sample_rate,
-             freq: freq }
+    Params { sample_rate: sample_rate, freq: freq }
 }
 
 

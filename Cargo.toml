@@ -55,3 +55,6 @@ required-features = ["random"]
 
 [[example]]
 name = "file_sink"
+
+[[example]]
+name = "file_source"
