@@ -1,13 +1,13 @@
 #[macro_use]
 extern crate clap;
 
-use gnuplot::{Figure, Color};
+use gnuplot::{Figure, Color, AxesCommon};
 use clap::{Arg, App};
 use dsp::runtime::node::SourceNode;
 use dsp::node::generator::*;
 
 
-const SIGNAL_LENGTH: usize = 1_000;
+const SIGNAL_LENGTH: usize = 512;
 
 
 // Application params
@@ -61,9 +61,12 @@ fn main() {
     let mut buffer = vec![0.0; SIGNAL_LENGTH];
     let _ = generator.write_buffer(&mut buffer);
 
-    // Plot signal
-    let idx: Vec<usize> = (0..buffer.len()).collect();
+    // Plot signal with ms as units
+    let idx: Vec<usize> = (0..buffer.len()).map(|i| i * 1000 / params.sample_rate).collect();
     let mut fg = Figure::new();
-    fg.axes2d().lines(&idx, buffer, &[Color("red")]);
+    fg.set_title("Scope plot");
+    let axes = fg.axes2d();
+    axes.lines(&idx, buffer, &[Color("red")]);
+    axes.set_x_label("Time in ms", &[]);
     fg.show().unwrap();
 }
