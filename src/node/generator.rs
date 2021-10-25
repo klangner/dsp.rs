@@ -6,9 +6,11 @@
 
 use std::f32;
 use std::f32::consts::PI;
-use rand_distr::{Normal, Distribution};
 use anyhow::Result;
+#[cfg(feature = "random")]
 use rand;
+#[cfg(feature = "random")]
+use rand_distr::{Normal, Distribution};
 
 use crate::runtime::node::SourceNode;
 
@@ -257,16 +259,19 @@ impl SourceNode<f32> for Square {
 /// let mut buffer = vec![0.0;10];
 /// let _ = signal.write_buffer(&mut buffer);
 /// ```
+#[cfg(feature = "random")]
 pub struct Noise {
     std: f32,
 }
 
+#[cfg(feature = "random")]
 impl Noise {
     pub fn new(std: f32) -> Noise {
         Noise { std }
     }
 }
 
+#[cfg(feature = "random")]
 impl SourceNode<f32> for Noise {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> { 
         let normal = Normal::new(0.0, self.std as f64).unwrap();

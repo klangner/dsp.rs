@@ -1,6 +1,6 @@
 [package]
 name = "dsp"
-version = "0.10.0"
+version = "0.10.1"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
 description = "Digital Signal Processing"
 keywords = ["dsp"]
@@ -10,6 +10,10 @@ homepage = "https://github.com/klangner/dsp"
 documentation = "https://docs.rs/dsp"
 edition = "2018"
 
+[features]
+default = []
+audio = ["cpal", "audrey"]
+random = ["rand", "rand_distr"]
 
 [dependencies]
 anyhow = "1.0"
@@ -17,9 +21,10 @@ arraydeque = "^0.4"
 itertools = "^0.10"
 num-complex = "^0.4"
 rustfft = "^6"
-rand_distr = "^0.4"
-audrey = "^0.3"
-rand = "^0.8"
+cpal = { version = "0.13.4", optional = true }
+audrey = { version = "^0.3", optional = true }
+rand = { version = "^0.8", optional = true }
+rand_distr = {version = "^0.4", optional = true }
 
 [dev-dependencies]
 assert_approx_eq = "^1.1"
@@ -33,3 +38,15 @@ pitch_calc = "^0.12"
 [[bench]]
 name = "gen_bench"
 harness = false
+
+[[example]]
+name = "tuner"
+required-features = ["audio"]
+
+[[example]]
+name = "spectrum"
+required-features = ["random"]
+
+[[example]]
+name = "plot"
+required-features = ["random"]
