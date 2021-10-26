@@ -43,31 +43,22 @@ impl SinkNode<f32> for UdpSink {
 
 /// Load binary data from file
 /// 
-/// Example
-/// 
-/// ```
-/// //use dsp::runtime::node::SourceNode;
-/// //use dsp::node::file::TcpSource;
-/// 
-/// //let mut node = tcpSource::new("target/file.dat");
-/// //let mut input_buffer = vec![1.;100];
-/// //node.write_buffer(&mut input_buffer);
-/// ```
 pub struct UdpSource {
+    socket: UdpSocket,
+    bytes: Vec<u8>,
 }
-/*
+
 impl UdpSource {
-    pub fn new(file_name: &str) -> TcpSource {
-        if let Ok(file) = File::open(file_name) {
-            TcpSource {file: Some(file)}
-        } else {
-            TcpSource{file: None}
-        }
+    pub fn new(port: usize, buffer_size: usize) -> UdpSource {
+        let socket = UdpSocket::bind(format!("127.0.0.1:{}", port)).expect("Can't bind to udp socket");
+        UdpSource {socket, bytes: vec![0; 4*buffer_size]}
     }
 }
-*/
+
 impl SourceNode<f32> for UdpSource {
-    fn write_buffer(&mut self, _output_buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, output_buffer: &mut [f32]) -> Result<()> {
+        let _ = self.socket.recv_from(&mut self.bytes).expect("Error reading from socket");
+        LittleEndian::read_f32_into(&self.bytes, output_buffer);
         Ok(())
     }
 }
