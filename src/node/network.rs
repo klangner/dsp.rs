@@ -12,9 +12,9 @@ use crate::runtime::node::{SinkNode, SourceNode};
 /// 
 /// ```
 /// use dsp::runtime::node::SinkNode;
-/// use dsp::node::tcp::UdpSink;
+/// use dsp::node::network::UdpSink;
 /// 
-/// let mut node = UdpSink::new(3456);
+/// let mut node = UdpSink::new(3456, "127.0.0.1:1234");
 /// let input_buffer = vec![1.;100];
 /// node.read_buffer(&input_buffer);
 /// ```
@@ -24,10 +24,10 @@ pub struct UdpSink {
 }
 
 impl UdpSink {
-    pub fn new(port: u32, addr: String) -> UdpSink {
+    pub fn new(port: u32, addr: &str) -> UdpSink {
         let bind_addr = format!("127.0.0.1:{}", port);
         let socket = UdpSocket::bind(bind_addr).expect("Failed to bind UdpSink"); 
-        UdpSink {socket, addr}
+        UdpSink {socket, addr: addr.to_owned()}
     }
 }
 
@@ -53,10 +53,10 @@ impl SinkNode<f32> for UdpSink {
 /// //let mut input_buffer = vec![1.;100];
 /// //node.write_buffer(&mut input_buffer);
 /// ```
-pub struct TcpSource {
+pub struct UdpSource {
 }
 /*
-impl TcpSource {
+impl UdpSource {
     pub fn new(file_name: &str) -> TcpSource {
         if let Ok(file) = File::open(file_name) {
             TcpSource {file: Some(file)}
@@ -65,18 +65,9 @@ impl TcpSource {
         }
     }
 }
-
-impl SourceNode<f32> for TcpSource {
-    fn write_buffer(&mut self, output_buffer: &mut [f32]) -> Result<()> {
-        let mut file = self.file.as_ref().unwrap();
-        for i in 0..output_buffer.len() {
-            if let Ok(v) = file.read_f32::<LittleEndian>() {
-                output_buffer[i] = v;
-            } else {
-                break
-            }
-        }
+*/
+impl SourceNode<f32> for UdpSource {
+    fn write_buffer(&mut self, _output_buffer: &mut [f32]) -> Result<()> {
         Ok(())
     }
 }
-*/
