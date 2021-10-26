@@ -58,3 +58,6 @@ name = "file_sink"
 
 [[example]]
 name = "file_source"
+
+[[example]]
+name = "udp_sink"

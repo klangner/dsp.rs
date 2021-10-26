@@ -7,5 +7,6 @@ pub mod generator;
 pub mod fft;
 pub mod file;
 pub mod multiply;
+pub mod network;
 #[cfg(feature = "audio")]
 pub mod audio;
