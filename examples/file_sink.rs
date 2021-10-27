@@ -3,7 +3,7 @@ extern crate clap;
 
 use clap::{Arg, App};
 use dsp::runtime::node::{SourceNode, SinkNode};
-use dsp::node::generator::Sinusoid;
+use dsp::node::generator::Sine;
 use dsp::node::file::FileSink;
 
 
@@ -38,7 +38,7 @@ fn parse_params() -> Params {
 
 fn main() {
     let params = parse_params();
-    let mut generator = Sinusoid::new(params.freq, params.sample_rate);
+    let mut generator = Sine::new(params.freq, params.sample_rate);
     let mut file_sink = FileSink::new("target/example.data");
     let mut buffer = vec![0.0; SIGNAL_LENGTH];
 

@@ -125,9 +125,9 @@ impl SourceNode<f32> for Step {
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Sinusoid;
+/// use dsp::node::generator::Sine;
 /// 
-/// let mut signal = Sinusoid::new(2.0, 8);
+/// let mut signal = Sine::new(2.0, 8);
 /// let mut buffer = vec![0.0;10];
 /// let _ = signal.write_buffer(&mut buffer);
 /// 
@@ -136,23 +136,23 @@ impl SourceNode<f32> for Step {
 /// assert_approx_eq!(buffer[2], 0.0, 1e-5f32);
 /// assert_approx_eq!(buffer[3], -1.0, 1e-5f32);
 /// ```
-pub struct Sinusoid {
+pub struct Sine {
     step_pos: usize,
     freq: f32,
     sample_rate: usize,
 }
 
-impl Sinusoid {
+impl Sine {
     /// Create new sinusoid generator
     ///   * freq - signal frequency
     ///   * sample_rate - Number of samples/s
-    pub fn new(freq: f32, sample_rate: usize) -> Sinusoid {
-        Sinusoid { step_pos: 0, freq, sample_rate}
+    pub fn new(freq: f32, sample_rate: usize) -> Sine {
+        Sine { step_pos: 0, freq, sample_rate}
     }
 }
 
 // Iterator implementation
-impl Iterator for Sinusoid {
+impl Iterator for Sine {
     type Item = f32;
     
     fn next(&mut self) -> Option<Self::Item> {
@@ -166,7 +166,7 @@ impl Iterator for Sinusoid {
     }
 }
 
-impl SourceNode<f32> for Sinusoid {
+impl SourceNode<f32> for Sine {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
@@ -396,11 +396,11 @@ impl SourceNode<f32> for Chirp {
 mod tests {
     use assert_approx_eq::assert_approx_eq;
     use crate::runtime::node::SourceNode;
-    use crate::node::generator::Sinusoid;
+    use crate::node::generator::Sine;
 
     #[test]
     fn test_sine_small_buffer() {
-        let mut signal = Sinusoid::new(2.0, 8);
+        let mut signal = Sine::new(2.0, 8);
         let mut buffer = vec![0.0;3];
         let _ = signal.write_buffer(&mut buffer);
 
@@ -416,7 +416,7 @@ mod tests {
 
     #[test]
     fn test_sine_large_buffer() {
-        let mut signal = Sinusoid::new(2.0, 8);
+        let mut signal = Sine::new(2.0, 8);
         let mut buffer = vec![0.0;10];
         let _ = signal.write_buffer(&mut buffer);
         let _ = signal.write_buffer(&mut buffer);

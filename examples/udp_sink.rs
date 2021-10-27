@@ -1,5 +1,5 @@
 use dsp::runtime::node::{SourceNode, SinkNode};
-use dsp::node::generator::Sinusoid;
+use dsp::node::generator::Sine;
 use dsp::node::network::UdpSink;
 
 
@@ -10,7 +10,7 @@ const FREQ: f32 = 440.;
 
 
 fn main() {
-    let mut generator = Sinusoid::new(FREQ, SAMPLE_RATE);
+    let mut generator = Sine::new(FREQ, SAMPLE_RATE);
     let mut tcp_sink = UdpSink::new(1212, "127.0.0.1:1234");
     let mut buffer = vec![0.0; BUFFER_SIZE];
 
