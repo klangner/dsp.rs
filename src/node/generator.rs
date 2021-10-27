@@ -43,13 +43,25 @@ impl Impulse {
     }
 }
 
+// Iterator implementation
+impl Iterator for Impulse {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let sample = if !self.impulse_send {
+            self.impulse_send = true;
+            1.
+        } else {
+            0.
+        };
+        Some(sample)
+    }
+}
+
+// Node implementation
 impl SourceNode<f32> for Impulse {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
-        for e in buffer.iter_mut() {*e = 0.};
-        if !self.impulse_send && buffer.len() > 0 {
-            buffer[0] = 1.;
-            self.impulse_send = true;
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
@@ -84,16 +96,24 @@ impl Step {
     }
 }
 
+// Iterator implementation
+impl Iterator for Step {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let sample = if self.step_pos  > 0 {
+            self.step_pos -= 1;
+            0.
+        } else {
+            1.
+        };
+        Some(sample)
+    }
+}
+
 impl SourceNode<f32> for Step {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
-        for i in 0..buffer.len() {
-            if self.step_pos  > 0 {
-                buffer[i] = 0.;
-                self.step_pos -= 1;
-            } else {
-                buffer[i] = 1.;
-            }
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
@@ -131,16 +151,24 @@ impl Sinusoid {
     }
 }
 
+// Iterator implementation
+impl Iterator for Sinusoid {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let w = 2.0 * PI * self.freq / (self.sample_rate as f32);
+        let sample = f32::sin((self.step_pos as f32) * w);
+        self.step_pos += 1;
+        if self.step_pos >= self.sample_rate {
+            self.step_pos = 0;
+        }
+        Some(sample)
+    }
+}
+
 impl SourceNode<f32> for Sinusoid {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
-        let w = 2.0 * PI * self.freq / (self.sample_rate as f32);
-        for i in 0..buffer.len() {
-            buffer[i] = f32::sin((self.step_pos as f32) * w);
-            self.step_pos += 1;
-            if self.step_pos >= self.sample_rate {
-                self.step_pos = 0;
-            }
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
@@ -179,16 +207,23 @@ impl Sawtooth {
     }
 }
 
+// Iterator implementation
+impl Iterator for Sawtooth {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let sample = 2.0 * ((self.step_pos as f32) * self.freq / (self.sample_rate as f32)).fract() - 1.0;
+        self.step_pos += 1;
+        if self.step_pos >= self.sample_rate {
+            self.step_pos = 0;
+        }
+        Some(sample)
+    }
+}
+
 impl SourceNode<f32> for Sawtooth {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
-        for i in 0..buffer.len() {
-            let value = 2.0 * ((self.step_pos as f32) * self.freq / (self.sample_rate as f32)).fract() - 1.0;
-            buffer[i] = value;
-            self.step_pos += 1;
-            if self.step_pos >= self.sample_rate {
-                self.step_pos = 0;
-            }
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
@@ -228,20 +263,27 @@ impl Square {
     }
 }
 
+// Iterator implementation
+impl Iterator for Square {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let sample = if ((self.step_pos as f32) * self.freq/(self.sample_rate as f32)).fract() < 0.5 {
+            1.0
+        } else {
+            -1.0
+        };
+        self.step_pos += 1;
+        if self.step_pos >= self.sample_rate {
+            self.step_pos = 0;
+        }
+        Some(sample)
+    }
+}
+
 impl SourceNode<f32> for Square {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
-        for i in 0..buffer.len() {
-            let value = if ((self.step_pos as f32) * self.freq/(self.sample_rate as f32)).fract() < 0.5 {
-                1.0
-            } else {
-                -1.0
-            };
-            buffer[i] = value;
-            self.step_pos += 1;
-            if self.step_pos >= self.sample_rate {
-                self.step_pos = 0;
-            }
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
@@ -268,6 +310,18 @@ pub struct Noise {
 impl Noise {
     pub fn new(std: f32) -> Noise {
         Noise { std }
+    }
+}
+
+// Iterator implementation
+#[cfg(feature = "random")]
+impl Iterator for Noise {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let normal = Normal::new(0.0, self.std as f64).unwrap();
+        let sample = normal.sample(&mut rand::thread_rng()) as f32;
+        Some(sample)
     }
 }
 
@@ -312,15 +366,23 @@ impl Chirp {
     }
 }
 
+// Iterator implementation
+impl Iterator for Chirp {
+    type Item = f32;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let t = self.sample_pos as f32 / self.sample_rate as f32;
+        let sample = self.sample(t);
+        if t <= self.sweep_time { 
+            self.sample_pos += 1
+        }
+        Some(sample)
+    }
+}
+
 impl SourceNode<f32> for Chirp {
     fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> { 
-        for i in 0..buffer.len() {
-            let t = (self.sample_pos + i) as f32 / self.sample_rate as f32;
-            buffer[i] = self.sample(t);
-            if t <= self.sweep_time { 
-                self.sample_pos += 1
-            }
-        }
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
         Ok(())
     }
 }
