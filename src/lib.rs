@@ -6,6 +6,7 @@
 pub mod node;
 pub mod runtime;
 pub mod filter;
+pub mod signal;
 pub mod spectrum;
 pub mod window;
 mod vector;

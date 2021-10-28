@@ -1,6 +1,5 @@
 //! Standard Windows functions
 
-use std::cmp;
 use std::f32::consts::PI;
 use crate::vector;
 
@@ -8,7 +7,7 @@ use crate::vector;
 /// A window function. Can be applied to a signal
 #[derive(Clone, Debug, PartialEq)]
 pub struct Window {
-    samples: Vec<f32>,
+    pub samples: Vec<f32>,
 }
 
 impl Window {
@@ -21,6 +20,10 @@ impl Window {
     pub fn apply(&self, input: &[f32], mut output: &mut [f32]) {
         vector::multiply(&self.samples, &input, &mut output);
     }
+
+    pub fn as_slice(&self) -> &[f32] {
+        &self.samples
+    }
 }
 
 
@@ -31,16 +34,15 @@ impl Window {
 /// ```
 /// use dsp::window;
 /// 
-/// let win = window::rectangular(3, 1, 6);
-/// let frame = vec![1.0; 6];
-/// let mut output = vec![0.0; 6];
+/// let win = window::rectangular(3);
+/// let frame = vec![1.0; 3];
+/// let mut output = vec![0.0; 3];
 /// win.apply(&frame, &mut output);
-/// assert_eq!(output, vec![0.0, 1.0, 1.0, 1.0, 0.0, 0.0]);
+/// assert_eq!(output, vec![1.0, 1.0, 1.0]);
 /// ```
-pub fn rectangular(width: usize, offset: usize, window_length: usize) -> Window {
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
-    for i in offset..end {
+pub fn rectangular(width: usize) -> Window {
+    let mut samples = vec![0.0; width];
+    for i in 0..width {
         samples[i] = 1.0;    
     }
     Window { samples }
@@ -53,19 +55,18 @@ pub fn rectangular(width: usize, offset: usize, window_length: usize) -> Window 
 /// ```
 /// use dsp::window;
 /// 
-/// let win = window::triangular(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::triangular(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
-/// assert_eq!(output, vec![0.0, 0.0, 0.5, 1.0, 0.5, 0.0, 0.0]);
+/// assert_eq!(output, vec![0.0, 0.5, 1.0, 0.5, 0.0]);
 /// ```
-pub fn triangular(width: usize, offset: usize, window_length: usize) -> Window {
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
+pub fn triangular(width: usize) -> Window {
+    let mut samples = vec![0.0; width];
     let slope = 2.0 / ((width - 1) as f32);
-    for i in offset..end {
-        let y = (i - offset) as f32 * slope;
-        samples[i] = if i - offset < window_length / 2 { y } else { 2.0 - y }    
+    for i in 0..width {
+        let y = i as f32 * slope;
+        samples[i] = if i < width / 2 { y } else { 2.0 - y }    
     }
     Window { samples }
 }
@@ -78,18 +79,17 @@ pub fn triangular(width: usize, offset: usize, window_length: usize) -> Window {
 /// ```
 /// use dsp::window;
 /// 
-/// let win = window::welch(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::welch(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
-/// assert_eq!(output, vec![0.0, 0.0, 0.75, 1.0, 0.75, 0.0, 0.0]);
+/// assert_eq!(output, vec![0.0, 0.75, 1.0, 0.75, 0.0]);
 /// ```
-pub fn welch(width: usize, offset: usize, window_length: usize) -> Window {
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
+pub fn welch(width: usize) -> Window {
+    let mut samples = vec![0.0; width];
     let half_width = (width-1) as f32 / 2.0;
-    for i in offset..end {
-        let n = (i - offset) as f32;
+    for i in 0..width {
+        let n = i as f32;
         let y = 1.0 - ((n - half_width) / half_width).powi(2);
         samples[i] = y as f32;
     }
@@ -105,23 +105,20 @@ pub fn welch(width: usize, offset: usize, window_length: usize) -> Window {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::window;
 /// 
-/// let win = window::sine(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::sine(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
 /// assert_approx_eq!(output[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[1], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[2], 0.707, 1e-3f32);
-/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(output[4], 0.707, 1e-3f32);
-/// assert_approx_eq!(output[5], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.707, 1e-3f32);
+/// assert_approx_eq!(output[2], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[3], 0.707, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.0, 1e-5f32);
 /// ```
-pub fn sine(width: usize, offset: usize, window_length: usize) -> Window {
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
-    for i in offset..end {
-        let n = (i - offset) as f32;
+pub fn sine(width: usize) -> Window {
+    let mut samples = vec![0.0; width];
+    for i in 0..width {
+        let n = i as f32;
         samples[i] = (PI * n / (width - 1) as f32).sin();
     }
     Window { samples }
@@ -136,23 +133,20 @@ pub fn sine(width: usize, offset: usize, window_length: usize) -> Window {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::window;
 /// 
-/// let win = window::hann(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::hann(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
 /// assert_approx_eq!(output[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[1], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[2], 0.5, 1e-3f32);
-/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(output[4], 0.5, 1e-3f32);
-/// assert_approx_eq!(output[5], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.5, 1e-3f32);
+/// assert_approx_eq!(output[2], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[3], 0.5, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.0, 1e-5f32);
 /// ```
-pub fn hann(width: usize, offset: usize, window_length: usize) -> Window {
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
-    for i in offset..end {
-        let n = (i - offset) as f32;
+pub fn hann(width: usize) -> Window {
+    let mut samples = vec![0.0; width];
+    for i in 0..width {
+        let n = i as f32;
         samples[i] = (PI * n / (width - 1) as f32).sin().powi(2);
     }
     Window { samples }
@@ -167,25 +161,22 @@ pub fn hann(width: usize, offset: usize, window_length: usize) -> Window {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::window;
 /// 
-/// let win = window::hamming(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::hamming(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
-/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[1], 0.0869, 1e-3f32);
-/// assert_approx_eq!(output[2], 0.54347825, 1e-3f32);
-/// assert_approx_eq!(output[3], 1.0, 1e-3f32);
-/// assert_approx_eq!(output[4], 0.54347825, 1e-3f32);
-/// assert_approx_eq!(output[5], 0.0869, 1e-3f32);
-/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[0], 0.0869, 1e-3f32);
+/// assert_approx_eq!(output[1], 0.54347825, 1e-3f32);
+/// assert_approx_eq!(output[2], 1.0, 1e-3f32);
+/// assert_approx_eq!(output[3], 0.54347825, 1e-3f32);
+/// assert_approx_eq!(output[4], 0.0869, 1e-3f32);
 /// ```
-pub fn hamming(width: usize, offset: usize, window_length: usize) -> Window {
+pub fn hamming(width: usize) -> Window {
     let a0 = 25.0 / 46.0;
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
+    let mut samples = vec![0.0; width];
     let size = (width - 1) as f32;
-    for i in offset..end {
-        let n = (i - offset) as f32;
+    for i in 0..width {
+        let n = i as f32;
         let v = a0 - (1.0 - a0) * (2.0 * PI * n / size).cos();
         samples[i] = v;
     }
@@ -201,27 +192,24 @@ pub fn hamming(width: usize, offset: usize, window_length: usize) -> Window {
 /// use assert_approx_eq::assert_approx_eq;
 /// use dsp::window;
 /// 
-/// let win = window::blackman(5, 1, 7);
-/// let frame = vec![1.0; 7];
-/// let mut output = vec![0.0; 7];
+/// let win = window::blackman(5);
+/// let frame = vec![1.0; 5];
+/// let mut output = vec![0.0; 5];
 /// win.apply(&frame, &mut output);
-/// assert_approx_eq!(output[0], 0.0, 1e-5f32);
-/// assert_approx_eq!(output[1], 0.00687, 1e-5f32);
-/// assert_approx_eq!(output[2], 0.34974, 1e-5f32);
-/// assert_approx_eq!(output[3], 1.0, 1e-5f32);
-/// assert_approx_eq!(output[4], 0.34974, 1e-5f32);
-/// assert_approx_eq!(output[5], 0.00687, 1e-5f32);
-/// assert_approx_eq!(output[6], 0.0, 1e-5f32);
+/// assert_approx_eq!(output[0], 0.00687, 1e-5f32);
+/// assert_approx_eq!(output[1], 0.34974, 1e-5f32);
+/// assert_approx_eq!(output[2], 1.0, 1e-5f32);
+/// assert_approx_eq!(output[3], 0.34974, 1e-5f32);
+/// assert_approx_eq!(output[4], 0.00687, 1e-5f32);
 /// ```
-pub fn blackman(width: usize, offset: usize, window_length: usize) -> Window {
+pub fn blackman(width: usize) -> Window {
     let a0 = 7938.0 / 18608.0;
     let a1 = 9240.0 / 18608.0;
     let a2 = 1430.0 / 18608.0;
-    let mut samples = vec![0.0; window_length];
-    let end = cmp::min(offset + width, window_length);
+    let mut samples = vec![0.0; width];
     let size = (width - 1) as f32;
-    for i in offset..end {
-        let n = (i - offset) as f32;
+    for i in 0..width {
+        let n = i as f32;
         let v = a0 - a1 * (2.0 * PI * n / size).cos()
                     + a2 * (4.0 * PI * n / size).cos();
         samples[i] = v;
@@ -240,16 +228,16 @@ mod tests {
 
     #[test]
     fn test_window() {
-        let win = rectangular(3, 1, 5);
-        let frame = vec![1.0; 5];
-        let mut output = vec![0.0; 5];
+        let win = rectangular(3);
+        let frame = vec![1.0; 3];
+        let mut output = vec![0.0; 3];
         win.apply(&frame, &mut output);
-        assert_eq!(output, vec![0.0, 1.0, 1.0, 1.0, 0.0]);
+        assert_eq!(output, vec![1.0, 1.0, 1.0]);
     }
 
     #[test]
     fn test_apply() {
-        let w = triangular(1000, 0, 1000);
+        let w = triangular(1000);
         let frame = vec![1.0; 1000];
         let mut output = vec![0.0; 1000];
 

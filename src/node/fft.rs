@@ -1,6 +1,7 @@
 //! Helper functions for FFT.
 use std::sync::Arc;
 use anyhow::Result;
+use crate::window;
 use rustfft::{Fft, FftPlanner};
 use crate::num_complex::Complex32;
 use crate::runtime::node::{ProcessNode};
@@ -8,26 +9,40 @@ use crate::runtime::node::{ProcessNode};
 
 pub struct ForwardFFT {
     fft: Arc<dyn Fft<f32>>,
+    window: window::Window
+}
+
+pub enum WindowType {
+    Blackman,
+    Hamming,
+    Hann,
+    Rectangular,
+    Welch,
 }
 
 impl ForwardFFT {
     /// Define new transformation
     /// ## Params:
     ///   * sample_size - Size of the vector which will be converter. Should be power of 2 (or 3)
-    pub fn new(sample_size: usize) -> ForwardFFT {
+    pub fn new(sample_size: usize, window_type: WindowType) -> ForwardFFT {
+        let window = match window_type {
+            WindowType::Blackman => window::blackman(sample_size),
+            WindowType::Hamming => window::hamming(sample_size),
+            WindowType::Hann => window::hann(sample_size),
+            WindowType::Welch => window::welch(sample_size),
+            _ => window::rectangular(sample_size),
+        };
         let mut fft = FftPlanner::new();
-        ForwardFFT {
-            fft: fft.plan_fft_forward(sample_size),
-        }
+        ForwardFFT { fft: fft.plan_fft_forward(sample_size), window }
     }
 }
 
 impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
     fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
-        let n = usize::min(input_buffer.len(), output_buffer.len());
+        let n = usize::min(usize::min(input_buffer.len(), output_buffer.len()), self.window.len());
         for i in 0..n {
-            output_buffer[i] = input_buffer[i]; 
+            output_buffer[i] = input_buffer[i].scale(self.window.as_slice()[i]); 
         }
         self.fft.process(output_buffer);
         Ok(())
@@ -80,7 +95,7 @@ mod tests {
             Complex32::new(0., 0.)];
         let mut output_buffer = vec![Complex32::new(0., 0.); 4];
         
-        let ft = ForwardFFT::new(4);
+        let ft = ForwardFFT::new(4, WindowType::Rectangular);
         let _ = ft.process_buffer(&input_buffer, &mut output_buffer);
         let expected = vec![Complex32::new(1., 0.); 4];
         assert_eq!(&output_buffer, &expected);

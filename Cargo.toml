@@ -61,3 +61,6 @@ name = "file_source"
 
 [[example]]
 name = "udp_sink"
+
+[[example]]
+name = "plot_freq"
