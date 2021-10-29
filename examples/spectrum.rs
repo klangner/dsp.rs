@@ -45,7 +45,7 @@ fn create_generator(gen_name: &str, freq: f32, sample_rate:usize) -> Box<dyn Sou
         "square"    => Box::new(Square::new(freq, sample_rate)),
         "noise"     => Box::new(Noise::new(0.1)),
         "chirp"     => Box::new(Chirp::new(4.0, 1.0, 10.0, sample_rate)),
-        _           => Box::new(Sinusoid::new(freq, sample_rate)),
+        _           => Box::new(Sine::new(freq, sample_rate)),
     }
 }
 
@@ -57,7 +57,7 @@ fn main() {
     let mut generator = create_generator(&params.gen_name, params.freq, window_size);
     let r2c = RealToComplex::new();
     let c2r = ComplexToReal::new();
-    let fft = ForwardFFT::new(window_size);
+    let fft = ForwardFFT::new(window_size, WindowType::Hamming);
     let mut buffer1 = vec![0.0; SIGNAL_LENGTH];
     let mut buffer2 = vec![Complex32::new(0., 0.); SIGNAL_LENGTH];
     let mut buffer3 = vec![Complex32::new(0., 0.); window_size];

@@ -51,7 +51,7 @@ fn create_generator(params: &Params) -> Box<dyn SourceNode<f32>> {
         "square"    => Box::new(Square::new(params.freq, params.sample_rate)),
         "noise"     => Box::new(Noise::new(0.1)),
         "chirp"     => Box::new(Chirp::new(4.0, 1.0, 10.0, params.sample_rate)),
-        _           => Box::new(Sinusoid::new(params.freq, params.sample_rate)),
+        _           => Box::new(Sine::new(params.freq, params.sample_rate)),
     }
 }
 
