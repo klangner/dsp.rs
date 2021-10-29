@@ -11,7 +11,7 @@ use dsp::node::generator::*;
 
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let mut signal = Sinusoid::new(1_000.0, 2048);
+    let mut signal = Sine::new(1_000.0, 2048);
     let mut buffer = vec![0.0;1024];
     c.bench_function("Sine generator", |b| {
         b.iter(|| signal.write_buffer(&mut buffer))
