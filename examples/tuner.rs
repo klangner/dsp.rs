@@ -9,7 +9,7 @@ use pitch_calc::step::Step;
 
 
 const SAMPLE_RATE: usize = 44100;
-const FRAME_SIZE: usize = 4096;
+const FRAME_SIZE: usize = 16385;
 const MAX_FREQ: f32 = 1_000.;
 
 
