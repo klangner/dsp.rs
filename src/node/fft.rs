@@ -39,7 +39,7 @@ impl ForwardFFT {
 
 impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
-    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
         let n = usize::min(usize::min(input_buffer.len(), output_buffer.len()), self.window.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i].scale(self.window.as_slice()[i]); 
@@ -68,7 +68,7 @@ impl InverseFFT {
 
 impl ProcessNode<Complex32, Complex32> for InverseFFT {
 
-    fn process_buffer(&self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i]; 
@@ -95,7 +95,7 @@ mod tests {
             Complex32::new(0., 0.)];
         let mut output_buffer = vec![Complex32::new(0., 0.); 4];
         
-        let ft = ForwardFFT::new(4, WindowType::Rectangular);
+        let mut ft = ForwardFFT::new(4, WindowType::Rectangular);
         let _ = ft.process_buffer(&input_buffer, &mut output_buffer);
         let expected = vec![Complex32::new(1., 0.); 4];
         assert_eq!(&output_buffer, &expected);

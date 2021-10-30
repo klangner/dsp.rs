@@ -14,5 +14,5 @@ pub trait SinkNode<T> {
 }
 
 pub trait ProcessNode<I, O> {
-    fn process_buffer(&self, input_buffer: &[I], output_buffer: &mut [O]) -> Result<()>;
+    fn process_buffer(&mut self, input_buffer: &[I], output_buffer: &mut [O]) -> Result<()>;
 }

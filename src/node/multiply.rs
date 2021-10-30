@@ -13,7 +13,7 @@ use crate::runtime::node::ProcessNode;
 /// use dsp::runtime::node::ProcessNode;
 /// use dsp::node::multiply::MultiplyConst;
 /// 
-/// let node = MultiplyConst::new(3.);
+/// let mut node = MultiplyConst::new(3.);
 /// let input_buffer = vec![1., 2., 3.];
 /// let mut output_buffer = vec![0.;3];
 /// node.process_buffer(&input_buffer, &mut output_buffer);
@@ -33,7 +33,7 @@ impl MultiplyConst {
 }
 
 impl ProcessNode<f32, f32> for MultiplyConst {
-    fn process_buffer(&self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = self.value * input_buffer[i]; 

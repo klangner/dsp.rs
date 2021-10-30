@@ -27,6 +27,7 @@ Implemented generators:
 ## Filters
 
   * [x] Biquad
+  * [x] Leaky Integrator (Exponential Smoothing)
   
 ## Window functions
 

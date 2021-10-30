@@ -1,6 +1,8 @@
 /// Basic implementations of common discrete filters
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::{izip};
+use anyhow::Result;
+use crate::runtime::node::{ProcessNode};
 
 
 /// A biquad filter (IIR)
@@ -74,11 +76,14 @@ impl BiquadFilter {
         sum
     }
 
-    /// Processes in_slice as a slice of samples as inputs to the filter,
-    /// writing results to out_slice.
-    pub fn process(&mut self, input: &[f32], output: &mut [f32]) {
-        let size = std::cmp::min(input.len(), output.len());
-        (0..size).for_each(|i| output[i] = self.process_one(input[i]));
+}
+
+impl ProcessNode<f32, f32> for BiquadFilter {
+
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+        let size = std::cmp::min(input_buffer.len(), output_buffer.len());
+        (0..size).for_each(|i| output_buffer[i] = self.process_one(input_buffer[i]));
+        Ok(())
     }
 }
 
@@ -116,13 +121,12 @@ mod tests {
         let mut biquad_rc = BiquadFilter::new(&b, &a);
         let dig_unit_step = vec![1.0; 50];
         let mut digital_response = vec![0.0; 50];
-        biquad_rc.process(&dig_unit_step, &mut digital_response);
+        let _ = biquad_rc.process_buffer(&dig_unit_step, &mut digital_response);
         
         // Compare the filter unit step responses. Since there
         // is some difference between the initial state of the
         // filters, use a less aggressive 5% threshold
         for i in 0..50 {
-            println!("{}", i);
             assert_approx_eq!(analog_response[i], digital_response[i], 0.05);
         }
     }

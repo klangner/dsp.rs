@@ -34,8 +34,8 @@ fn parse_params() -> Params {
 fn main() {
     let params = parse_params();
     let mut generator = Sine::new(params.freq, SAMPLE_RATE);
-    let r2c = RealToComplex::new();
-    let fft = ForwardFFT::new(FRAME_SIZE, WindowType::Hamming);
+    let mut r2c = RealToComplex::new();
+    let mut fft = ForwardFFT::new(FRAME_SIZE, WindowType::Hamming);
     let mut buffer1 = vec![0.0; FRAME_SIZE];
     let mut buffer2 = vec![Complex32::new(0., 0.); FRAME_SIZE];
     let mut buffer3 = vec![Complex32::new(0., 0.); FRAME_SIZE];
