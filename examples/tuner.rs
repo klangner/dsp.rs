@@ -17,8 +17,8 @@ fn main() {
     let file_path = env::args().nth(1).unwrap_or("examples/assets/sine_440hz.wav".to_string());
 
     let mut audio_src = AudioFileSource::new(&file_path);
-    let r2c = RealToComplex::new();
-    let fft = ForwardFFT::new(FRAME_SIZE, WindowType::Hamming);
+    let mut r2c = RealToComplex::new();
+    let mut fft = ForwardFFT::new(FRAME_SIZE, WindowType::Hamming);
     let mut buffer1 = vec![0.; FRAME_SIZE];
     let mut buffer2 = vec![Complex32::new(0., 0.); FRAME_SIZE];
     let mut buffer3 = vec![Complex32::new(0., 0.); FRAME_SIZE];

@@ -2,3 +2,5 @@
 //!
 //! 
 pub mod node;
+
+pub use node::{SourceNode, ProcessNode, SinkNode};

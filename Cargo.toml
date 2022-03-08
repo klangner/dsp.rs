@@ -11,7 +11,7 @@ documentation = "https://docs.rs/dsp"
 edition = "2018"
 
 [features]
-default = []
+default = ["audio"]
 audio = ["cpal", "audrey"]
 random = ["rand", "rand_distr"]
 
