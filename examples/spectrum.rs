@@ -55,9 +55,9 @@ fn main() {
     let num_spectrums = 10;
     let window_size = SIGNAL_LENGTH / num_spectrums;
     let mut generator = create_generator(&params.gen_name, params.freq, window_size);
-    let r2c = RealToComplex::new();
-    let c2r = ComplexToReal::new();
-    let fft = ForwardFFT::new(window_size, WindowType::Hamming);
+    let mut r2c = RealToComplex::new();
+    let mut c2r = ComplexToReal::new();
+    let mut fft = ForwardFFT::new(window_size, WindowType::Hamming);
     let mut buffer1 = vec![0.0; SIGNAL_LENGTH];
     let mut buffer2 = vec![Complex32::new(0., 0.); SIGNAL_LENGTH];
     let mut buffer3 = vec![Complex32::new(0., 0.); window_size];
