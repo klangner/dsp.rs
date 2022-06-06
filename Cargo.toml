@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/klangner/dsp"
 homepage = "https://github.com/klangner/dsp"
 documentation = "https://docs.rs/dsp"
-edition = "2018"
+edition = "2021"
 
 [features]
 default = ["audio"]
@@ -22,7 +22,7 @@ byteorder = "1"
 itertools = "^0.10"
 num-complex = "^0.4"
 rustfft = "^6"
-cpal = { version = "0.13.4", optional = true }
+cpal = { version = "0.13", optional = true }
 audrey = { version = "^0.3", optional = true }
 rand = { version = "^0.8", optional = true }
 rand_distr = {version = "^0.4", optional = true }
@@ -41,6 +41,10 @@ crossbeam-deque = "0.8"
 [[bench]]
 name = "gen_bench"
 harness = false
+
+[[example]]
+name = "play"
+required-features = ["audio"]
 
 [[example]]
 name = "tuner"
