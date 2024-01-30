@@ -10,6 +10,8 @@ pub mod signal;
 pub mod spectrum;
 pub mod window;
 pub use num_complex;
+#[cfg(feature = "audio")]
+pub mod audio;
 
 mod vector;
 
