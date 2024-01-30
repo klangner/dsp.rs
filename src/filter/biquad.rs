@@ -1,15 +1,16 @@
 /// Basic implementations of common discrete filters
 use arraydeque::{ArrayDeque, Wrapping};
-use itertools::{izip};
+use itertools::izip;
 use anyhow::Result;
-use crate::runtime::node::{ProcessNode};
+
+use crate::node::ProcessNode;
 
 
 /// A biquad filter (IIR)
 #[derive(Clone,Debug)]
 pub struct BiquadFilter {
-    x: ArrayDeque<[f32; 3], Wrapping>,
-    y: ArrayDeque<[f32; 3], Wrapping>,
+    x: ArrayDeque<f32, 3, Wrapping>,
+    y: ArrayDeque<f32, 3, Wrapping>,
     b: [f32; 3],
     a: [f32; 3]
 }
@@ -26,8 +27,8 @@ impl BiquadFilter {
         assert_ne!(a[0], 0.0); // a0 of 0 results in divide by 0
 
         // Initialize sample histories
-        let mut x: ArrayDeque<[f32; 3], Wrapping> = ArrayDeque::new();
-        let mut y: ArrayDeque<[f32; 3], Wrapping> = ArrayDeque::new();
+        let mut x: ArrayDeque<f32, 3, Wrapping> = ArrayDeque::new();
+        let mut y: ArrayDeque<f32, 3, Wrapping> = ArrayDeque::new();
         for _ in 0..3 {
             x.push_front(0.0);
             y.push_front(0.0);

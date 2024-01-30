@@ -1,11 +1,8 @@
-#[macro_use]
-extern crate clap;
-
 use gnuplot::{Figure, Color, AxesCommon};
-use clap::{Arg, App};
+use clap::Parser;
 use dsp::num_complex::Complex32;
-use dsp::runtime::node::{ProcessNode, SourceNode};
-use dsp::node::{generator::Sine, fft::*, complex::*};
+use dsp::node::{ProcessNode, SourceNode};
+use dsp::core::{generator::Sine, fft::*, complex::*};
 
 
 const FRAME_SIZE: usize = 8_192;
@@ -13,27 +10,16 @@ const SAMPLE_RATE: usize = 48_000;
 const MAX_FREQ: f32 = 2_000.;
 
 
-// Application params
-struct Params {
-    freq: f32
-}
-
-/// Parse command line arguments
-fn parse_params() -> Params {
-    let args = App::new("Plot signal")
-                .arg(Arg::with_name("freq")
-                    .short("f")
-                    .long("frequency")
-                    .help("Frequency in Hz")
-                    .takes_value(true))
-                .get_matches();
-    let freq = value_t!(args, "freq", f32).unwrap_or(440.0);
-    Params { freq: freq }
+#[derive(Parser, Debug)]
+struct Args {
+    /// Center frequency
+    #[clap(short, long, default_value_t = 100_000_000.0)]
+    freq: f32,
 }
 
 fn main() {
-    let params = parse_params();
-    let mut generator = Sine::new(params.freq, SAMPLE_RATE);
+    let args = Args::parse();
+    let mut generator = Sine::new(args.freq, SAMPLE_RATE);
     let mut r2c = RealToComplex::new();
     let mut fft = ForwardFFT::new(FRAME_SIZE, WindowType::Hamming);
     let mut buffer1 = vec![0.0; FRAME_SIZE];

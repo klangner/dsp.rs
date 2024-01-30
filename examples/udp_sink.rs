@@ -1,6 +1,6 @@
-use dsp::runtime::node::{SourceNode, SinkNode};
-use dsp::node::generator::Sine;
-use dsp::node::network::UdpSink;
+use dsp::node::{SourceNode, SinkNode};
+use dsp::core::generator::Sine;
+use dsp::core::network::UdpSink;
 
 
 const SAMPLE_RATE: usize = 32_000;

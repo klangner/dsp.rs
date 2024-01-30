@@ -4,12 +4,13 @@
 //!
 
 pub mod node;
-pub mod runtime;
+pub mod core;
 pub mod filter;
 pub mod signal;
 pub mod spectrum;
 pub mod window;
+pub use num_complex;
+
 mod vector;
 
-pub use num_complex;
 

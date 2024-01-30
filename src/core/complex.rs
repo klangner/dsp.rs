@@ -3,8 +3,7 @@
 //! 
 
 use anyhow::Result;
-use crate::num_complex::Complex32;
-use crate::runtime::node::ProcessNode;
+use crate::{node::ProcessNode, num_complex::Complex32};
 
 
 /// Implement Real -> complex converter
@@ -12,8 +11,8 @@ use crate::runtime::node::ProcessNode;
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::ProcessNode;
-/// use dsp::node::complex::RealToComplex;
+/// use dsp::node::ProcessNode;
+/// use dsp::core::complex::RealToComplex;
 /// use dsp::num_complex::Complex32;
 /// 
 /// let mut node = RealToComplex::new();
@@ -49,8 +48,8 @@ impl ProcessNode<f32, Complex32> for RealToComplex {
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::ProcessNode;
-/// use dsp::node::complex::ComplexToReal;
+/// use dsp::node::ProcessNode;
+/// use dsp::core::complex::ComplexToReal;
 /// use dsp::num_complex::Complex32;
 /// 
 /// let mut node = ComplexToReal::new();

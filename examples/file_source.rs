@@ -1,6 +1,6 @@
 use gnuplot::{Figure, Color, AxesCommon};
-use dsp::runtime::node::SourceNode;
-use dsp::node::file::FileSource;
+use dsp::node::SourceNode;
+use dsp::core::file::FileSource;
 
 
 const SAMPLE_RATE: usize = 512;

@@ -1,44 +1,25 @@
-#[macro_use]
-extern crate clap;
-
-use clap::{Arg, App};
-use dsp::runtime::node::{SourceNode, SinkNode};
-use dsp::node::generator::Sine;
-use dsp::node::file::FileSink;
+use clap::Parser;
+use dsp::node::{SourceNode, SinkNode};
+use dsp::core::generator::Sine;
+use dsp::core::file::FileSink;
 
 
 const SIGNAL_LENGTH: usize = 512;
 
-
-// Application params
-struct Params {
+#[derive(Parser, Debug)]
+struct Args {
+    /// Gain to apply to the seify source
+    #[clap(short, long, default_value_t = 30)]
     sample_rate: usize,
-    freq: f32
-}
 
-/// Parse command line arguments
-fn parse_params() -> Params {
-    let args = App::new("Save signal to file")
-                .arg(Arg::with_name("freq")
-                    .short("f")
-                    .long("frequency")
-                    .help("Frequency in Hz")
-                    .takes_value(true))
-                .arg(Arg::with_name("sample-rate")
-                    .short("s")
-                    .long("sample-rate")
-                    .help("Number of samples per period")
-                    .takes_value(true))
-                .get_matches();
-    let sample_rate = value_t!(args, "sample-rate", usize).unwrap_or(512);
-    let freq = value_t!(args, "freq", f32).unwrap_or(4.0);
-    Params { sample_rate: sample_rate, freq: freq }
+    /// Center frequency
+    #[clap(short, long, default_value_t = 100_000_000.0)]
+    freq: f32,
 }
-
 
 fn main() {
-    let params = parse_params();
-    let mut generator = Sine::new(params.freq, params.sample_rate);
+    let args = Args::parse();
+    let mut generator = Sine::new(args.freq, args.sample_rate);
     let mut file_sink = FileSink::new("target/example.data");
     let mut buffer = vec![0.0; SIGNAL_LENGTH];
 

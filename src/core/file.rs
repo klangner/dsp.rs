@@ -4,7 +4,7 @@ use std::fs::File;
 use byteorder::{ReadBytesExt, WriteBytesExt}; 
 use byteorder::LittleEndian;
 use anyhow::Result;
-use crate::runtime::node::{SinkNode, SourceNode};
+use crate::node::{SinkNode, SourceNode};
 
 
 /// Save binary data into a file
@@ -12,8 +12,8 @@ use crate::runtime::node::{SinkNode, SourceNode};
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::SinkNode;
-/// use dsp::node::file::FileSink;
+/// use dsp::node::SinkNode;
+/// use dsp::core::file::FileSink;
 /// 
 /// let mut node = FileSink::new("target/file.dat");
 /// let input_buffer = vec![1.;100];

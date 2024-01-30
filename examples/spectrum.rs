@@ -1,8 +1,5 @@
-#[macro_use]
-extern crate clap;
-
 use gnuplot::*;
-use clap::{Arg, App};
+use clap::Parser;
 use dsp::num_complex::Complex32;
 use dsp::runtime::node::*;
 use dsp::node::{generator::*, fft::*, complex::*};
@@ -11,33 +8,18 @@ use dsp::node::{generator::*, fft::*, complex::*};
 const SIGNAL_LENGTH: usize = 10*256;
 
 
-// Application params
-#[derive(Debug)]
-struct Params {
+#[derive(Parser, Debug)]
+struct Args {
+    /// Gain to apply to the seify source
+    #[clap(short, long)]
     gen_name: String,
-    freq: f32
+
+    /// Center frequency
+    #[clap(short, long, default_value_t = 100_000_000.0)]
+    freq: f32,
 }
 
 /// Parse command line arguments
-fn parse_params() -> Params {
-    let args = App::new("Plot signal")
-                .arg(Arg::with_name("gen")
-                    .short("g")
-                    .long("generator-name")
-                    .help("Select generator type")
-                    .takes_value(true))
-                .arg(Arg::with_name("freq")
-                    .short("f")
-                    .long("frequency")
-                    .help("Frequency in Hz")
-                    .takes_value(true))
-                .get_matches();
-    let gen_name = args.value_of("gen").unwrap_or("sine"); 
-    let freq = value_t!(args, "freq", f32).unwrap_or(4.0);
-    Params { gen_name: gen_name.to_string(),
-             freq: freq }
-}
-
 /// Create signal
 fn create_generator(gen_name: &str, freq: f32, sample_rate:usize) -> Box<dyn SourceNode<f32>> {
     match gen_name.as_ref() {
@@ -51,10 +33,10 @@ fn create_generator(gen_name: &str, freq: f32, sample_rate:usize) -> Box<dyn Sou
 
 
 fn main() {
-    let params = parse_params();
+    let args = Args::parse();
     let num_spectrums = 10;
     let window_size = SIGNAL_LENGTH / num_spectrums;
-    let mut generator = create_generator(&params.gen_name, params.freq, window_size);
+    let mut generator = create_generator(&args.gen_name, args.freq, window_size);
     let mut r2c = RealToComplex::new();
     let mut c2r = ComplexToReal::new();
     let mut fft = ForwardFFT::new(window_size, WindowType::Hamming);

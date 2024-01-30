@@ -1,10 +1,9 @@
 //! Helper functions for FFT.
 use std::sync::Arc;
 use anyhow::Result;
-use crate::window;
+use crate::{node::ProcessNode, window};
 use rustfft::{Fft, FftPlanner};
 use crate::num_complex::Complex32;
-use crate::runtime::node::{ProcessNode};
 
 
 pub struct ForwardFFT {
@@ -84,7 +83,7 @@ impl ProcessNode<Complex32, Complex32> for InverseFFT {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::runtime::node::ProcessNode;
+    use crate::node::ProcessNode;
 
     #[test]
     fn test_fft() {
