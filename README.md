@@ -5,7 +5,7 @@
 
 This library is focused in working with block of data not on real time processing.
 
-If you are looking for realtime processing then theree is alreeady great library for it
+If you are looking for a realtime processing library then there is already great library for it
 https://github.com/FutureSDR/FutureSDR
 
 The folder [examples](https://github.com/klangner/dsp/tree/master/examples) contains demo programs which shows how to use this library.
