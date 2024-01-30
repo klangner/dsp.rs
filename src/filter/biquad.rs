@@ -2,8 +2,6 @@
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::izip;
 
-use crate::node::ProcessNode;
-
 
 /// A biquad filter (IIR)
 #[derive(Clone,Debug)]
@@ -76,11 +74,7 @@ impl BiquadFilter {
         sum
     }
 
-}
-
-impl ProcessNode<f32, f32> for BiquadFilter {
-
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let size = std::cmp::min(input_buffer.len(), output_buffer.len());
         (0..size).for_each(|i| output_buffer[i] = self.process_one(input_buffer[i]));
     }

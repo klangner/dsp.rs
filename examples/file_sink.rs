@@ -1,5 +1,4 @@
 use clap::Parser;
-use dsp::node::{SourceNode, SinkNode};
 use dsp::core::generator::Sine;
 use dsp::core::file::FileSink;
 

@@ -11,8 +11,6 @@ use rand;
 #[cfg(feature = "random")]
 use rand_distr::{Normal, Distribution};
 
-use crate::node::SourceNode;
-
 
 /// Generate impulse signal
 /// x[n] = 1 if n == impulse_pos
@@ -21,7 +19,6 @@ use crate::node::SourceNode;
 /// Example
 /// 
 /// ```
-/// use dsp::node::SourceNode;
 /// use dsp::core::generator::Impulse;
 /// 
 /// let mut signal = Impulse::new();
@@ -40,6 +37,10 @@ impl Impulse {
     pub fn new() -> Impulse {
         Impulse {impulse_send: false}
     }
+
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -57,13 +58,6 @@ impl Iterator for Impulse {
     }
 }
 
-// Node implementation
-impl SourceNode<f32> for Impulse {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
-    }
-}
-
 
 /// Step signal
 /// x[n] = 1 if n > step_pos
@@ -72,7 +66,6 @@ impl SourceNode<f32> for Impulse {
 /// Example
 /// 
 /// ```
-/// use dsp::node::SourceNode;
 /// use dsp::core::generator::Step;
 /// 
 /// let mut signal = Step::new(2);
@@ -92,6 +85,10 @@ impl Step {
     pub fn new(step_pos: usize) -> Step {
         Step{ step_pos }
     }
+    
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -109,11 +106,6 @@ impl Iterator for Step {
     }
 }
 
-impl SourceNode<f32> for Step {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
-    }
-}
 
 /// Sinusoidal signal
 /// 
@@ -121,7 +113,6 @@ impl SourceNode<f32> for Step {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::node::SourceNode;
 /// use dsp::core::generator::Sine;
 /// 
 /// let mut signal = Sine::new(2.0, 8);
@@ -146,6 +137,10 @@ impl Sine {
     pub fn new(freq: f32, sample_rate: usize) -> Sine {
         Sine { step_pos: 0, freq, sample_rate}
     }
+    
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -163,19 +158,12 @@ impl Iterator for Sine {
     }
 }
 
-impl SourceNode<f32> for Sine {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
-    }
-}
-
 /// Generate triangular signal
 /// 
 /// Example
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::node::SourceNode;
 /// use dsp::core::generator::Sawtooth;
 /// 
 /// let mut signal = Sawtooth::new(4.0, 16);
@@ -201,6 +189,10 @@ impl Sawtooth {
     pub fn new(freq: f32, sample_rate: usize) -> Sawtooth {
         Sawtooth { step_pos: 0, freq, sample_rate}
     }
+    
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -217,12 +209,6 @@ impl Iterator for Sawtooth {
     }
 }
 
-impl SourceNode<f32> for Sawtooth {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
-    }
-}
-
 
 /// Generate square signal
 /// 
@@ -230,7 +216,6 @@ impl SourceNode<f32> for Sawtooth {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::node::SourceNode;
 /// use dsp::core::generator::Square;
 /// 
 /// let mut signal = Square::new(4.0, 16);
@@ -256,6 +241,10 @@ impl Square {
     pub fn new(freq: f32, sample_rate: usize) -> Square {
         Square { step_pos: 0, freq, sample_rate}
     }
+    
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) {
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -273,12 +262,6 @@ impl Iterator for Square {
             self.step_pos = 0;
         }
         Some(sample)
-    }
-}
-
-impl SourceNode<f32> for Square {
-    fn write_buffer(&mut self, buffer: &mut [f32]) {
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
     }
 }
 
@@ -358,6 +341,10 @@ impl Chirp {
         let w = 2.0 * PI * (c/2.0*t.powi(2) + self.start_freq*t);
         f32::sin(w)
     }
+    
+    pub fn write_buffer(&mut self, buffer: &mut [f32]) { 
+        for e in buffer.iter_mut() {*e = self.next().unwrap()};
+    }
 }
 
 // Iterator implementation
@@ -374,12 +361,6 @@ impl Iterator for Chirp {
     }
 }
 
-impl SourceNode<f32> for Chirp {
-    fn write_buffer(&mut self, buffer: &mut [f32]) { 
-        for e in buffer.iter_mut() {*e = self.next().unwrap()};
-    }
-}
-
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
@@ -388,7 +369,6 @@ impl SourceNode<f32> for Chirp {
 #[cfg(test)]
 mod tests {
     use assert_approx_eq::assert_approx_eq;
-    use crate::node::SourceNode;
     use crate::core::generator::Sine;
 
     #[test]

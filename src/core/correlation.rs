@@ -1,6 +1,5 @@
 //! Calculate (Auto)Correlation
 //! 
-use crate::node::ProcessNode;
 
 
 pub struct AutoCorrelation {
@@ -11,9 +10,6 @@ impl AutoCorrelation {
     pub fn new(window_size: usize) -> AutoCorrelation {
         AutoCorrelation {window_size}
     }
-}
-
-impl ProcessNode<f32, f32> for AutoCorrelation {
 
     /// Calculate correlation between 2 buffers
     /// 
@@ -21,7 +17,6 @@ impl ProcessNode<f32, f32> for AutoCorrelation {
     /// 
     /// ```
     /// use assert_approx_eq::assert_approx_eq;
-    /// use dsp::node::{SourceNode, ProcessNode};
     /// use dsp::core::generator::Sine;
     /// use dsp::core::correlation::AutoCorrelation;
     /// 
@@ -38,7 +33,7 @@ impl ProcessNode<f32, f32> for AutoCorrelation {
     /// assert_approx_eq!(corr_buffer[3], 0., 1e-5f32);
     /// assert_approx_eq!(corr_buffer[4], 1.0, 1e-5f32);
     /// ```
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let mu: f32 = input_buffer.iter().sum::<f32>() / input_buffer.len() as f32;
         let max_offset = usize::min(input_buffer.len()-self.window_size, output_buffer.len());
         // auto covariance

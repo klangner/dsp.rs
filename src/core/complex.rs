@@ -2,7 +2,7 @@
 //! 
 //! 
 
-use crate::{node::ProcessNode, num_complex::Complex32};
+use crate::num_complex::Complex32;
 
 
 /// Implement Real -> complex converter
@@ -10,7 +10,6 @@ use crate::{node::ProcessNode, num_complex::Complex32};
 /// Example
 /// 
 /// ```
-/// use dsp::node::ProcessNode;
 /// use dsp::core::complex::RealToComplex;
 /// use dsp::num_complex::Complex32;
 /// 
@@ -29,10 +28,8 @@ impl RealToComplex {
     pub fn new() -> RealToComplex {
         RealToComplex {}
     }
-}
 
-impl ProcessNode<f32, Complex32> for RealToComplex {
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [Complex32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = Complex32::new(input_buffer[i], 0.); 
@@ -46,7 +43,6 @@ impl ProcessNode<f32, Complex32> for RealToComplex {
 /// Example
 /// 
 /// ```
-/// use dsp::node::ProcessNode;
 /// use dsp::core::complex::ComplexToReal;
 /// use dsp::num_complex::Complex32;
 /// 
@@ -65,10 +61,8 @@ impl ComplexToReal {
     pub fn new() -> ComplexToReal {
         ComplexToReal {}
     }
-}
 
-impl ProcessNode<Complex32, f32> for ComplexToReal {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i].norm(); 

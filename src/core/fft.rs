@@ -1,8 +1,7 @@
 //! Helper functions for FFT.
 use std::sync::Arc;
-use crate::{node::ProcessNode, window};
 use rustfft::{Fft, FftPlanner};
-use crate::num_complex::Complex32;
+use crate::{num_complex::Complex32, window};
 
 
 pub struct ForwardFFT {
@@ -33,11 +32,9 @@ impl ForwardFFT {
         let mut fft = FftPlanner::new();
         ForwardFFT { fft: fft.plan_fft_forward(sample_size), window }
     }
-}
 
-impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(usize::min(input_buffer.len(), output_buffer.len()), self.window.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i].scale(self.window.as_slice()[i]); 
@@ -61,11 +58,9 @@ impl InverseFFT {
             fft: fft.plan_fft_inverse(sample_size),
         }
     }
-}
 
-impl ProcessNode<Complex32, Complex32> for InverseFFT {
 
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i]; 
@@ -80,7 +75,6 @@ impl ProcessNode<Complex32, Complex32> for InverseFFT {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::node::ProcessNode;
 
     #[test]
     fn test_fft() {

@@ -1,5 +1,4 @@
 use gnuplot::{Figure, Color, AxesCommon};
-use dsp::node::SourceNode;
 use dsp::core::file::FileSource;
 
 

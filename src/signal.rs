@@ -16,7 +16,6 @@ pub fn power(buffer: &[f32]) -> f32 {
 mod tests {
     use assert_approx_eq::assert_approx_eq;
     use crate::core::generator::Sine;
-    use crate::node::SourceNode;
     use super::*;
 
 

@@ -2,7 +2,6 @@
 //! 
 
 use num_complex::Complex32;
-use crate::node::ProcessNode;
 
 use super::generator::Sine;
 
@@ -13,7 +12,6 @@ use super::generator::Sine;
 /// 
 /// ```
 /// use dsp::num_complex::Complex32;
-/// use dsp::node::ProcessNode;
 /// use dsp::core::generator::Sine;
 /// use dsp::core::freq_shift::FrequencyShift;
 /// 
@@ -32,13 +30,15 @@ impl FrequencyShift {
         let offset_signal = Sine::new(freq_offset as f32, sample_rate);
         Self {offset_signal}
     }
-}
 
-impl ProcessNode<Complex32, Complex32> for FrequencyShift {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = self.offset_signal.next().unwrap() * input_buffer[i]; 
         }
+    }
+
+    pub fn process_sample(&mut self, v: &Complex32) -> Complex32 {
+       self.offset_signal.next().unwrap() * v 
     }
 }

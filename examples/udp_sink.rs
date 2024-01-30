@@ -1,4 +1,3 @@
-use dsp::node::{SourceNode, SinkNode};
 use dsp::core::generator::Sine;
 use dsp::core::network::UdpSink;
 

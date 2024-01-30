@@ -2,7 +2,6 @@
 //! 
 
 use num_complex::Complex32;
-use crate::node::ProcessNode;
 
 
 /// Demodulation block using the conjugate delay method
@@ -12,7 +11,6 @@ use crate::node::ProcessNode;
 /// 
 /// ```
 /// use dsp::num_complex::Complex32;
-/// use dsp::node::ProcessNode;
 /// use dsp::core::fm::QuadratureDetector;
 /// 
 /// let mut node = QuadratureDetector::new();
@@ -28,15 +26,19 @@ impl QuadratureDetector {
     pub fn new() -> Self {
         Self {last_sample: Complex32::default()}
     }
-}
 
-impl ProcessNode<Complex32, f32> for QuadratureDetector {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             let v = &input_buffer[i];
             output_buffer[i] = (v * self.last_sample.conj()).arg(); // Obtain phase of x[n] * conj(x[n-1])
             self.last_sample = *v;
         }
+    }
+
+    pub fn process_sample(&mut self, v: &Complex32) -> f32 {
+        let d = (v * self.last_sample.conj()).arg(); // Obtain phase of x[n] * conj(x[n-1])
+        self.last_sample = *v;
+        d
     }
 }

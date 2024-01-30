@@ -1,15 +1,12 @@
 //! Node for multiplying signal samples by constant value
 //! 
 
-use crate::node::ProcessNode;
-
 
 /// Multiply buffer sample by constant value
 /// 
 /// Example
 /// 
 /// ```
-/// use dsp::node::ProcessNode;
 /// use dsp::core::multiply::MultiplyConst;
 /// 
 /// let mut node = MultiplyConst::new(3.);
@@ -29,10 +26,8 @@ impl MultiplyConst {
     pub fn new(value: f32) -> MultiplyConst {
         MultiplyConst {value}
     }
-}
 
-impl ProcessNode<f32, f32> for MultiplyConst {
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
+    pub fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = self.value * input_buffer[i]; 

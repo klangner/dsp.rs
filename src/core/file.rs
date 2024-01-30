@@ -3,7 +3,6 @@
 use std::fs::File;
 use byteorder::{ReadBytesExt, WriteBytesExt}; 
 use byteorder::LittleEndian;
-use crate::node::{SinkNode, SourceNode};
 
 
 /// Save binary data into a file
@@ -11,7 +10,6 @@ use crate::node::{SinkNode, SourceNode};
 /// Example
 /// 
 /// ```
-/// use dsp::node::SinkNode;
 /// use dsp::core::file::FileSink;
 /// 
 /// let mut node = FileSink::new("target/file.dat");
@@ -30,10 +28,8 @@ impl FileSink {
             FileSink{file: None}
         }
     }
-}
 
-impl SinkNode<f32> for FileSink {
-    fn read_buffer(&mut self, input_buffer: &[f32]) {
+    pub fn read_buffer(&mut self, input_buffer: &[f32]) {
         let mut file = self.file.as_ref().unwrap();
         for v in input_buffer {
             file.write_f32::<LittleEndian>(*v).expect("Can't reead from file");
@@ -54,10 +50,8 @@ impl FileSource {
         let file = File::open(file_name).expect("Can't open file");
         FileSource {file}
     }
-}
 
-impl SourceNode<f32> for FileSource {
-    fn write_buffer(&mut self, output_buffer: &mut [f32]) {
+    pub fn write_buffer(&mut self, output_buffer: &mut [f32]) {
         for i in 0..output_buffer.len() {
             if let Ok(v) = self.file.read_f32::<LittleEndian>() {
                 output_buffer[i] = v;

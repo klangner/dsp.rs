@@ -1,6 +1,5 @@
 
 use dsp::core::generator::Sine;
-use dsp::node::SourceNode;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 
 
