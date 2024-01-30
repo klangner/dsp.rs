@@ -1,7 +1,7 @@
 use std::fs::File;
 use gnuplot::{Figure, Color, AxesCommon};
-use dsp::runtime::node::ProcessNode;
-use dsp::node::correlation::*;
+use dsp::node::ProcessNode;
+use dsp::core::correlation::*;
 
 
 const SAMPLE_RATE: usize = 100;

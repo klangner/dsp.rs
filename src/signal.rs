@@ -15,8 +15,8 @@ pub fn power(buffer: &[f32]) -> f32 {
 #[cfg(test)]
 mod tests {
     use assert_approx_eq::assert_approx_eq;
-    use crate::node::generator::Sine;
-    use crate::runtime::node::SourceNode;
+    use crate::core::generator::Sine;
+    use crate::node::SourceNode;
     use super::*;
 
 

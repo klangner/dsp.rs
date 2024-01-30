@@ -1,7 +1,7 @@
 //! Calculate (Auto)Correlation
 //! 
 use anyhow::Result;
-use crate::runtime::node::{ProcessNode};
+use crate::node::ProcessNode;
 
 
 pub struct AutoCorrelation {
@@ -22,9 +22,9 @@ impl ProcessNode<f32, f32> for AutoCorrelation {
     /// 
     /// ```
     /// use assert_approx_eq::assert_approx_eq;
-    /// use dsp::runtime::node::{SourceNode, ProcessNode};
-    /// use dsp::node::generator::Sine;
-    /// use dsp::node::correlation::AutoCorrelation;
+    /// use dsp::node::{SourceNode, ProcessNode};
+    /// use dsp::core::generator::Sine;
+    /// use dsp::core::correlation::AutoCorrelation;
     /// 
     /// let mut signal = Sine::new(2.0, 8);
     /// let mut corr = AutoCorrelation::new(8);

@@ -6,8 +6,8 @@ extern crate criterion;
 
 use criterion::Criterion;
 
-use dsp::runtime::node::SourceNode;
-use dsp::node::generator::*;
+use dsp::node::SourceNode;
+use dsp::core::generator::*;
 
 
 fn criterion_benchmark(c: &mut Criterion) {

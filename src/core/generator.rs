@@ -12,7 +12,7 @@ use rand;
 #[cfg(feature = "random")]
 use rand_distr::{Normal, Distribution};
 
-use crate::runtime::node::SourceNode;
+use crate::node::SourceNode;
 
 
 /// Generate impulse signal
@@ -22,8 +22,8 @@ use crate::runtime::node::SourceNode;
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Impulse;
+/// use dsp::node::SourceNode;
+/// use dsp::core::generator::Impulse;
 /// 
 /// let mut signal = Impulse::new();
 /// let mut buffer = vec![2.0;100];
@@ -74,8 +74,8 @@ impl SourceNode<f32> for Impulse {
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Step;
+/// use dsp::node::SourceNode;
+/// use dsp::core::generator::Step;
 /// 
 /// let mut signal = Step::new(2);
 /// let mut buffer = vec![2.0;100];
@@ -124,8 +124,8 @@ impl SourceNode<f32> for Step {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Sine;
+/// use dsp::node::SourceNode;
+/// use dsp::core::generator::Sine;
 /// 
 /// let mut signal = Sine::new(2.0, 8);
 /// let mut buffer = vec![0.0;10];
@@ -179,8 +179,8 @@ impl SourceNode<f32> for Sine {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Sawtooth;
+/// use dsp::node::SourceNode;
+/// use dsp::core::generator::Sawtooth;
 /// 
 /// let mut signal = Sawtooth::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -235,8 +235,8 @@ impl SourceNode<f32> for Sawtooth {
 /// 
 /// ```
 /// use assert_approx_eq::assert_approx_eq;
-/// use dsp::runtime::node::SourceNode;
-/// use dsp::node::generator::Square;
+/// use dsp::node::SourceNode;
+/// use dsp::core::generator::Square;
 /// 
 /// let mut signal = Square::new(4.0, 16);
 /// let mut buffer = vec![0.0;10];
@@ -395,8 +395,8 @@ impl SourceNode<f32> for Chirp {
 #[cfg(test)]
 mod tests {
     use assert_approx_eq::assert_approx_eq;
-    use crate::runtime::node::SourceNode;
-    use crate::node::generator::Sine;
+    use crate::node::SourceNode;
+    use crate::core::generator::Sine;
 
     #[test]
     fn test_sine_small_buffer() {

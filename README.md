@@ -3,8 +3,10 @@
 [![Rust](https://github.com/klangner/dsp.rs/actions/workflows/rust.yml/badge.svg)](https://github.com/klangner/dsp.rs/actions/workflows/rust.yml)
 [![Crates.io](https://img.shields.io/crates/v/dsp.svg)](https://crates.io/crates/dsp) [![Crates.io](https://img.shields.io/crates/l/dsp.svg)](https://github.com/klangner/dsp/blob/master/LICENSE-MIT) [![docs.rs](https://docs.rs/dsp/badge.svg)](https://docs.rs/dsp/)
 
-**dsp is an early-stage open-source project**. It means that API can change at any time.
-If you think that this library can help you, then let me know. We can discuss future direction and try to stabilize the API.
+This library is focused in working with block of data not on real time processing.
+
+If you are looking for realtime processing then theree is alreeady great library for it
+https://github.com/FutureSDR/FutureSDR
 
 The folder [examples](https://github.com/klangner/dsp/tree/master/examples) contains demo programs which shows how to use this library.
 
@@ -46,25 +48,9 @@ Implemented generators:
   * [x] Find peak frequency
 
 
-## Runtime
-There is minimal support for runtime. 
-Runtime is designed as a graph of nodes. 
-Node is a single computation which takes buffer as an input and generate data 
-to provided output buffer. It means that node do not allocate memory for data.
-There are 3 types of node:
-  * SourceNode - Generate new data
-  * ProcessingNode - Processing data between buffers
-  * SinkNode - Takes data from buffer and consumes it.
-  
-  
 # License
 
-Licensed under either of
-
- * [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
- * [MIT license](http://opensource.org/licenses/MIT)
-
-at your option.
+Licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 
 **Contributions**

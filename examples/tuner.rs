@@ -1,7 +1,7 @@
 use std::env;
 use gnuplot::{Figure, Color, AxesCommon};
-use dsp::runtime::node::*;
-use dsp::node::{fft::*, complex::*, audio::audio_file::AudioFileSource};
+use dsp::node::*;
+use dsp::core::{fft::*, complex::*, audio::audio_file::AudioFileSource};
 use dsp::num_complex::Complex32;
 use dsp::spectrum;
 use pitch_calc::calc::step_from_hz;

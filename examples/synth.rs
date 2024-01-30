@@ -1,6 +1,6 @@
 
-use dsp::node::generator::Sine;
-use dsp::runtime::node::SourceNode;
+use dsp::core::generator::Sine;
+use dsp::node::SourceNode;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 
 

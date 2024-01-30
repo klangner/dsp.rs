@@ -2,7 +2,7 @@
 //! 
 
 use anyhow::Result;
-use crate::runtime::node::ProcessNode;
+use crate::node::ProcessNode;
 
 
 /// Multiply buffer sample by constant value
@@ -10,8 +10,8 @@ use crate::runtime::node::ProcessNode;
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::ProcessNode;
-/// use dsp::node::multiply::MultiplyConst;
+/// use dsp::node::ProcessNode;
+/// use dsp::core::multiply::MultiplyConst;
 /// 
 /// let mut node = MultiplyConst::new(3.);
 /// let input_buffer = vec![1., 2., 3.];

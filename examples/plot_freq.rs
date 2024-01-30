@@ -1,8 +1,8 @@
 use gnuplot::{Figure, Color, AxesCommon};
 use clap::Parser;
 use dsp::num_complex::Complex32;
-use dsp::runtime::node::{ProcessNode, SourceNode};
-use dsp::node::{generator::Sine, fft::*, complex::*};
+use dsp::node::{ProcessNode, SourceNode};
+use dsp::core::{generator::Sine, fft::*, complex::*};
 
 
 const FRAME_SIZE: usize = 8_192;

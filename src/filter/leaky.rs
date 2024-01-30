@@ -5,7 +5,8 @@
 //! x[t] = alpha * x + (1-alpha)*x[t-1]
 
 use anyhow::Result;
-use crate::runtime::node::{ProcessNode};
+
+use crate::node::ProcessNode;
 
 #[derive(Clone,Debug)]
 pub struct LeakyIntegrator {

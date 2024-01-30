@@ -2,7 +2,8 @@
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::izip;
 use anyhow::Result;
-use crate::runtime::node::ProcessNode;
+
+use crate::node::ProcessNode;
 
 
 /// A biquad filter (IIR)

@@ -1,9 +1,9 @@
 //! Nodes for saving and reading data to/from file
 //! 
-use std::net::{UdpSocket};
+use std::net::UdpSocket;
 use byteorder::{ByteOrder, LittleEndian};
 use anyhow::Result;
-use crate::runtime::node::{SinkNode, SourceNode};
+use crate::node::{SinkNode, SourceNode};
 
 
 /// Send binary data via the TCP sockek
@@ -11,8 +11,8 @@ use crate::runtime::node::{SinkNode, SourceNode};
 /// Example
 /// 
 /// ```
-/// use dsp::runtime::node::SinkNode;
-/// use dsp::node::network::UdpSink;
+/// use dsp::node::SinkNode;
+/// use dsp::core::network::UdpSink;
 /// 
 /// let mut node = UdpSink::new(3456, "127.0.0.1:1234");
 /// let input_buffer = vec![1.;100];

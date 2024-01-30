@@ -1,7 +1,7 @@
 use clap::Parser;
-use dsp::runtime::node::{SourceNode, SinkNode};
-use dsp::node::generator::Sine;
-use dsp::node::file::FileSink;
+use dsp::node::{SourceNode, SinkNode};
+use dsp::core::generator::Sine;
+use dsp::core::file::FileSink;
 
 
 const SIGNAL_LENGTH: usize = 512;

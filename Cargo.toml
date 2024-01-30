@@ -1,6 +1,6 @@
 [package]
 name = "dsp"
-version = "0.10.2"
+version = "0.11.0"
 authors = ["Krzysztof Langner <klangner@gmail.com>"]
 description = "Digital Signal Processing"
 keywords = ["dsp"]
