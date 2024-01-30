@@ -10,3 +10,4 @@ pub mod file;
 pub mod multiply;
 pub mod network;
 pub mod freq_shift;
+pub mod fm;
