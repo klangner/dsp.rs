@@ -29,7 +29,8 @@ fn main() {
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
             generator.write_buffer(data).unwrap();
         },
-        move |err| {panic!("cpal stream error {:?}", err);}
+        move |err| {panic!("cpal stream error {:?}", err);},
+        None
     ).unwrap();
     
     stream.play().unwrap();

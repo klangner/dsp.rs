@@ -29,7 +29,8 @@ fn setup_audio<D>(mut sound_gen: D) -> Result<cpal::Stream, cpal::BuildStreamErr
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
             sound_gen(data);
         },
-        move |err| {panic!("cpal stream error {:?}", err);}
+        move |err| {panic!("cpal stream error {:?}", err);},
+        None
     );
      
     stream
