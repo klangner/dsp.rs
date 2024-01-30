@@ -1,7 +1,6 @@
 //! Node for multiplying signal samples by constant value
 //! 
 
-use anyhow::Result;
 use crate::node::ProcessNode;
 
 
@@ -33,11 +32,10 @@ impl MultiplyConst {
 }
 
 impl ProcessNode<f32, f32> for MultiplyConst {
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = self.value * input_buffer[i]; 
         }
-        Ok(())
     }
 }

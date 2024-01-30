@@ -1,6 +1,5 @@
 //! Calculate (Auto)Correlation
 //! 
-use anyhow::Result;
 use crate::node::ProcessNode;
 
 
@@ -39,7 +38,7 @@ impl ProcessNode<f32, f32> for AutoCorrelation {
     /// assert_approx_eq!(corr_buffer[3], 0., 1e-5f32);
     /// assert_approx_eq!(corr_buffer[4], 1.0, 1e-5f32);
     /// ```
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let mu: f32 = input_buffer.iter().sum::<f32>() / input_buffer.len() as f32;
         let max_offset = usize::min(input_buffer.len()-self.window_size, output_buffer.len());
         // auto covariance
@@ -53,8 +52,6 @@ impl ProcessNode<f32, f32> for AutoCorrelation {
         for i in 0..output_buffer.len() {
             output_buffer[i] = output_buffer[i] / s0;
         }
-
-        Ok(())
     }
 }
 

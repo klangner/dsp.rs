@@ -1,7 +1,6 @@
 //! Audio file sources and Sinks
 //! 
 
-use anyhow::Result;
 use audrey::Reader;
 
 use crate::node::SourceNode;
@@ -19,7 +18,7 @@ impl AudioFileSource {
 }
 
 impl SourceNode<f32> for AudioFileSource {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         let mut samples = self.reader.samples(); 
         for i in 0..buffer.len() {
             if let Some(v) = samples.next() {
@@ -28,6 +27,5 @@ impl SourceNode<f32> for AudioFileSource {
                 break;
             }
         }
-        Ok(())
     }
 }

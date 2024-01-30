@@ -2,7 +2,6 @@
 //! 
 use std::net::UdpSocket;
 use byteorder::{ByteOrder, LittleEndian};
-use anyhow::Result;
 use crate::node::{SinkNode, SourceNode};
 
 
@@ -32,11 +31,10 @@ impl UdpSink {
 }
 
 impl SinkNode<f32> for UdpSink {
-    fn read_buffer(&mut self, input_buffer: &[f32]) -> Result<()> {
+    fn read_buffer(&mut self, input_buffer: &[f32]) {
         let mut bytes: Vec<u8> = vec![0; 4 * input_buffer.len()];
         LittleEndian::write_f32_into(&input_buffer, &mut bytes);
         self.socket.send_to(&bytes, &self.addr).unwrap();
-        Ok(())
     }
 }
 
@@ -56,9 +54,8 @@ impl UdpSource {
 }
 
 impl SourceNode<f32> for UdpSource {
-    fn write_buffer(&mut self, output_buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, output_buffer: &mut [f32]) {
         let _ = self.socket.recv_from(&mut self.bytes).expect("Error reading from socket");
         LittleEndian::read_f32_into(&self.bytes, output_buffer);
-        Ok(())
     }
 }

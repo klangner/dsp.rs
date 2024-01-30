@@ -1,7 +1,6 @@
 //! FM demodulation
 //! 
 
-use anyhow::Result;
 use num_complex::Complex32;
 use crate::node::ProcessNode;
 
@@ -32,14 +31,12 @@ impl QuadratureDetector {
 }
 
 impl ProcessNode<Complex32, f32> for QuadratureDetector {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             let v = &input_buffer[i];
             output_buffer[i] = (v * self.last_sample.conj()).arg(); // Obtain phase of x[n] * conj(x[n-1])
             self.last_sample = *v;
         }
-        
-        Ok(())
     }
 }

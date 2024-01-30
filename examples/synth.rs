@@ -42,7 +42,7 @@ fn main() {
     let mut generator = Sine::new(440., SAMPLE_RATE as usize);
 
     let stream = setup_audio(move |data: &mut [f32]| {
-            generator.write_buffer(data).unwrap();
+            generator.write_buffer(data);
         },).unwrap();
     stream.play().unwrap();
     

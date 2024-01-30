@@ -1,6 +1,5 @@
 //! Helper functions for FFT.
 use std::sync::Arc;
-use anyhow::Result;
 use crate::{node::ProcessNode, window};
 use rustfft::{Fft, FftPlanner};
 use crate::num_complex::Complex32;
@@ -38,13 +37,12 @@ impl ForwardFFT {
 
 impl ProcessNode<Complex32, Complex32> for ForwardFFT {
 
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(usize::min(input_buffer.len(), output_buffer.len()), self.window.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i].scale(self.window.as_slice()[i]); 
         }
         self.fft.process(output_buffer);
-        Ok(())
     }
 }
 
@@ -67,13 +65,12 @@ impl InverseFFT {
 
 impl ProcessNode<Complex32, Complex32> for InverseFFT {
 
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i]; 
         }
         self.fft.process(output_buffer);
-        Ok(())
     }
 }
 

@@ -27,7 +27,7 @@ fn main() {
     let stream = device.build_output_stream(
         &config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
-            generator.write_buffer(data).unwrap();
+            generator.write_buffer(data);
         },
         move |err| {panic!("cpal stream error {:?}", err);},
         None

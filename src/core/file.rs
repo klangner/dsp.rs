@@ -3,7 +3,6 @@
 use std::fs::File;
 use byteorder::{ReadBytesExt, WriteBytesExt}; 
 use byteorder::LittleEndian;
-use anyhow::Result;
 use crate::node::{SinkNode, SourceNode};
 
 
@@ -34,13 +33,12 @@ impl FileSink {
 }
 
 impl SinkNode<f32> for FileSink {
-    fn read_buffer(&mut self, input_buffer: &[f32]) -> Result<()> {
+    fn read_buffer(&mut self, input_buffer: &[f32]) {
         let mut file = self.file.as_ref().unwrap();
         for v in input_buffer {
-            file.write_f32::<LittleEndian>(*v)?;
+            file.write_f32::<LittleEndian>(*v).expect("Can't reead from file");
         }
         let _ = file.sync_all();
-        Ok(())
     }
 }
 
@@ -59,7 +57,7 @@ impl FileSource {
 }
 
 impl SourceNode<f32> for FileSource {
-    fn write_buffer(&mut self, output_buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, output_buffer: &mut [f32]) {
         for i in 0..output_buffer.len() {
             if let Ok(v) = self.file.read_f32::<LittleEndian>() {
                 output_buffer[i] = v;
@@ -67,6 +65,5 @@ impl SourceNode<f32> for FileSource {
                 break
             }
         }
-        Ok(())
     }
 }

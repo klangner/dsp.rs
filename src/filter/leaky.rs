@@ -4,8 +4,6 @@
 //! 
 //! x[t] = alpha * x + (1-alpha)*x[t-1]
 
-use anyhow::Result;
-
 use crate::node::ProcessNode;
 
 #[derive(Clone,Debug)]
@@ -43,12 +41,11 @@ impl LeakyIntegrator {
 
 impl ProcessNode<f32, f32> for LeakyIntegrator {
 
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let size = std::cmp::min(input_buffer.len(), output_buffer.len());
         for i in 0..size {
             output_buffer[i] = self.next_value(input_buffer[i]);
         }
-        Ok(())
     }
 }
 

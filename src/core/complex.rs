@@ -2,7 +2,6 @@
 //! 
 //! 
 
-use anyhow::Result;
 use crate::{node::ProcessNode, num_complex::Complex32};
 
 
@@ -33,12 +32,11 @@ impl RealToComplex {
 }
 
 impl ProcessNode<f32, Complex32> for RealToComplex {
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = Complex32::new(input_buffer[i], 0.); 
         }
-        Ok(())
     }
 }
 
@@ -70,11 +68,10 @@ impl ComplexToReal {
 }
 
 impl ProcessNode<Complex32, f32> for ComplexToReal {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [f32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = input_buffer[i].norm(); 
         }
-        Ok(())
     }
 }

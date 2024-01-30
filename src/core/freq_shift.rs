@@ -1,7 +1,6 @@
 //! Node for shifting frequency of a giveen signal
 //! 
 
-use anyhow::Result;
 use num_complex::Complex32;
 use crate::node::ProcessNode;
 
@@ -36,12 +35,10 @@ impl FrequencyShift {
 }
 
 impl ProcessNode<Complex32, Complex32> for FrequencyShift {
-    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[Complex32], output_buffer: &mut [Complex32]) {
         let n = usize::min(input_buffer.len(), output_buffer.len());
         for i in 0..n {
             output_buffer[i] = self.offset_signal.next().unwrap() * input_buffer[i]; 
         }
-        
-        Ok(())
     }
 }

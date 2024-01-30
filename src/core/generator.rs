@@ -6,7 +6,6 @@
 
 use std::f32;
 use std::f32::consts::PI;
-use anyhow::Result;
 #[cfg(feature = "random")]
 use rand;
 #[cfg(feature = "random")]
@@ -60,9 +59,8 @@ impl Iterator for Impulse {
 
 // Node implementation
 impl SourceNode<f32> for Impulse {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 
@@ -112,9 +110,8 @@ impl Iterator for Step {
 }
 
 impl SourceNode<f32> for Step {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 
@@ -167,9 +164,8 @@ impl Iterator for Sine {
 }
 
 impl SourceNode<f32> for Sine {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 
@@ -222,9 +218,8 @@ impl Iterator for Sawtooth {
 }
 
 impl SourceNode<f32> for Sawtooth {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 
@@ -282,9 +277,8 @@ impl Iterator for Square {
 }
 
 impl SourceNode<f32> for Square {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> {
+    fn write_buffer(&mut self, buffer: &mut [f32]) {
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 
@@ -381,9 +375,8 @@ impl Iterator for Chirp {
 }
 
 impl SourceNode<f32> for Chirp {
-    fn write_buffer(&mut self, buffer: &mut [f32]) -> Result<()> { 
+    fn write_buffer(&mut self, buffer: &mut [f32]) { 
         for e in buffer.iter_mut() {*e = self.next().unwrap()};
-        Ok(())
     }
 }
 

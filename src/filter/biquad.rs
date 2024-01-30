@@ -1,7 +1,6 @@
 /// Basic implementations of common discrete filters
 use arraydeque::{ArrayDeque, Wrapping};
 use itertools::izip;
-use anyhow::Result;
 
 use crate::node::ProcessNode;
 
@@ -81,10 +80,9 @@ impl BiquadFilter {
 
 impl ProcessNode<f32, f32> for BiquadFilter {
 
-    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) -> Result<()> {
+    fn process_buffer(&mut self, input_buffer: &[f32], output_buffer: &mut [f32]) {
         let size = std::cmp::min(input_buffer.len(), output_buffer.len());
         (0..size).for_each(|i| output_buffer[i] = self.process_one(input_buffer[i]));
-        Ok(())
     }
 }
 
