@@ -48,6 +48,12 @@ Implemented generators:
   * [x] Find peak frequency
 
 
+## Time domain
+
+  * [x] Frequency shifter
+  * [x] FM demodulation
+
+
 # License
 
 Licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
