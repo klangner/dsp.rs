@@ -23,10 +23,24 @@ pub fn max_freq(data: &[Complex32], sample_rate: usize) -> f32 {
     }
 }
 
+/// Calculate Decibels relative to the full scale
+pub fn dbfs(sample: &Complex32, max_power: f32) -> f32 {
+    20.0 * (sample.norm() / max_power).log10()
+}
+
 
 /// ------------------------------------------------------------------------------------------------
 /// Module unit tests
 /// ------------------------------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
+    use rustfft::num_traits::One;
+
+    use super::*;
+
+    #[test]
+    fn test_dbfs() {
+        assert_eq!(dbfs(&Complex32::one(), 1.), 0.);
+        assert_eq!(dbfs(&Complex32::new(10., 0.), 100.), -20.);
+    }
 }
