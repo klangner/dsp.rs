@@ -11,12 +11,11 @@ documentation = "https://docs.rs/dsp"
 edition = "2021"
 
 [features]
-default = ["audio"]
+default = []
 audio = ["cpal", "audrey"]
 random = ["rand", "rand_distr"]
 
 [dependencies]
-anyhow = "1.0"
 arraydeque = "0.5"
 byteorder = "1.5"
 itertools = "0.12"
@@ -28,6 +27,7 @@ rand = { version = "0.8", optional = true }
 rand_distr = {version = "0.4", optional = true }
 
 [dev-dependencies]
+anyhow = "1.0"
 assert_approx_eq = "1.1"
 gnuplot = "0.0.41"
 clap = { version = "4", features = ["derive"] }
@@ -44,6 +44,10 @@ harness = false
 
 [[example]]
 name = "play"
+required-features = ["audio"]
+
+[[example]]
+name = "synth"
 required-features = ["audio"]
 
 [[example]]
