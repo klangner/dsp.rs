@@ -16,10 +16,10 @@ audio = ["cpal", "audrey"]
 random = ["rand", "rand_distr"]
 
 [dependencies]
-arraydeque = "0.5"
-byteorder = "1.5"
+arraydeque = { version = "0.5", default-features = false }
+byteorder = { version = "1.5", default-features = false }
 itertools = "0.12"
-num-complex = "0.4"
+num-complex = { version = "0.4", default-features = false }
 rustfft = "6.2"
 cpal = { version = "0.15", optional = true }
 audrey = { version = "0.3", optional = true }
